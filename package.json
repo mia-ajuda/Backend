@@ -1,0 +1,11 @@
+{
+  "name": "Backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mia-ajuda/Backend.git",
+  "author": "LeoSilvaGomes <leonardodasigomes@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
