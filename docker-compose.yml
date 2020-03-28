@@ -5,7 +5,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: "node index.js"
+        command: "yarn start"
         ports:
             - "8000:8000"
         depends_on: 
