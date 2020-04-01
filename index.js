@@ -15,6 +15,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 const mongoDB = process.env.DATABASE_URL
+console.log(mongoDB)
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true }).then(
     ()=> console.log('Conectado')
 ).catch(error => console.log(error))
