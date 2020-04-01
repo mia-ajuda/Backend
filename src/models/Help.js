@@ -11,35 +11,33 @@ const helpSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum:['nao aceito','em andamento','concluido','excluido'],
-        default:'nao aceito',
-        required: true
+        enum: ['nao aceito', 'em andamento', 'concluido', 'excluido'],
+        default: 'nao aceito',
     },
-    possibleHelpers:{
-        type: [mongoose.Schema.Types.ObjectId], ref:'User',
+    possibleHelpers: {
+        type: [mongoose.Schema.Types.ObjectId], ref: 'User',
         required: false
     },
-    categoryId:{
+    categoryId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Category',
+        // required: true
+    },
+    ownerId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required: true
     },
-    ownerId:{
-        type: mongoose.Schema.Types.ObjectId, ref: 'User',
-        required: true 
-    },
-    helperId:{
+    helperId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required: false
     },
-    creationDate:{
+    creationDate: {
         type: Date,
-        required: true,
         default: Date.now
     },
-    finishedDate:{
-        type:Date,
-        required: true
+    finishedDate: {
+        type: Date,
+        required: false
     }
-}, { collection: 'help' })
+}, { collection: 'userHelp' })
 
 module.exports = mongoose.model('Help', helpSchema)
