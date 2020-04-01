@@ -3,7 +3,7 @@ const HelpSchema = require("../models/Help");
 
 class HelpRepository extends BaseRepository {
 
-    constructor(){
+    constructor() {
         super(HelpSchema);
     }
 
@@ -15,9 +15,9 @@ class HelpRepository extends BaseRepository {
         return await super.$getById(id);
     }
 
-    async list(query){
+    async list(query) {
         return await super.$list(query);
     }
-} 
+}
 
 module.exports = HelpRepository

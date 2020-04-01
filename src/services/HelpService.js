@@ -9,9 +9,9 @@ class HelpService {
         try {
 
             const createdHelp = await this.HelpRepository.create(data);
-            
+
             return createdHelp;
-        } catch(err) {
+        } catch (err) {
             throw err;
         }
     }
@@ -27,13 +27,13 @@ class HelpService {
     }
 
     async getHelpList(query) {
+        console.log(query)
         const Helplist = await this.HelpRepository.list(query);
-
         if (!Helplist) {
             throw new Error('Pedidos de ajuda não encontrados')
         }
 
-        return Help
+        return Helplist
     }
 }
 

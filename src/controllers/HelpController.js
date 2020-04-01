@@ -1,4 +1,5 @@
 const HelpService = require('../services/HelpService');
+const mongoose = require('mongoose')
 
 class HelpController {
 
@@ -26,7 +27,7 @@ class HelpController {
     async getHelpById(req, res, next) {
         const id = req.params.id
         try {
-            const result = await this.HelpService.getHelp(id);
+            const result = await this.HelpService.getHelpByid(id);
             res.status(200);
             res.json(result);
             next();
@@ -38,10 +39,10 @@ class HelpController {
     }
 
     async getHelpList(req, res, next) {
-        const id = req.params.id
-
+        const id = req.query.id
+        const query = id ? { ownerId: { $ne: id } } : {}
         try {
-            const result = await this.HelpService.getHelpList({_id: {$ne:id}});
+            const result = await this.HelpService.getHelpList(query)
             res.status(200);
             res.json(result);
             next();
