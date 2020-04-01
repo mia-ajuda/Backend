@@ -26,9 +26,8 @@ class HelpService {
         return Help
     }
 
-    async getHelpList(query) {
-        console.log(query)
-        const Helplist = await this.HelpRepository.list(query);
+    async getHelpList(id) {
+        const Helplist = await this.HelpRepository.list(id);
         if (!Helplist) {
             throw new Error('Pedidos de ajuda não encontrados')
         }

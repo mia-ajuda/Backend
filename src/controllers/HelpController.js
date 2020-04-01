@@ -39,10 +39,9 @@ class HelpController {
     }
 
     async getHelpList(req, res, next) {
-        const id = req.query.id
-        const query = id ? { ownerId: { $ne: id } } : {}
+        const id = req.query.id || null;
         try {
-            const result = await this.HelpService.getHelpList(query)
+            const result = await this.HelpService.getHelpList(id)
             res.status(200);
             res.json(result);
             next();
