@@ -7,6 +7,7 @@ const helpSchema = new mongoose.Schema({
     },
     description: {
         type: String,
+        maxlength: 120,
         required: true
     },
     status: {
