@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const helpSchema = require('./help')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -38,10 +37,6 @@ const userSchema = new mongoose.Schema({
         latitude: Number,
         longitude: Number
     },
-    /*helpList:{
-        type: [mongoose.Schema.Types.ObjectId], ref: 'Help',
-        required:false
-    } ,*/
     phone: {
         type: String,
         required: true

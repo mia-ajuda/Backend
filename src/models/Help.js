@@ -1,6 +1,4 @@
 const mongoose = require('mongoose')
-const userSchema = require('./user')
-const categorySchema = require('./category')
 
 const helpSchema = new mongoose.Schema({
     title: {
