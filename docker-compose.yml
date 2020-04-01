@@ -2,6 +2,8 @@ version: '3'
 services:
     backend:
         container_name: backend
+        environment:
+            - DATABASE_URL=mongodb://mongo/miaAjudaDB
         build:
             context: .
             dockerfile: Dockerfile
