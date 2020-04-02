@@ -20,6 +20,10 @@ class UserRepository extends BaseRepository {
     async updateUserLocationById(user) {
         return await super.$update(user);
     }
+
+    async deleteUserLogically(user) {
+        return await super.$update(user);
+    }
 }
 
 module.exports = UserRepository

@@ -30,15 +30,14 @@ class BaseRepository {
         const savedModel = await dataModel.save({session: mongoSession.session});
         return savedModel;
     }
-    
 
     async $listAggregate(aggregationPipeline) {
         return await this.modelClass.aggregate(aggregationPipeline).exec();
     }
 
     /**
-     * @param {string} id Id do objeto 
-     * @param {Boolean} [active = true] se vou pegar ou não elementos deletados. Se for false, mesmo elementos removidos serão exibidos.  
+     * @param {string} id Id do objeto
+     * @param {Boolean} [active = true] se vou pegar ou não elementos deletados. Se for false, mesmo elementos removidos serão exibidos.
      */
     async $getById(id, active = true) {
         let finalIdFormat = id;
@@ -53,7 +52,7 @@ class BaseRepository {
 
         if (active) {
             query['active'] = true
-        }  
+        }
 
         const recordModel = await this.modelClass.findOne(query);
 

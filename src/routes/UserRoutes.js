@@ -11,6 +11,9 @@ routes.get('/user/:id', async (req, res, next) => {
 })
 routes.put('/user/:id/location', async (req, res, next) => {
     userController.updateUserLocationById(req, res, next)
-})
+});
+routes.delete('/user/:id', async (req, res, next) => {
+    userController.deleteUserLogic(req, res, next);
+});
 
 module.exports = routes

@@ -15,27 +15,51 @@ class UserController {
         const data = {
             ...req.body,
             location
-        };
-
-        const result = await this.userService.createUser(data);
-
-        res.status(201);
-        res.json(result);
-        next();
+        }
+        try {
+            const result = await this.userService.createUser(data);
+            res.status(201);
+            res.json(result);
+            next();
+        }
+        catch (err) {
+            res.status(400);
+            res.json(err);
+            next();
+        }
     }
 
-    async getUserById(req, res, next) {
-        const id = req.params.id;
+    async deleteUserLogic(req, res, next) {
+        const id  = req.params.id;
 
-        const result = await this.userService.getUser(id);
-
-        res.status(200);
-        res.json(result);
-        next();
+        try {
+            const result = await this.userService.deleteUserLogically(id);
+            res.status(200).json(result);
+            return next();
+        }catch (err) {
+            res.status(400).json(err);
+            return next();
+        }
     }
 
 
-    async updateUserLocationById(req, res, next) {
+    async getUserById(req,res,next) {
+        const id = req.params.id
+
+        try {
+            const result = await this.userService.getUser(id);
+            res.status(200);
+            res.json(result);
+            next();
+        }
+        catch (err) {
+            res.status(400);
+            res.json(err);
+            next();
+        }
+    }
+
+    async updateUserLocationById(req,res,next) {
 
         const data = {
             id: req.params.id,

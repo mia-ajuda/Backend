@@ -10,7 +10,7 @@ class UserService {
         try {
 
             const createdUser = await this.userRepository.create(data);
-            
+
             return createdUser;
         } catch(err) {
             throw err;
@@ -36,6 +36,14 @@ class UserService {
         }
 
         await this.userRepository.updateUserLocationById(user)
+    }
+
+    async deleteUserLogically(id) {
+        const user = await this.getUser(id);
+
+        user.active = false;
+
+        await this.userRepository.deleteUserLogically(user);
     }
 }
 
