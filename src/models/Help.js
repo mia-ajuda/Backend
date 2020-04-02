@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const helpStatusEnum = require('../utils/enums/helpStatusEnum')
 
 const helpSchema = new mongoose.Schema({
     title: {
@@ -12,8 +13,8 @@ const helpSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['nao aceito', 'em andamento', 'concluido', 'excluido'],
-        default: 'nao aceito',
+        enum: Object.values(helpStatusEnum),
+        default: helpStatusEnum.WAITING,
     },
     possibleHelpers: {
         type: [mongoose.Schema.Types.ObjectId], ref: 'User',
