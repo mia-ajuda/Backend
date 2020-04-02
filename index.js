@@ -15,6 +15,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 databaseConnect()
+dailySchedule()
 setRoutes(app)
 dailySchedule()
 

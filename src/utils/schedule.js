@@ -38,6 +38,4 @@ function dailySchedule() {
     })
 }
 
-// * * 08,18 * * *
-
 module.exports = dailySchedule
