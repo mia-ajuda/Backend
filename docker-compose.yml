@@ -10,9 +10,10 @@ services:
         command: "yarn start"
         ports:
             - "8000:8000"
-        depends_on: 
+        depends_on:
             - mongo
+        volumes:
+            - .:/app
     mongo:
         container_name: mongo
-        image: mongo 
-            
+        image: mongo
