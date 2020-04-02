@@ -72,6 +72,18 @@ class HelpController {
       return next();
     }
   }
+    async getToExpireList(req, res, next) {
+        try {
+            const result = await this.HelpService.getListToDelete()
+            res.status(200);
+            res.json(result);
+            next();
+        } catch (err) {
+            res.status(400);
+            res.json(err);
+            next();
+        }
+    }
 }
 
 module.exports = HelpController;

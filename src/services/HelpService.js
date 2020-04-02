@@ -48,6 +48,23 @@ class HelpService {
 
         return {'message': `Help ${id} deleted!`};
     }
+
+    async delete(data) {
+        try {
+            return await this.HelpRepository.delete(data)
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getListToDelete() {
+        const Helplist = await this.HelpRepository.listToExpire();
+        if (!Helplist) {
+            throw new Error('Pedidos de ajuda não encontrados')
+        }
+
+        return Helplist
+    }
 }
 
 module.exports = HelpService;
