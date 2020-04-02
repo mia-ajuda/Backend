@@ -41,7 +41,6 @@ class HelpRepository extends BaseRepository {
     return result;
   }
 
-
   async listToExpire() {
     let date = new Date()
     date.setDate(date.getDate() - 14)
