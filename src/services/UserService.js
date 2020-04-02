@@ -21,10 +21,21 @@ class UserService {
         const user = await this.userRepository.getById(id);
 
         if (!user) {
-            throw new Error('Usuário não encontrado')
+            throw { error:'Usuário não encontrado' }
         }
 
         return user
+    }
+
+    async updateUserLocationById({id, longitude, latitude}) {
+        const user = await this.getUser(id);
+
+        if (longitude || latitude) {
+            user.location.longitude = longitude || user.location.longitude
+            user.location.latitude = latitude || user.location.latitude
+        }
+
+        await this.userRepository.updateUserLocationById(user)
     }
 }
 

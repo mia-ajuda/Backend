@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 
 class BaseRepository {
 
@@ -17,7 +18,7 @@ class BaseRepository {
 
     async $saveMany(itemsModel, mongoSession = {}) {
         itemsModel.forEach(item => {
-            item.lastUpdateDate = this.newDate();
+            item.lastUpdateDate = Date.now();
         })
         const savedModels = await this.modelClass.insertMany(itemsModel, {session: mongoSession.session});
         return savedModels;
@@ -25,7 +26,7 @@ class BaseRepository {
 
 
     async $update(dataModel, mongoSession = {}) {
-        dataModel.lastUpdateDate = this.newDate();
+        dataModel.lastUpdateDate = Date.now();
         const savedModel = await dataModel.save({session: mongoSession.session});
         return savedModel;
     }
@@ -35,10 +36,26 @@ class BaseRepository {
         return await this.modelClass.aggregate(aggregationPipeline).exec();
     }
 
+    /**
+     * @param {string} id Id do objeto 
+     * @param {Boolean} [active = true] se vou pegar ou não elementos deletados. Se for false, mesmo elementos removidos serão exibidos.  
+     */
+    async $getById(id, active = true) {
+        let finalIdFormat = id;
 
-    async $getById(id) {
+        if(typeof id === "string") {
+            finalIdFormat = mongoose.Types.ObjectId(id);
+        }
 
-        const recordModel = await this.modelClass.findById(id);
+        const query = {
+            _id: finalIdFormat,
+        }
+
+        if (active) {
+            query['active'] = true
+        }  
+
+        const recordModel = await this.modelClass.findOne(query);
 
         return recordModel;
     }
