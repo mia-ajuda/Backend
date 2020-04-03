@@ -24,18 +24,40 @@ class UserService {
             throw { error:'Usuário não encontrado' }
         }
 
-        return user
+        return user;
+    }
+
+    async editUserById({id, photo = undefined, name = undefined, phone = undefined}) {
+        const user = await this.getUser(id);
+
+        if (!user) {
+            throw { error:'Usuário não encontrado' }
+        }
+
+        user.photo = photo || user.photo;
+        user.name = name || user.name;
+        user.phone = phone || user.phone;
+
+        const result = await this.userRepository.update(user);
+
+        return result;
     }
 
     async updateUserLocationById({id, longitude, latitude}) {
         const user = await this.getUser(id);
 
-        if (longitude || latitude) {
-            user.location.longitude = longitude || user.location.longitude
-            user.location.latitude = latitude || user.location.latitude
+        if (!user) {
+            throw { error:'Usuário não encontrado' }
         }
 
-        await this.userRepository.updateUserLocationById(user)
+        if (longitude || latitude) {
+            user.location.longitude = longitude || user.location.longitude;
+            user.location.latitude = latitude || user.location.latitude;
+        }
+
+        const result = await this.userRepository.update(user);
+
+        return result;
     }
 
     async deleteUserLogically(id) {
@@ -43,7 +65,7 @@ class UserService {
 
         user.active = false;
 
-        await this.userRepository.deleteUserLogically(user);
+        await this.userRepository.update(user);
     }
 }
 
