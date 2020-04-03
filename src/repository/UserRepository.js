@@ -17,11 +17,7 @@ class UserRepository extends BaseRepository {
         return await super.$getById(id);
     }
 
-    async updateUserLocationById(user) {
-        return await super.$update(user);
-    }
-
-    async deleteUserLogically(user) {
+    async update(user) {
         return await super.$update(user);
     }
 }

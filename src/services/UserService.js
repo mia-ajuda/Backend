@@ -8,7 +8,6 @@ class UserService {
 
     async createUser(data) {
         try {
-
             const createdUser = await this.userRepository.create(data);
 
             return createdUser;
@@ -27,7 +26,7 @@ class UserService {
         return user;
     }
 
-    async editUserById({id, photo = undefined, name = undefined, phone = undefined}) {
+    async editUserById({id, photo, name, phone}) {
         const user = await this.getUser(id);
 
         if (!user) {
@@ -43,6 +42,29 @@ class UserService {
         return result;
     }
 
+
+    async editUserAddressById({id, cep, number, city, state, complement}) {
+        const user = await this.getUser(id);
+
+        if (!user) {
+            throw { error:'Usuário não encontrado' }
+        }
+
+        const address = {
+            cep:cep || user.address.cep,
+            number:number || user.address.number,
+            city:city || user.address.city,
+            state:state || user.address.state,
+            complement:complement || user.address.complement
+        }
+
+        user.address = address
+
+        const result = await this.userRepository.update(user);
+
+        return result;
+    }
+
     async updateUserLocationById({id, longitude, latitude}) {
         const user = await this.getUser(id);
 
@@ -50,9 +72,11 @@ class UserService {
             throw { error:'Usuário não encontrado' }
         }
 
+        console.log(latitude, longitude);
+
         if (longitude || latitude) {
-            user.location.longitude = longitude || user.location.longitude;
-            user.location.latitude = latitude || user.location.latitude;
+            user.location.coordinates[0] = longitude || user.location.coordinates[0];
+            user.location.coordinates[1] = latitude || user.location.coordinates[1];
         }
 
         const result = await this.userRepository.update(user);

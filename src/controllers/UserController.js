@@ -7,27 +7,67 @@ class UserController {
 
     async createUser(req, res, next) {
         const { latitude, longitude } = req.body;
+
         const location = {
             type: "Point",
             coordinates: [longitude, latitude]
         };
-
+        
         const data = {
             ...req.body,
             location
         }
+
         try {
             const result = await this.userService.createUser(data);
-            res.status(201);
-            res.json(result);
+            res.status(201).json(result);
             next();
         }
         catch (err) {
-            res.status(400);
-            res.json(err);
+            res.status(400).json(err);
             next();
         }
     }
+
+
+    async editUserById(req, res, next) {
+        const data = {
+            id: req.params.id,
+            photo: req.body.photo,
+            name: req.body.name,
+            phone: req.body.phone
+        }
+        try {
+            const result = await this.userService.editUserById(data);
+            res.status(200).json(result);
+            return next();
+        }catch (err) {
+            res.status(400).json(err);
+            return next();
+        }
+    }
+
+    async editUserAddressById(req, res, next) {
+
+        const data = {
+            id: req.params.id,
+            cep: req.body.cep,
+            number: req.body.number,
+            city: req.body.city,
+            state: req.body.state,
+            complement: req.body.complement
+        }
+        
+        try {
+            const result = await this.userService.editUserAddressById(data);
+            res.status(200).json(result);
+            return next();
+        }catch (err) {
+            res.status(400).json(err);
+            return next();
+        }
+    }
+
 
     async deleteUserLogic(req, res, next) {
         const id  = req.params.id;
@@ -48,13 +88,11 @@ class UserController {
 
         try {
             const result = await this.userService.getUser(id);
-            res.status(200);
-            res.json(result);
+            res.status(200).json(result);
             next();
         }
         catch (err) {
-            res.status(400);
-            res.json(err);
+            res.status(400).json(err);
             next();
         }
     }
@@ -69,13 +107,11 @@ class UserController {
 
         try {
             const result = await this.userService.updateUserLocationById(data);
-            res.status(200);
-            res.json(result);
+            res.status(200).json(result);
             next();
         }
         catch (err) {
-            res.status(400);
-            res.json(err);
+            res.status(400).json(err);
             next();
         }
     }
