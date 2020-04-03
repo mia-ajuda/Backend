@@ -14,11 +14,11 @@ const databaseConnect = async() => {
         await CategorySeed()
         if(envType === 'development') {
             await UserSeed()
-            HelpSeed()
+            await HelpSeed()
             console.log('Popula usuários e ajudas falsas');
         }
     } catch(error) {
-        console.log('Não foi possível initializar corretamente a base de dados!')
+        console.log('Não foi possível inicicializar corretamente a base de dados!')
         console.log(error)
     }
 }

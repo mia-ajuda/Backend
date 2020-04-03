@@ -21,7 +21,6 @@ const helpSchema = new mongoose.Schema({
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Category',
-        // required: true
     },
     ownerId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
@@ -38,6 +37,10 @@ const helpSchema = new mongoose.Schema({
     finishedDate: {
         type: Date,
         required: false
+    },
+    active: {
+        default: true,
+        type: Boolean
     }
 }, { collection: 'userHelp' })
 

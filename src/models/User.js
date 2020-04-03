@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
     birthday: {
         type: Date,
         required: true
@@ -19,7 +24,10 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     address: {
-        cep: String,
+        cep: {
+            type: String,
+            required: true
+        },
         number: {
             type: Number,
             required: true
@@ -45,6 +53,10 @@ const userSchema = new mongoose.Schema({
     registerDate: {
         type: Date,
         default: Date.now
+    },
+    active: {
+        default: true,
+        type: Boolean
     }
 }, {collection: 'user'})
 
