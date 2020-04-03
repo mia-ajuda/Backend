@@ -40,8 +40,15 @@ class HelpController {
 
     async getHelpList(req, res, next) {
         const id = req.query.id || null;
+        const status = req.query.status || null;
         try {
-            const result = await this.HelpService.getHelpList(id)
+            let result
+            if (id && status) {
+                result = await this.HelpService.getHelpListByStatus(id, status);
+            }
+            else {
+                result = await this.HelpService.getHelpList(id)
+            }
             res.status(200);
             res.json(result);
             next();
