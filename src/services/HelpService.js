@@ -45,6 +45,11 @@ class HelpService {
 
     async getListToDelete() {
         const Helplist = await this.HelpRepository.listToExpire();
+        return Helplist
+    }
+    
+    async getHelpListByStatus(id, status) {
+        const Helplist = await this.HelpRepository.listByStatus(id, status)
         if (!Helplist) {
             throw new Error('Pedidos de ajuda não encontrados')
         }

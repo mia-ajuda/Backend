@@ -31,6 +31,10 @@ class HelpRepository extends BaseRepository {
         help.status = helpStatusEnum.DELETED;
         return await super.$update(help)
     }
+    
+    async listByStatus(id, status) {
+        return await super.$list({ ownerId: id, status: status })
+    }
 }
 
 module.exports = HelpRepository
