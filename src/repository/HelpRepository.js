@@ -29,23 +29,35 @@ class HelpRepository extends BaseRepository {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: coords
+            coordinates: coords,
           },
-          $maxDistance: 10000
-        }
-      }
+          $maxDistance: 10000,
+        },
+      },
     });
+    const arrayUsersId = users.map((user) => user._id);
 
-    const arrayUsersId = users.map(user => user._id);
+    const aggregation = [
+      {
+        $math: {
+          ownerId: {
+            $in: arrayUsersId,
+          },
+          status: "on_going",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+    ];
 
-    const query = {
-      // ownerId: {
-      //   $in: arrayUsersId
-      // },
-      status: "on_going"
-    };
     try {
-      return await super.$listPopulate(query);
+      return await super.$listAggregate(aggregation);
     } catch (error) {
       console.log(error);
     }
