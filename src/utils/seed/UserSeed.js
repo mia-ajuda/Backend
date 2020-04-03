@@ -40,7 +40,6 @@ const seedUser = async () => {
         await User.deleteMany({})
 
         users.forEach(user => {
-            //console.log(user)
             User.create(user)
         })
         console.log('Categorias populadas com sucesso!')

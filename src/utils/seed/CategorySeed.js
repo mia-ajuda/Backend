@@ -60,7 +60,6 @@ const seedCategory = async () => {
         await Category.deleteMany({})
 
         categories.forEach(category => {
-            //console.log(category)
             Category.create(category)
         })
         console.log('Categorias populadas com sucesso!')
