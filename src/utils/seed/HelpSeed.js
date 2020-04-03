@@ -3,7 +3,7 @@ const faker = require('faker/locale/pt_BR')
 const Category = require('../../models/Category')
 const User = require('../../models/User')
 const seedHelp = async () => {
-    //console.log('iaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+   
     try {
         
         const categoryCollection = await Category.find()
@@ -39,7 +39,7 @@ const seedHelp = async () => {
                     categoryId:categoryCollection[faker.random.number(t2-1)]._id,
                     ownerId: userCollection[faker.random.number(t1-1)]._id,
                     helperId: userCollection[faker.random.number(t1-1)]._id,
-                    
+                    finishedDate:faker.date.future()
                 })
             )
             
@@ -49,11 +49,9 @@ const seedHelp = async () => {
         await Help.deleteMany({})
 
         helps.forEach(help => {
-            //console.log(help + 'batom')
             Help.create(help)
         })
         
-        //console.log(Helps)
 
 
     } catch (error) {
