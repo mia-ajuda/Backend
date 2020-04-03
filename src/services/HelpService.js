@@ -34,6 +34,15 @@ class HelpService {
 
         return Helplist
     }
+
+    async getHelpListByStatus(id, status) {
+        const Helplist = await this.HelpRepository.listByStatus(id, status)
+        if (!Helplist) {
+            throw new Error('Pedidos de ajuda não encontrados')
+        }
+
+        return Helplist
+    }
 }
 
 module.exports = HelpService

@@ -12,8 +12,8 @@ const helpSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['nao aceito', 'em andamento', 'concluido', 'excluido'],
-        default: 'nao aceito',
+        enum: ['waiting', 'on_going', 'finished', 'deleted'],
+        default: 'on_going',
     },
     possibleHelpers: {
         type: [mongoose.Schema.Types.ObjectId], ref: 'User',

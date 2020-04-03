@@ -19,6 +19,10 @@ class HelpRepository extends BaseRepository {
         const query = id ? { ownerId: { $ne: id } } : {}
         return await super.$list(query);
     }
+
+    async listByStatus(id, status) {
+        return await super.$list({ ownerId: id, status: status })
+    }
 }
 
 module.exports = HelpRepository
