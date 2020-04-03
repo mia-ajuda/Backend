@@ -39,7 +39,7 @@ class HelpRepository extends BaseRepository {
 
     const aggregation = [
       {
-        $math: {
+        $match: {
           ownerId: {
             $in: arrayUsersId,
           },
