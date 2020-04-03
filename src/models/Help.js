@@ -32,6 +32,10 @@ const helpSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'User',
         required: false
     },
+    deviceId: {
+        type: String,
+        required: false
+    },
     creationDate: {
         type: Date,
         default: Date.now
