@@ -14,6 +14,7 @@ services:
             - mongo
         volumes:
             - .:/app
+            - /app/node_modules
     mongo:
         container_name: mongo
         image: mongo
