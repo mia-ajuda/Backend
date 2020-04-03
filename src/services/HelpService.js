@@ -1,48 +1,57 @@
-const HelpRepository = require('../repository/HelpRepository');
+const HelpRepository = require("../repository/HelpRepository");
 
 class HelpService {
-    constructor() {
-        this.HelpRepository = new HelpRepository();
+  constructor() {
+    this.HelpRepository = new HelpRepository();
+  }
+
+  async createHelp(data) {
+    try {
+      const createdHelp = await this.HelpRepository.create(data);
+
+      return createdHelp;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getHelpByid(id) {
+    const Help = await this.HelpRepository.getById(id);
+
+    if (!Help) {
+      throw new Error("Pedido de ajuda não encontrado");
     }
 
-    async createHelp(data) {
-        try {
+    return Help;
+  }
 
-            const createdHelp = await this.HelpRepository.create(data);
-
-            return createdHelp;
-        } catch (err) {
-            throw err;
-        }
+  async getHelpList(id) {
+    const Helplist = await this.HelpRepository.list(id);
+    if (!Helplist) {
+      throw new Error("Pedidos de ajuda não encontrados");
     }
 
-    async getHelpByid(id) {
-        const Help = await this.HelpRepository.getById(id);
+    return Helplist;
+  }
 
-        if (!Help) {
-            throw new Error('Pedido de ajuda não encontrado')
-        }
-
-        return Help
+  async getHelpListByStatus(id, status) {
+    const Helplist = await this.HelpRepository.listByStatus(id, status);
+    if (!Helplist) {
+      throw new Error("Pedidos de ajuda não encontrados");
     }
 
-    async getHelpList(id) {
-        const Helplist = await this.HelpRepository.list(id);
-        if (!Helplist) {
-            throw new Error('Pedidos de ajuda não encontrados')
-        }
-
-        return Helplist
+    return Helplist;
+  }
+  async getNearHelpList(coords) {
+    const Helplist = await this.HelpRepository.listNear(coords);
+    if (!Helplist) {
+      throw new Error(
+        "Pedidos de ajuda não encontrados no seu raio de distância"
+      );
     }
 
-    async getHelpListByStatus(id, status) {
-        const Helplist = await this.HelpRepository.listByStatus(id, status)
-        if (!Helplist) {
-            throw new Error('Pedidos de ajuda não encontrados')
-        }
-
-        return Helplist
-    }
+    return Helplist;
+  }
 }
 
-module.exports = HelpService
+module.exports = HelpService;
