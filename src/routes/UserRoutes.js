@@ -9,6 +9,12 @@ routes.post("/user", async (req, res, next) => {
 routes.get('/user/:id', async (req, res, next) => {
     userController.getUserById(req, res, next)
 })
+routes.put('/user/:id', async (req, res, next) => {
+    userController.editUserById(req, res, next)
+})
+routes.put('/user/:id/address', async (req, res, next) => {
+    userController.editUserAddressById(req, res, next)
+});
 routes.put('/user/:id/location', async (req, res, next) => {
     userController.updateUserLocationById(req, res, next)
 });
