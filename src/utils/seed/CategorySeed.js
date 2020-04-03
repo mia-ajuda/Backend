@@ -38,6 +38,10 @@ const mapCategories = [
 const seedCategory = async () => {
     try {
         const categoryCollection = await Category.find()
+        // with sudo docker-compose -f docker-compose.yml up --build, the seed will work only one time
+        // because the database was not dropped, so it will fail de if below
+        // to continue seeding diffent users, comment the if bellow or execute sudo docker-compose down
+        // to drop everything
         if(categoryCollection.length > 0) {
             return
         }
@@ -56,6 +60,7 @@ const seedCategory = async () => {
         await Category.deleteMany({})
 
         categories.forEach(category => {
+            //console.log(category)
             Category.create(category)
         })
         console.log('Categorias populadas com sucesso!')
