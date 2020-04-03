@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Point = require('./Point');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -34,8 +35,8 @@ const userSchema = new mongoose.Schema({
         complement: String
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        type: Point,
+        index: '2dsphere'
     },
     phone: {
         type: String,
