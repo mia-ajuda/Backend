@@ -16,6 +16,10 @@ class UserRepository extends BaseRepository {
     async getById(id) {
         return await super.$getById(id);
     }
+
+    async update(user) {
+        return await super.$update(user);
+    }
 }
 
 module.exports = UserRepository

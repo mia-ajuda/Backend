@@ -8,6 +8,10 @@ const categorySchema = new mongoose.Schema({
     description: {
         type: String,
         required: true
+    },
+    active: {
+        default: true,
+        type: Boolean
     }
 }, { collection: 'category' })
 

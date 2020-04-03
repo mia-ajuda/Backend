@@ -34,7 +34,7 @@ const seedHelp = async () => {
                 new Help({
                     title:faker.lorem.lines(1),
                     description: faker.lorem.lines(1),
-                    status: faker.random.arrayElement(['nao aceito', 'em andamento', 'concluido', 'excluido']),
+                    status: faker.random.arrayElement(['waiting', 'on_going', 'finished', 'deleted']),
                     possibleHelpers:Helpers,
                     categoryId:categoryCollection[faker.random.number(t2-1)]._id,
                     ownerId: userCollection[faker.random.number(t1-1)]._id,
@@ -42,8 +42,6 @@ const seedHelp = async () => {
                     finishedDate:faker.date.future()
                 })
             )
-            
-          
         }
 
         await Help.deleteMany({})
@@ -53,8 +51,9 @@ const seedHelp = async () => {
         })
         
 
-
-    } catch (error) {
+        console.log('Ajudas populadas com sucesso!')
+    } catch(error) {
+        console.log('Não foi possível popular as ajudas na base de dados!')
         console.log(error)
     }
 }

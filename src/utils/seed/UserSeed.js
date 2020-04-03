@@ -20,6 +20,7 @@ const seedUser = async () => {
                     name:faker.name.findName(),
                     birthday:Date.parse(faker.date.between('1900-01-01', '2020-03-01')),
                     cpf:'12345678910',
+                    email: faker.internet.email(),
                     photo:faker.image.avatar(),
                     address:{
                         cep:faker.address.zipCode(),
@@ -29,8 +30,11 @@ const seedUser = async () => {
                         complement:faker.lorem.lines(1)
                     },
                     location: {
-                        latitude:faker.address.longitude(),
-                        longitude:faker.address.latitude()
+                        type: "Point",
+                        coordinates: [
+                            faker.address.longitude(),
+                            faker.address.latitude()
+                        ]
                     },
                     phone:faker.phone.phoneNumber('+55 (##) #####-####')
                 })
@@ -39,12 +43,12 @@ const seedUser = async () => {
 
         await User.deleteMany({})
 
-        users.forEach(user => {
-            User.create(user)
+        users.forEach(async user => {
+            await user.save();
         })
-        console.log('Categorias populadas com sucesso!')
+        console.log('Usuários populados com sucesso!')
     } catch(error) {
-        console.log('Não foi possível popular as categorias na base de dados!')
+        console.log('Não foi possível popular os usuáriios na base de dados!')
         console.log(error)
     }
 }
