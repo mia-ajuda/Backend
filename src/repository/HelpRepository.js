@@ -23,6 +23,10 @@ class HelpRepository extends BaseRepository {
     async listByStatus(id, status) {
         return await super.$list({ ownerId: id, status: status })
     }
+
+    async update(help) {
+        return await super.$update(help);
+    }
 }
 
 module.exports = HelpRepository

@@ -7,7 +7,6 @@ class HelpService {
 
     async createHelp(data) {
         try {
-
             const createdHelp = await this.HelpRepository.create(data);
 
             return createdHelp;
@@ -20,7 +19,7 @@ class HelpService {
         const Help = await this.HelpRepository.getById(id);
 
         if (!Help) {
-            throw new Error('Pedido de ajuda não encontrado')
+            throw {error: 'Pedido de ajuda não encontrado'}
         }
 
         return Help
@@ -42,6 +41,13 @@ class HelpService {
         }
 
         return Helplist
+    }
+    async deleteHelpLogically(id) {
+        const help = await this.getHelpByid(id);
+
+        help.active = false;
+
+        await this.HelpRepository.update(help);
     }
 }
 
