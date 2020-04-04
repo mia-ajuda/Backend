@@ -1,13 +1,14 @@
 const User = require('../../models/User')
 const faker = require('faker/locale/pt_BR')
+const lodash = require('lodash')
+
+const diseases = ['Doenças Respiratórias','HIV','Diabétes','Hipertensão','Doenças Cardiovasculares']
 
 const seedUser = async () => {
     try {
         const userCollection = await User.find()
-        // with sudo docker-compose -f docker-compose.yml up --build, the seed will work only one time
-        // because the database was not dropped, so it will fail de if below
-        // to continue seeding diffent users, comment the if bellow or execute sudo docker-compose down
-        // to drop everything
+
+        // this condition avoid populate duplicate users
         if(userCollection.length > 0) {
             return
         }
@@ -15,6 +16,8 @@ const seedUser = async () => {
         let users = []
         const quantity = 10
         for(let i = 0; i < quantity; i++) {
+            const sampleRiscGroup = await lodash.sampleSize(diseases, faker.random.number(5))
+            
             users.push(
                 new User({
                     name:faker.name.findName(),
@@ -36,6 +39,8 @@ const seedUser = async () => {
                             faker.address.latitude()
                         ]
                     },
+                    riscGroup: sampleRiscGroup,
+                    isMentalHealthProfessional: faker.random.boolean(),
                     phone:faker.phone.phoneNumber('+55 (##) #####-####')
                 })
             )
