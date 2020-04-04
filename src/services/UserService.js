@@ -1,4 +1,5 @@
 const UserRepository = require('../repository/UserRepository');
+const ValidationUtils = require("../utils/validations/ValidationUtils")
 
 class UserService {
     constructor() {
@@ -7,6 +8,14 @@ class UserService {
 
 
     async createUser(data) {
+
+        if (data.cpf.length >= 11) {
+            data.cpf = data.cpf.replace(/[-.]/g,"");
+        }
+
+        // Se quebrar ele não continua a execução
+        ValidationUtils.validateIndividualRegisterDoc(data.cpf);
+
         try {
             const createdUser = await this.userRepository.create(data);
 
@@ -91,6 +100,8 @@ class UserService {
 
         await this.userRepository.update(user);
     }
+
+
 }
 
 module.exports = UserService
