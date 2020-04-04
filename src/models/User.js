@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Point = require('./Point');
 
+const riskGroupTypes = require('./RiskGroup');
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -10,6 +12,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        index: true,
     },
     birthday: {
         type: Date,
@@ -18,6 +21,12 @@ const userSchema = new mongoose.Schema({
     cpf: {
         type: String,
         required: true,
+        unique: true,
+        index: true,
+    },
+    riskGroup: {
+        type: [String],
+        enum: [...Object.keys(riskGroupTypes)],
     },
     photo: {
         type: String,
@@ -41,6 +50,10 @@ const userSchema = new mongoose.Schema({
             required: true,
         },
         complement: String,
+    },
+    mentalHealthcareProfessional: {
+        type: Boolean,
+        default: false,
     },
     location: {
         type: Point,
