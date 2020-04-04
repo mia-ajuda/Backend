@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const { cpf } = require('cpf-cnpj-validator');
+
 const Point = require('./Point');
 
-const ValitionUtils = require('../utils/validations/ValidationUtils');
 
 const { riskGroupsEnum } = require('./RiskGroup');
 
@@ -26,7 +27,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         index: true,
         validate: {
-            validator: (v) => ValitionUtils.validCpf(v),
+            validator: (v) => cpf.isValid(v),
             message: (props) => `${props.value} não é um cpf válido`,
         },
     },
