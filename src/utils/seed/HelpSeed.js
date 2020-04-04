@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable */
 const faker = require('faker/locale/pt_BR');
 const Help = require('../../models/Help');
 const Category = require('../../models/Category');

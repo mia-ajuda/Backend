@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable */
 const Category = require('../../models/Category');
 
 const mapCategories = [

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable */
 const faker = require('faker/locale/pt_BR');
 const User = require('../../models/User');
 

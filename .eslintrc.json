@@ -19,6 +19,7 @@
         "no-underscore-dangle": 0,
         "no-param-reassign": 0,
         "max-len": ["error", { "code": 120 }],
-        "no-useless-catch": 0
+        "no-useless-catch": 0,
+        "class-methods-use-this": 0
     }
 }
