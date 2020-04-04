@@ -1,5 +1,5 @@
 const UserService = require('../services/UserService');
-const groupRisk = require('../models/RiskGroup');
+const { riskGroups } = require('../models/RiskGroup');
 
 class UserController {
     constructor() {
@@ -113,7 +113,7 @@ class UserController {
     }
 
     async getUserGroupRiskList(req, res, next) {
-        res.status(200).json(groupRisk);
+        res.status(200).json(riskGroups);
         next();
     }
 }

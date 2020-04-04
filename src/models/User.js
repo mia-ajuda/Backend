@@ -3,7 +3,7 @@ const Point = require('./Point');
 
 const ValitionUtils = require('../utils/validations/ValidationUtils');
 
-const riskGroupTypes = require('./RiskGroup');
+const { riskGroupsEnum } = require('./RiskGroup');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
     },
     riskGroup: {
         type: [String],
-        enum: [...Object.keys(riskGroupTypes)],
+        enum: [...Object.keys(riskGroupsEnum)],
     },
     photo: {
         type: String,

@@ -1,5 +1,4 @@
 const UserRepository = require('../repository/UserRepository');
-const ValidationUtils = require('../utils/validations/ValidationUtils');
 
 class UserService {
     constructor() {
