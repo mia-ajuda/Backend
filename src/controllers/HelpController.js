@@ -23,7 +23,6 @@ class HelpController {
         }
     }
 
-
     async getHelpById(req, res, next) {
         const id = req.params.id
         try {
@@ -56,6 +55,20 @@ class HelpController {
             res.status(400);
             res.json(err);
             next();
+        }
+    }
+
+    async deleteHelpLogic(req, res, next) {
+        const id = req.params.id;
+
+        try {
+            const result = await this.HelpService.deleteHelpLogically(id);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            console.log(er)
+            res.status(400).json(err);
+            return next();
         }
     }
 }
