@@ -13,12 +13,10 @@ class HelpController {
         }
         try {
             const result = await this.HelpService.createHelp(data);
-            res.status(201);
-            res.json(result);
+            res.status(201).json(result);
             next();
         } catch (err) {
-            res.status(400);
-            res.send(err);
+            res.status(400).send({error:err});
             next();
         }
     }
@@ -28,12 +26,10 @@ class HelpController {
         const id = req.params.id
         try {
             const result = await this.HelpService.getHelpByid(id);
-            res.status(200);
-            res.json(result);
+            res.status(200).json(result);
             next();
         } catch (err) {
-            res.status(400);
-            res.json(err);
+            res.status(400).json({error:err});
             next();
         }
     }
@@ -49,12 +45,10 @@ class HelpController {
             else {
                 result = await this.HelpService.getHelpList(id)
             }
-            res.status(200);
-            res.json(result);
+            res.status(200).json(result);
             next();
         } catch (err) {
-            res.status(400);
-            res.json(err);
+            res.status(400).json({error:err});
             next();
         }
     }

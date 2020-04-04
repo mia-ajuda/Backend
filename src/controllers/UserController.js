@@ -24,7 +24,7 @@ class UserController {
             next();
         }
         catch (err) {
-            res.status(400).json(err);
+            res.status(400).json({error:err});
             next();
         }
     }
@@ -42,7 +42,7 @@ class UserController {
             res.status(200).json(result);
             return next();
         }catch (err) {
-            res.status(400).json(err);
+            res.status(400).json({error:err});
             return next();
         }
     }
@@ -63,7 +63,7 @@ class UserController {
             res.status(200).json(result);
             return next();
         }catch (err) {
-            res.status(400).json(err);
+            res.status(400).json({error:err});
             return next();
         }
     }
@@ -77,7 +77,7 @@ class UserController {
             res.status(200).json(result);
             return next();
         }catch (err) {
-            res.status(400).json(err);
+            res.status(400).json({error:err});
             return next();
         }
     }
@@ -92,7 +92,7 @@ class UserController {
             next();
         }
         catch (err) {
-            res.status(400).json(err);
+            res.status(400).json({error:err});
             next();
         }
     }
@@ -111,7 +111,7 @@ class UserController {
             next();
         }
         catch (err) {
-            res.status(400).json(err);
+            res.status(400).json({error:err});
             next();
         }
     }
