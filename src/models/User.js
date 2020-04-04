@@ -57,6 +57,14 @@ const userSchema = new mongoose.Schema({
     active: {
         default: true,
         type: Boolean
+    },
+    riscGroup:{
+        type: [String],
+        enum: ['Idoso','Doenças Respiratórias','HIV','Diabétes','Hipertensão','Doenças Cardiovasculares']
+    },
+    isMentalHealthProfessional:{
+        type: Boolean,
+        default: false
     }
 }, {collection: 'user'})
 
