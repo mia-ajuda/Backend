@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Point = require('./Point');
 
+const ValitionUtils = require('../utils/validations/ValidationUtils');
+
 const riskGroupTypes = require('./RiskGroup');
 
 const userSchema = new mongoose.Schema({
@@ -23,6 +25,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         index: true,
+        validate: {
+            validator: (v) => ValitionUtils.validCpf(v),
+            message: (props) => `${props.value} não é um cpf válido`,
+        },
     },
     riskGroup: {
         type: [String],

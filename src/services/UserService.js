@@ -12,9 +12,6 @@ class UserService {
             data.cpf = data.cpf.replace(/[-.]/g, '');
         }
 
-        // Se quebrar ele não continua a execução
-        ValidationUtils.validateIndividualRegisterDoc(data.cpf);
-
         try {
             const createdUser = await this.userRepository.create(data);
 
