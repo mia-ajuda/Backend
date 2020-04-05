@@ -43,7 +43,7 @@ class BaseRepository {
      */
     async $getById(id, active = true) {
         let finalIdFormat = id;
-
+        
         if (typeof id === 'string') {
             finalIdFormat = mongoose.Types.ObjectId(id);
         }
@@ -51,6 +51,7 @@ class BaseRepository {
         const query = {
             _id: finalIdFormat,
         };
+        
 
         if (active) {
             query.active = true;
