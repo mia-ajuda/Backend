@@ -31,7 +31,7 @@ class HelpRepository extends BaseRepository {
             type: "Point",
             coordinates: coords,
           },
-          $maxDistance: 10000,
+          $maxDistance: 200000,
         },
       },
     });
