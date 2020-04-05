@@ -1,6 +1,7 @@
 const BaseRepository = require('./BaseRepository')
 const SessionSchema = require("../models/Session");
 const jwt = require('jsonwebtoken');
+const firebase = require('../config/authFirebase');
 
 class SessionRepository extends BaseRepository {
 
@@ -8,7 +9,13 @@ class SessionRepository extends BaseRepository {
         super(SessionSchema);
     }
 
-    async create(sessionUser) {
+    async create(sessionUser) {        
+        try {
+            await firebase.auth().createUser(sessionUser);
+        } catch (err) {
+            throw err;
+        }   
+        
         return await super.$save(sessionUser);
     }
 

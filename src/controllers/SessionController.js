@@ -1,4 +1,5 @@
 const SessionService = require("../services/SessionService");
+const firebase = require('../config/authFirebase');
 
 class SessionController {
     constructor() {
@@ -28,6 +29,7 @@ class SessionController {
             password: req.body.password
         };
 
+        
         try {
             const result = await this.SessionService.SignInUser(data);
             res.status(201).json(result);
