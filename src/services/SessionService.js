@@ -7,15 +7,23 @@ class SessionService {
 
     async SignUpUser(data) {
         try {
-            const createdUser = await this.SessionRepository.create(data);
+            const createdSession = await this.SessionRepository.create(data);
+
+            return createdSession;
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async SignInUser(data) {
+        try {
+            const session = await this.SessionRepository.getSession(data);
 
             return createdUser;
         } catch(err) {
             throw err;
         }
     }
-
-
 }
 
 module.exports = SessionService;
