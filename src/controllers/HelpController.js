@@ -58,7 +58,6 @@ class HelpController {
             res.status(200).json(result);
             return next();
         } catch (err) {
-            console.log(er)
             res.status(400).json(err);
             return next();
         }
