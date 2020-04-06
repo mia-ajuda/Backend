@@ -34,15 +34,14 @@ class HelpController {
     }
 
     async getHelpList(req, res, next) {
-        const id = req.query.id || null;
+        const except = req.query["id.except"] ? true : false;
+        const helper = req.query["id.helper"] ? true : false;
+        const temp = except ? 'except' : helper ? 'helper' : null;
+        const id = temp ? req.query[`id.${temp}`] : req.query.id;
         const status = req.query.status || null;
         try {
             let result;
-            if (id && status) {
-                result = await this.HelpService.getHelpListByStatus(id, status);
-            } else {
-                result = await this.HelpService.getHelpList(id);
-            }
+            result = await this.HelpService.getHelpList(id, status, except, helper);
             res.status(200).json(result);
             next();
         } catch (err) {
