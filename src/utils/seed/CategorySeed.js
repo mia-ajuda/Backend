@@ -4,35 +4,35 @@ const Category = require('../../models/Category');
 const mapCategories = [
     {
         name: 'Higiene Pessoal',
-        description: 'São considerados produtos de higiene pessoal, papel higienico, pasta dental, absorvente feminino, fraldas, entre outros.',
+        description: 'Todos precisam de itens essenciais, como itens de higiene pessoal como papel higienico, lenços umidecidos, fraldas, pasta de dente, entre outros, ajude como pode quem mais precisa! Seja a diferença na vida de alguém hoje!',
     },
     {
         name: 'Apoio Social',
-        description: 'Pedidos de apoio social são coisas imateriais, você pode pedir por alguém para conversar, por exemplo.',
+        description: 'Todo apoio é bem-vindo, seja este afetivo, emocional e/ou motivacional! Você pode colaborar contando uma história, cantando uma música, recitando um poema, apresentando uma peça teatral, tocando um instrumento musical, ou apenas conversando. Use a sua criatividade! Muitos precisam do seu apoio nesse momento! Sua colaboração faz muita diferença! Participe!',
     },
     {
         name: 'Itens de Proteção',
-        description: 'Pedidos de itens de proteção são pedidos de itens como mascaras, alcool gel, luvas, entre outros.',
+        description: 'Em momentos difíceis como este, precisamos nos proteger e proteger nossos parentes e entes queridos, ajude pessoas doando ou comprando para elas itens como máscaras, alcool gel, luvas, entre outros. Vamos todos nos ajudar!',
     },
     {
         name: 'Apoio Psicológico',
-        description: 'Pedido de apoio psicológico são direcionados à psicológos, eles podem conversar com você para te ajudar com alguma dificuldade que esteja passando',
+        description: 'Pessoas em estado de isolamento tendem a se sentir mais tristes ou ansiosas do que o normal. Ajude uma pessoa que está passando por esse momento sozinho.',
     },
     {
         name: 'Pequenos Serviços',
-        description: 'Pedidos de pequenos serviços são para caso você necessite de alguém para fazer um pequeno conserto, trocar uma lâmpada, entre outras coisas.',
+        description: 'As pequenas coisas podem fazer diferença. Colabore ajudando em um pequeno conserto ou até mesmo trocando uma lâmpada. Toda forma de ajuda é necessária, para aqueles que mais precisam!',
     },
     {
         name: 'Suprimentos Básicos',
-        description: 'Pedidos de suprimentos básicos são para quando você precisa que alguém lhe traga algum item, como arroz, feijão.',
+        description: 'Todo mundo precisa do básico para viver, seja com um pacote de arroz, um quilo de feijão, ou até mesmo uma duzia de ovos. Você pode ajudar quem mais precisa ou não tem como ir ao mercado! Faça a diferença!',
     },
     {
         name: 'Transporte de Emergência',
-        description: 'Pedidos por transporte de emergência são para caso você necessite de alguém para levar você ou algum familiar ao hospital.',
+        description: 'As vezes, um pequeno gesto pode salvar uma vida, alguém pode estar precisando de uma carona para o hospital. Ajude, mas proteja-se! Você pode ser o motivo de agradecimento de alguém.',
     },
     {
         name: 'Apoio Físico',
-        description: 'Pedidos de apoio físico são para caso precise de alguém para auxiliar em exercícios físicos, alongamentos, entre outros.',
+        description: 'Não podemos ficar parados, sedentarismo pode atrair diversas doenças. Ajude quem mais precisa com alguma série de exercícios físicos, ou até mesmo em uma sessão de alongamentos. Vamos nos movimentar!',
     },
 ];
 
