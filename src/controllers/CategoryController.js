@@ -19,14 +19,9 @@ class CategoryController {
 
     async getCategoryList(req, res, next) {
         const id = req.query.id || null;
-        const status = req.query.status || null;
         try {
             let result;
-            if (id && status) {
-                result = await this.CategoryService.getCategoryListByStatus(id, status);
-            } else {
-                result = await this.CategoryService.getCategoryList(id);
-            }
+            result = await this.CategoryService.getCategoryList(id);
             res.status(200).json(result);
             next();
         } catch (err) {
