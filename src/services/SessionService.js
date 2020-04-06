@@ -14,17 +14,6 @@ class SessionService {
             throw err;
         }
     }
-
-    async SignInUser(data) {
-
-        // try {
-        //     const session = await this.SessionRepository.getSession(data);
-
-        //     return session;
-        // } catch(err) {
-        //     throw err;
-        // }
-    }
 }
 
 module.exports = SessionService;

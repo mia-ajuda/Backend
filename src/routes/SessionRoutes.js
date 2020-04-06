@@ -6,8 +6,5 @@ const routes = express.Router();
 routes.post("/signup", async (req, res, next) => {
     SessionController.signUp(req, res, next);
 });
-routes.post("/signin", async (req, res, next) => {
-    SessionController.signIn(req, res, next);
-})
 
 module.exports = routes
