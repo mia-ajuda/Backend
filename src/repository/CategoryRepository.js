@@ -12,7 +12,7 @@ class CategoryRepository extends BaseRepository {
     }
 
     async list(id) {
-        const query = id ? id : {};
+        const query = id ? {id} : {};
 
         const result = await super.$list(query);
         return result;
