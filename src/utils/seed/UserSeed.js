@@ -20,7 +20,7 @@ const seedUser = async () => {
                 new User({
                     name: faker.name.findName(),
                     birthday: Date.parse(faker.date.between('1900-01-01', '2020-03-01')),
-                    cpf: '12345678910',
+                    cpf: '101.503.390-38',
                     email: faker.internet.email(),
                     photo: faker.image.avatar(),
                     address: {
