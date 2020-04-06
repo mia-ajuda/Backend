@@ -8,7 +8,7 @@ class HelpController {
 
   async createHelp(req, res, next) {
     const data = {
-      ...req.body
+      ...req.body,
     };
     try {
       const result = await this.HelpService.createHelp(data);
@@ -39,9 +39,10 @@ class HelpController {
   async getHelpList(req, res, next) {
     const id = req.query.id || null;
     const status = req.query.status || null;
-    const near = req.query.near || true;
-    const coords =
-      req.query.coords.split(",").map(coord => Number(coord)) || null;
+    const near = req.query.near || false;
+    const coords = near
+      ? req.query.coords.split(",").map((coord) => Number(coord))
+      : null;
 
     try {
       let result;

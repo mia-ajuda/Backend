@@ -1,14 +1,14 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const helpSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
     },
     description: {
         type: String,
         maxlength: 120,
-        required: true
+        required: true,
     },
     status: {
         type: String,
@@ -16,32 +16,35 @@ const helpSchema = new mongoose.Schema({
         default: 'on_going',
     },
     possibleHelpers: {
-        type: [mongoose.Schema.Types.ObjectId], ref: 'User',
-        required: false
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User',
+        required: false,
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Category',
     },
     ownerId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'User',
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
     helperId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'User',
-        required: false
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false,
     },
     creationDate: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     finishedDate: {
         type: Date,
-        required: false
+        required: false,
     },
     active: {
         default: true,
-        type: Boolean
-    }
-}, { collection: 'userHelp' })
+        type: Boolean,
+    },
+}, { collection: 'userHelp' });
 
-module.exports = mongoose.model('Help', helpSchema)
+module.exports = mongoose.model('Help', helpSchema);

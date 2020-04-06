@@ -65,10 +65,17 @@ class BaseRepository {
   }
 
   async findOne(query, mongoSession = {}) {
+    let result;
+
     if (mongoSession !== undefined || mongoSession.session !== undefined) {
-      return await this.modelClass.findOne(query).session(mongoSession.session);
+      result = await this.modelClass
+        .findOne(query)
+        .session(mongoSession.session);
+      return result;
     }
-    return await this.modelClass.findOne(query);
+    result = await this.modelClass.findOne(query);
+
+    return result;
   }
 }
 
