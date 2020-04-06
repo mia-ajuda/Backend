@@ -10,10 +10,7 @@ const seedHelp = async () => {
         const userCollection = await User.find();
         const helpCollection = await Help.find();
 
-        // with sudo docker-compose -f docker-compose.yml up --build, the seed will work only one time
-        // because the database was not dropped, so it will fail de if below
-        // to continue seeding diffent users, comment the if bellow or execute sudo docker-compose down
-        // to drop everything
+        // this condition avoid populate duplicate users
         if (helpCollection.length > 0) {
             return;
         }

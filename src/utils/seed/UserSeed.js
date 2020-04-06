@@ -5,10 +5,8 @@ const User = require('../../models/User');
 const seedUser = async () => {
     try {
         const userCollection = await User.find();
-        // with sudo docker-compose -f docker-compose.yml up --build, the seed will work only one time
-        // because the database was not dropped, so it will fail de if below
-        // to continue seeding diffent users, comment the if bellow or execute sudo docker-compose down
-        // to drop everything
+
+        // this condition avoid populate duplicate users
         if (userCollection.length > 0) {
             return;
         }
