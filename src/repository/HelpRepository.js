@@ -23,7 +23,6 @@ class HelpRepository extends BaseRepository {
         if (status) query.status = status;
         if (helper) query.helperId = helperId;
         else query.ownerId = ownerId
-        console.log(query)
         const result = await super.$list(query);
         return result;
     }
