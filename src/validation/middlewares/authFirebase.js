@@ -1,27 +1,22 @@
 const admin = require('../../config/authFirebase');
 
-const isAuthenticated = (req, res, next) => {  
+const isAuthenticated = async (req, res, next) => {  
   
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.split(' ')[0] === 'Bearer'
-  ) {
-    let token = req.headers.authorization.split(' ')[1];
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.split(' ')[0] === 'Bearer'
+    ) {
+        const token = req.headers.authorization.split(' ')[1];
 
-    console.log(token)
-  
-    admin.auth()
-    .verifyIdToken(token).then(decodeToken => {
-      console.log('enter');
-      req.authId = decodeToken.uid;
-      return next();
-    })
-    .catch(error => {
-      return res
-        .status(401)
-        .json({ error: 'User not authoreized' });
-    })
-  } 
+        try {
+            const idToken = await admin.auth().verifyIdToken(token)
+            req.decodedToken = idToken
+            return next();
+        } catch {
+            return res.status(401).json({ error: 'User not authorized' });
+        }
+    }
+    return res.status(403).json({ error: 'User not authenticated' });
 };
 
 module.exports = isAuthenticated;

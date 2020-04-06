@@ -1,5 +1,11 @@
+<<<<<<< Updated upstream
 const UserService = require('../services/UserService');
 const { riskGroups } = require('../models/RiskGroup');
+=======
+const UserService = require("../services/UserService");
+const firebase = require('../config/authFirebase');
+
+>>>>>>> Stashed changes
 
 class UserController {
     constructor() {
@@ -16,11 +22,27 @@ class UserController {
 
         const data = {
             ...req.body,
-            location,
-        };
+            name: req.body.name,
+            photo: req.body.photo,
+            phone: req.body.phone,
+            email: req.body.email,
+            password: req.body.password, // Não será salvo local, somente para ser utilizado no firebase.
+            location
+        }
 
         try {
+            // Cria o usuário no miaAjuda
             const result = await this.userService.createUser(data);
+
+            // Cria o usuário no firebase
+            await firebase.auth().createUser({
+                photoURL: data.photo,
+                email: data.email,
+                password: data.password,
+                displayName: data.name,
+                phoneNumber: data.phone
+            });
+
             res.status(201).json(result);
             next();
         } catch (err) {
