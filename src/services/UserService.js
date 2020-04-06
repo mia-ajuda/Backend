@@ -20,8 +20,18 @@ class UserService {
         }
     }
 
-    async getUser(id) {
-        const user = await this.userRepository.getById(id);
+    async getUser({id = undefined, email = undefined}) {
+        if (!id && !email) {
+            throw { id: 'Nenhum identificador encontrado' };
+        }
+        console.log("ID:",id, '\n', "Email:",email)
+        let user;
+
+        if (id) {
+            user = await this.userRepository.getById(id);
+        } else {
+            user = await this.userRepository.getUserByEmail(email);
+        }
 
         if (!user) {
             throw { user: 'Usuário não encontrado' };

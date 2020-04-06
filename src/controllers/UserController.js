@@ -1,11 +1,7 @@
-<<<<<<< Updated upstream
 const UserService = require('../services/UserService');
 const { riskGroups } = require('../models/RiskGroup');
-=======
-const UserService = require("../services/UserService");
 const firebase = require('../config/authFirebase');
 
->>>>>>> Stashed changes
 
 class UserController {
     constructor() {
@@ -28,6 +24,11 @@ class UserController {
             email: req.body.email,
             password: req.body.password, // Não será salvo local, somente para ser utilizado no firebase.
             location
+        }
+
+        if(password.length < 8) {
+            res.status(400).json({ error: 'Senha inválida' });
+            next();
         }
 
         try {
@@ -105,10 +106,13 @@ class UserController {
 
 
     async getUserById(req, res, next) {
-        const { id } = req.params;
+        const data = {
+            id: req.params.id,
+            email: req.decodedToken.email
+        }
 
         try {
-            const result = await this.userService.getUser(id);
+            const result = await this.userService.getUser(data);
             res.status(200).json(result);
             next();
         } catch (err) {

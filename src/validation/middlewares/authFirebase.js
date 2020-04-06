@@ -13,10 +13,10 @@ const isAuthenticated = async (req, res, next) => {
             req.decodedToken = idToken
             return next();
         } catch {
-            return res.status(401).json({ error: 'User not authorized' });
+            return res.status(401).json({ error: 'Usuário não autorizado' });
         }
     }
-    return res.status(403).json({ error: 'User not authenticated' });
+    return res.status(403).json({ error: 'Usuário não está autenticado' });
 };
 
 module.exports = isAuthenticated;
