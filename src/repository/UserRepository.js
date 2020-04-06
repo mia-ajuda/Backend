@@ -1,25 +1,26 @@
-const BaseRepository = require('./BaseRepository')
-const UserSchema = require("../models/User");
-
+const BaseRepository = require('./BaseRepository');
+const UserSchema = require('../models/User');
 
 
 class UserRepository extends BaseRepository {
-
     constructor() {
         super(UserSchema);
     }
 
     async create(user) {
-        return await super.$save(user);
+        const result = await super.$save(user);
+        return result;
     }
 
     async getById(id) {
-        return await super.$getById(id);
+        const result = await super.$getById(id);
+        return result;
     }
 
     async update(user) {
-        return await super.$update(user);
+        const result = await super.$update(user);
+        return result;
     }
 }
 
-module.exports = UserRepository
+module.exports = UserRepository;
