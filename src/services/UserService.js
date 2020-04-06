@@ -7,11 +7,15 @@ class UserService {
 
 
     async createUser(data) {
+        if (data.cpf.length >= 11) {
+            data.cpf = data.cpf.replace(/[-.]/g, '');
+        }
+
         try {
             const createdUser = await this.userRepository.create(data);
 
             return createdUser;
-        } catch(err) {
+        } catch (err) {
             throw err;
         }
     }
@@ -20,17 +24,19 @@ class UserService {
         const user = await this.userRepository.getById(id);
 
         if (!user) {
-            throw { error:'Usuário não encontrado' }
+            throw { user: 'Usuário não encontrado' };
         }
 
         return user;
     }
 
-    async editUserById({id, photo, name, phone}) {
+    async editUserById({
+        id, photo, name, phone,
+    }) {
         const user = await this.getUser(id);
 
         if (!user) {
-            throw { error:'Usuário não encontrado' }
+            throw { user: 'Usuário não encontrado' };
         }
 
         user.photo = photo || user.photo;
@@ -43,33 +49,35 @@ class UserService {
     }
 
 
-    async editUserAddressById({id, cep, number, city, state, complement}) {
+    async editUserAddressById({
+        id, cep, number, city, state, complement,
+    }) {
         const user = await this.getUser(id);
 
         if (!user) {
-            throw { error:'Usuário não encontrado' }
+            throw ({ user: 'Usuário não encontrado' });
         }
 
         const address = {
-            cep:cep || user.address.cep,
-            number:number || user.address.number,
-            city:city || user.address.city,
-            state:state || user.address.state,
-            complement:complement || user.address.complement
-        }
+            cep: cep || user.address.cep,
+            number: number || user.address.number,
+            city: city || user.address.city,
+            state: state || user.address.state,
+            complement: complement || user.address.complement,
+        };
 
-        user.address = address
+        user.address = address;
 
         const result = await this.userRepository.update(user);
 
         return result;
     }
 
-    async updateUserLocationById({id, longitude, latitude}) {
+    async updateUserLocationById({ id, longitude, latitude }) {
         const user = await this.getUser(id);
 
         if (!user) {
-            throw { error:'Usuário não encontrado' }
+            throw { user: 'Usuário não encontrado' };
         }
 
         console.log(latitude, longitude);
@@ -93,4 +101,4 @@ class UserService {
     }
 }
 
-module.exports = UserService
+module.exports = UserService;
