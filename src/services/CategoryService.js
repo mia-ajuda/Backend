@@ -23,15 +23,6 @@ class CategoryService {
 
         return Categorylist;
     }
-
-    async getHelpListByStatus(id, status) {
-        const Categorylist = await this.CategoryRepository.listByStatus(id, status);
-        if (!Categorylist) {
-            throw new Error('Categorias não encontradas');
-        }
-
-        return Categorylist;
-    }
 }
 
 module.exports = CategoryService;
