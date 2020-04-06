@@ -25,17 +25,8 @@ class HelpService {
         return Help;
     }
 
-    async getHelpList(id) {
-        const Helplist = await this.HelpRepository.list(id);
-        if (!Helplist) {
-            throw new Error('Pedidos de ajuda não encontrados');
-        }
-
-        return Helplist;
-    }
-
-    async getHelpListByStatus(id, status) {
-        const Helplist = await this.HelpRepository.listByStatus(id, status);
+    async getHelpList(id, status, except, helper) {
+        const Helplist = await this.HelpRepository.list(id, status, except, helper);
         if (!Helplist) {
             throw new Error('Pedidos de ajuda não encontrados');
         }
