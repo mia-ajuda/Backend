@@ -1,6 +1,6 @@
+const mongoose = require('mongoose');
 
 class BaseRepository {
-
     constructor(modelClass) {
         this.modelClass = modelClass;
     }
@@ -16,29 +16,48 @@ class BaseRepository {
 
 
     async $saveMany(itemsModel, mongoSession = {}) {
-        itemsModel.forEach(item => {
-            item.lastUpdateDate = new Date()
-        })
+        itemsModel.forEach((item) => {
+            item.lastUpdateDate = Date.now();
+        });
         const savedModels = await this.modelClass.insertMany(itemsModel, { session: mongoSession.session });
         return savedModels;
     }
 
 
+    // eslint-disable-next-line class-methods-use-this
     async $update(dataModel, mongoSession = {}) {
-        dataModel.lastUpdateDate = new Date();
-        const savedModel = await (new this.modelClass(dataModel)).save({ session: mongoSession.session });
+        dataModel.lastUpdateDate = Date.now();
+        const savedModel = await dataModel.save({ session: mongoSession.session });
         return savedModel;
     }
 
-
     async $listAggregate(aggregationPipeline) {
-        return await this.modelClass.aggregate(aggregationPipeline).exec();
+        const result = await this.modelClass.aggregate(aggregationPipeline).exec();
+        return result;
     }
 
+    /**
+     * @param {string} id Id do objeto
+     * @param {Boolean} [active = true] se vou pegar ou não elementos deletados,
+     * Se for false, mesmo elementos removidos serão exibidos.
+     */
+    async $getById(id, active = true) {
+        let finalIdFormat = id;
+        
+        if (typeof id === 'string') {
+            finalIdFormat = mongoose.Types.ObjectId(id);
+        }
 
-    async $getById(id) {
+        const query = {
+            _id: finalIdFormat,
+        };
+        
 
-        const recordModel = await this.modelClass.findById(id);
+        if (active) {
+            query.active = true;
+        }
+
+        const recordModel = await this.modelClass.findOne(query);
 
         return recordModel;
     }
@@ -51,11 +70,16 @@ class BaseRepository {
 
 
     async findOne(query, mongoSession = {}) {
+        let result;
+
         if (mongoSession !== undefined
             || mongoSession.session !== undefined) {
-            return await this.modelClass.findOne(query).session(mongoSession.session);
+            result = await this.modelClass.findOne(query).session(mongoSession.session);
+            return result;
         }
-        return await this.modelClass.findOne(query);
+        result = await this.modelClass.findOne(query);
+
+        return result;
     }
 }
 

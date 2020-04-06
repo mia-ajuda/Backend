@@ -1,38 +1,121 @@
-const UserService = require("../services/UserService");
+const UserService = require('../services/UserService');
+const { riskGroups } = require('../models/RiskGroup');
 
 class UserController {
-  constructor() {
-    this.userService = new UserService();
-  }
+    constructor() {
+        this.userService = new UserService();
+    }
 
-  async createUser(req, res, next) {
-    const { latitude, longitude } = req.body;
-    const location = {
-      type: "Point",
-      coordinates: [longitude, latitude]
-    };
+    async createUser(req, res, next) {
+        const { latitude, longitude } = req.body;
 
-    const data = {
-      ...req.body,
-      location
-    };
+        const location = {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+        };
 
-    const result = await this.userService.createUser(data);
+        const data = {
+            ...req.body,
+            location,
+        };
 
-    res.status(201);
-    res.json(result);
-    next();
-  }
+        try {
+            const result = await this.userService.createUser(data);
+            res.status(201).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
+    }
 
-  async getUserById(req, res, next) {
-    const id = req.params.id;
 
-    const result = await this.userService.getUser(id);
+    async editUserById(req, res, next) {
+        const data = {
+            id: req.params.id,
+            photo: req.body.photo,
+            name: req.body.name,
+            phone: req.body.phone,
+        };
+        try {
+            const result = await this.userService.editUserById(data);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
+    }
 
-    res.status(200);
-    res.json(result);
-    next();
-  }
+    async editUserAddressById(req, res, next) {
+        const data = {
+            id: req.params.id,
+            cep: req.body.cep,
+            number: req.body.number,
+            city: req.body.city,
+            state: req.body.state,
+            complement: req.body.complement,
+        };
+
+        try {
+            const result = await this.userService.editUserAddressById(data);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
+    }
+
+
+    async deleteUserLogic(req, res, next) {
+        const { id } = req.params;
+
+        try {
+            const result = await this.userService.deleteUserLogically(id);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
+    }
+
+
+    async getUserById(req, res, next) {
+        const { id } = req.params;
+
+        try {
+            const result = await this.userService.getUser(id);
+            res.status(200).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
+    }
+
+    async updateUserLocationById(req, res, next) {
+        const data = {
+            id: req.params.id,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
+        };
+
+        try {
+            const result = await this.userService.updateUserLocationById(data);
+            res.status(200).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
+    }
+
+    async getUserGroupRiskList(req, res, next) {
+        res.status(200).json(riskGroups);
+        next();
+    }
 }
 
 module.exports = UserController;

@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "cpf-cnpj-validator": "^1.0.1",
     "dotenv": "^8.2.0",
     "expo-server-sdk": "^3.5.0",
     "express": "^4.17.1",
@@ -20,6 +21,9 @@
     "node-schedule": "^1.3.2"
   },
   "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
     "nodemon": "^2.0.2"
   }
 }

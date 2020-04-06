@@ -1,15 +1,19 @@
+<<<<<<< HEAD
 const mongoose = require('mongoose')
 const helpStatusEnum = require('../utils/enums/helpStatusEnum')
+=======
+const mongoose = require('mongoose');
+>>>>>>> develop
 
 const helpSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
     },
     description: {
         type: String,
         maxlength: 120,
-        required: true
+        required: true,
     },
     status: {
         type: String,
@@ -17,20 +21,22 @@ const helpSchema = new mongoose.Schema({
         default: helpStatusEnum.WAITING,
     },
     possibleHelpers: {
-        type: [mongoose.Schema.Types.ObjectId], ref: 'User',
-        required: false
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User',
+        required: false,
     },
     categoryId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Category',
-        // required: true
     },
     ownerId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'User',
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
     helperId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'User',
-        required: false
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false,
     },
     deviceId: {
         type: String,
@@ -38,12 +44,16 @@ const helpSchema = new mongoose.Schema({
     },
     creationDate: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     finishedDate: {
         type: Date,
-        required: false
-    }
-}, { collection: 'userHelp' })
+        required: false,
+    },
+    active: {
+        default: true,
+        type: Boolean,
+    },
+}, { collection: 'userHelp' });
 
-module.exports = mongoose.model('Help', helpSchema)
+module.exports = mongoose.model('Help', helpSchema);
