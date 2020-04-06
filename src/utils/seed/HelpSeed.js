@@ -1,8 +1,11 @@
-/* eslint-disable */
+const lodash = require('lodash');
 const faker = require('faker/locale/pt_BR');
-const Help = require('../../models/Help');
+
 const Category = require('../../models/Category');
+const Help = require('../../models/Help');
 const User = require('../../models/User');
+
+const status = ['waiting', 'on_going', 'finished', 'deleted'];
 
 const seedHelp = async () => {
     try {
@@ -14,28 +17,29 @@ const seedHelp = async () => {
         if (helpCollection.length > 0) {
             return;
         }
+        
         const quantity = 10;
         const helps = [];
-        const t1 = userCollection.length;
-        const t2 = categoryCollection.length;
-
         for (let i = 0; i < quantity; i++) {
-            let quant = faker.random.number(t1 - 2);
-            quant++;
-            const Helpers = [];
-            for (let u = 0; u < quant; u++) {
-                Helpers[u] = userCollection[faker.random.number(t1 - 1)]._id;
-            }
+            const sampleStatus = await lodash.sample(status);
+            const sampleCategory = await lodash.sample(categoryCollection);
+            const sampleUsers = await lodash.sampleSize(userCollection, 2);
+            const samplePossibleHelpers = await lodash.sampleSize(
+                userCollection, faker.random.number(userCollection.length - 2));
+            const samplePossibleHelpsID = [];
+            samplePossibleHelpers.forEach((item) => {
+                samplePossibleHelpsID.push(item._id);
+            });
 
             helps.push(
                 new Help({
                     title: faker.lorem.lines(1),
                     description: faker.lorem.lines(1),
-                    status: faker.random.arrayElement(['waiting', 'on_going', 'finished', 'deleted']),
-                    possibleHelpers: Helpers,
-                    categoryId: categoryCollection[faker.random.number(t2 - 1)]._id,
-                    ownerId: userCollection[faker.random.number(t1 - 1)]._id,
-                    helperId: userCollection[faker.random.number(t1 - 1)]._id,
+                    status: sampleStatus,
+                    possibleHelpers: samplePossibleHelpsID,
+                    categoryId: sampleCategory._id,
+                    ownerId: sampleUsers[0]._id,
+                    helperId: sampleUsers[1]._id,
                     finishedDate: faker.date.future(),
                 }),
             );
@@ -46,7 +50,6 @@ const seedHelp = async () => {
         helps.forEach((help) => {
             Help.create(help);
         });
-
 
         console.log('Ajudas populadas com sucesso!');
     } catch (error) {
