@@ -24,6 +24,10 @@ class SessionController {
             next();
         }
     }
+
+    async teste(req, res, next) {
+        return res.status(200).json({ teste: 'teste' });
+    }
 }
 
 module.exports = SessionController;
