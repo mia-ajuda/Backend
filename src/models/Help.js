@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 const mongoose = require('mongoose')
 const helpStatusEnum = require('../utils/enums/helpStatusEnum')
-=======
-const mongoose = require('mongoose');
->>>>>>> develop
 
 const helpSchema = new mongoose.Schema({
     title: {

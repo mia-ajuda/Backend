@@ -1,10 +1,6 @@
 const BaseRepository = require('./BaseRepository');
-<<<<<<< HEAD
 const HelpSchema = require("../models/Help");
 const helpStatusEnum = require('../utils/enums/helpStatusEnum')
-=======
-const HelpSchema = require('../models/Help');
->>>>>>> develop
 
 class HelpRepository extends BaseRepository {
     constructor() {

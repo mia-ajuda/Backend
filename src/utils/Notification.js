@@ -2,7 +2,9 @@ const { Expo } = require('expo-server-sdk')
 
 // Create a new Expo SDK client
 
-function notify(messages) {
+const notify = async (messages) => {
+    console.log('notify')
+    console.log(messages[0]);
     let expo = new Expo();
     // Create the messages that you want to send to clents
     // for (let pushToken of pushTokenArray) {
