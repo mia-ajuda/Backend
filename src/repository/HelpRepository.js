@@ -21,8 +21,9 @@ class HelpRepository extends BaseRepository {
   }
 
   async listByStatus(id, status) {
-    return await super.$list({ ownerId: id, status: status });
+    return await super.$list({ ownerId: id, status });
   }
+
   async listNear(coords) {
     const users = await UserSchema.find({
       location: {

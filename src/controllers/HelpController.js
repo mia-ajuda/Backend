@@ -1,5 +1,5 @@
-const HelpService = require("../services/HelpService");
 const mongoose = require("mongoose");
+const HelpService = require("../services/HelpService");
 
 class HelpController {
   constructor() {
@@ -23,7 +23,7 @@ class HelpController {
   }
 
   async getHelpById(req, res, next) {
-    const id = req.params.id;
+    const { id } = req.params;
     try {
       const result = await this.HelpService.getHelpByid(id);
       res.status(200);
