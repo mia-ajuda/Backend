@@ -98,6 +98,8 @@ class UserService {
         user.active = false;
 
         await this.userRepository.update(user);
+
+        return {'message': `user ${id} deleted!`};
     }
 }
 

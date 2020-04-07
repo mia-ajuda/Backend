@@ -48,6 +48,8 @@ class HelpService {
         help.active = false;
 
         await this.HelpRepository.update(help);
+
+        return {'message': `user ${id} deleted!`};
     }
 }
 

@@ -15,7 +15,7 @@ routes.get('/help/:id', async (req, res, next) => {
 routes.get('/help', async (req, res, next) => {
     helpController.getHelpList(req, res, next);
 });
-routes.delete('/Help/:id', async (req, res, next) => {
+routes.delete('/help/:id', async (req, res, next) => {
     helpController.deleteHelpLogic(req, res, next);
 });
 
