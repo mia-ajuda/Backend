@@ -25,8 +25,8 @@ class HelpService {
     return Help;
   }
 
-  async getHelpList(id) {
-    const Helplist = await this.HelpRepository.list(id);
+  async getHelpList(id, status, except, helper) {
+    const Helplist = await this.HelpRepository.list(id, status, except, helper);
     if (!Helplist) {
       throw new Error("Pedidos de ajuda não encontrados");
     }
@@ -42,6 +42,7 @@ class HelpService {
 
     return Helplist;
   }
+
   async getNearHelpList(coords) {
     const Helplist = await this.HelpRepository.listNear(coords);
     if (!Helplist) {

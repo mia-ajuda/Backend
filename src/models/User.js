@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema({
         },
         complement: String,
     },
-    mentalHealthcareProfessional: {
+    ismentalHealthProfessional: {
         type: Boolean,
         default: false,
     },

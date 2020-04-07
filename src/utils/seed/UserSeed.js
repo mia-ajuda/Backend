@@ -1,14 +1,15 @@
-/* eslint-disable */
-const faker = require('faker/locale/pt_BR');
 const User = require('../../models/User');
+const faker = require('faker/locale/pt_BR');
+const lodash = require('lodash');
+const { cpf } = require('cpf-cnpj-validator');
+
+const diseases = ['dc','hiv','diab','hiperT','doenCardio'];
 
 const seedUser = async () => {
     try {
         const userCollection = await User.find();
-        // with sudo docker-compose -f docker-compose.yml up --build, the seed will work only one time
-        // because the database was not dropped, so it will fail de if below
-        // to continue seeding diffent users, comment the if bellow or execute sudo docker-compose down
-        // to drop everything
+
+        // this condition avoid populate duplicate users
         if (userCollection.length > 0) {
             return;
         }
@@ -16,11 +17,13 @@ const seedUser = async () => {
         const users = [];
         const quantity = 10;
         for (let i = 0; i < quantity; i++) {
+            const sampleRiskGroup = await lodash.sampleSize(diseases, faker.random.number(5));
+
             users.push(
                 new User({
                     name: faker.name.findName(),
-                    birthday: Date.parse(faker.date.between('1900-01-01', '2020-03-01')),
-                    cpf: '101.503.390-38',
+                    birthday: Date.parse(faker.date.between('1900-01-01', '2020-01-01')),
+                    cpf: cpf.generate(),
                     email: faker.internet.email(),
                     photo: faker.image.avatar(),
                     address: {
@@ -37,15 +40,17 @@ const seedUser = async () => {
                             faker.address.latitude(),
                         ],
                     },
-                    phone: faker.phone.phoneNumber('+55 (##) #####-####'),
+                    riskGroup: sampleRiskGroup,
+                    ismentalHealthProfessional: faker.random.boolean(),
+                    phone: faker.phone.phoneNumber('+55 (##) 9####-####'),
                 }),
             );
         }
 
         await User.deleteMany({});
 
-        users.forEach(async (user) => {
-            await user.save();
+        users.forEach((user) => {
+            User.create(user);
         });
         console.log('Usuários populados com sucesso!');
     } catch (error) {

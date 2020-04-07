@@ -15,13 +15,15 @@ class HelpRepository extends BaseRepository {
     return await super.$getById(id);
   }
 
-  async list(id) {
-    const query = id ? { ownerId: { $ne: id } } : {};
-    return await super.$list(query);
-  }
-
-  async listByStatus(id, status) {
-    return await super.$list({ ownerId: id, status });
+  async list(id, status, except, helper) {
+    const ownerId = except ? { $ne: id } : helper ? null : id;
+    const helperId = helper ? id : null;
+    const query = {};
+    if (status) query.status = status;
+    if (helper) query.helperId = helperId;
+    else query.ownerId = ownerId;
+    const result = await super.$list(query);
+    return result;
   }
 
   async listNear(coords) {
