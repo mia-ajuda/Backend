@@ -11,7 +11,6 @@ class HelpController {
         };
 
         try {
-            const count = await this.HelpService.getCountHelp(data.ownerId);
             const result = await this.HelpService.createHelp(data);
             res.status(201).json(result);
             next();

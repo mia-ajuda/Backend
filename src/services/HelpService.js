@@ -7,8 +7,13 @@ class HelpService {
 
     async createHelp(data) {
         try {
+            
+            const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
+            if (countHelp >= 5) {
+                throw { countHelp: ' Limite máximo de pedidos atingido' };
+            }
+            
             const createdHelp = await this.HelpRepository.create(data);
-
             return createdHelp;
         } catch (err) {
             throw err;
@@ -34,15 +39,7 @@ class HelpService {
         return Helplist;
     }
 
-    async getCountHelp(id){
-        const countHelp = await this.HelpRepository.countDocuments(id);
-        
-        if(countHelp >= 5){
-            throw { countHelp: ' Limite máximo de pedidos atingido' };
-        }
-        
-        return countHelp;
-    }
+   
 }
 
 module.exports = HelpService;
