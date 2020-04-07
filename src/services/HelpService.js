@@ -33,6 +33,16 @@ class HelpService {
 
         return Helplist;
     }
+
+    async getCountHelp(id){
+        const countHelp = await this.HelpRepository.countDocuments(id);
+        
+        if(countHelp >= 5){
+            throw { countHelp: ' Limite máximo de pedidos atingido' };
+        }
+        
+        return countHelp;
+    }
 }
 
 module.exports = HelpService;
