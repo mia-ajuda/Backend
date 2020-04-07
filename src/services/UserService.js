@@ -99,7 +99,7 @@ class UserService {
 
         await this.userRepository.update(user);
 
-        return {'message': `user ${id} deleted!`};
+        return {'message': `User ${id} deleted!`};
     }
 }
 
