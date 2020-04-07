@@ -59,6 +59,7 @@ class UserController {
             photo: req.body.photo,
             name: req.body.name,
             phone: req.body.phone,
+            notificationToken: req.body.notificationToken
         };
         try {
             const result = await this.userService.editUserById(data);
