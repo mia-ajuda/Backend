@@ -20,11 +20,12 @@ class HelpRepository extends BaseRepository {
         return await super.$update(help);
     }
 
-    async list(id, status, except, helper) {
+    async list(id, status, category, except, helper) {
         const ownerId = except ? { $ne: id } : helper ? null : id;
         const helperId = helper ? id : null;
         const query = {}
         if (status) query.status = status;
+        if (category) query.categoryId = category;
         if (helper) query.helperId = helperId;
         else query.ownerId = ownerId
         const result = await super.$list(query);

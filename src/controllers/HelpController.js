@@ -38,9 +38,10 @@ class HelpController {
         const temp = except ? 'except' : helper ? 'helper' : null;
         const id = temp ? req.query[`id.${temp}`] : req.query.id;
         const status = req.query.status || null;
+        const category = req.query.categoryId || null;
         try {
             let result;
-            result = await this.HelpService.getHelpList(id, status, except, helper);
+            result = await this.HelpService.getHelpList(id, status, category, except, helper);
             res.status(200).json(result);
             next();
         } catch (err) {
