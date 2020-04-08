@@ -1,6 +1,7 @@
 const BaseRepository = require("./BaseRepository");
 const HelpSchema = require("../models/Help");
 const UserSchema = require("../models/User");
+const ObjectId = require("mongodb").ObjectID;
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -15,39 +16,54 @@ class HelpRepository extends BaseRepository {
     return await super.$getById(id);
   }
 
-  async list(id, status, except, helper) {
+  async list(id, status, except, helper, categoryArray) {
     const ownerId = except ? { $ne: id } : helper ? null : id;
     const helperId = helper ? id : null;
     const query = {};
     if (status) query.status = status;
+    if (categoryArray) query.categoryId = { $in: categoryArray };
     if (helper) query.helperId = helperId;
     else query.ownerId = ownerId;
     const result = await super.$list(query);
     return result;
   }
 
-  async listNear(coords) {
-    const users = await UserSchema.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: coords,
-          },
-          $maxDistance: 200000,
+  async listNear(coords, except, id, categoryArray) {
+    const query = {};
+    const location = {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: coords,
         },
+        $maxDistance: 200000,
       },
-    });
+    };
+    const ownerId = except ? { $ne: id } : null;
+
+    query.location = location;
+    query.ownerId = ownerId;
+
+    const users = await UserSchema.find(query);
     const arrayUsersId = users.map((user) => user._id);
+
+    const matchQuery = {};
+
+    matchQuery.status = "on_going";
+
+    matchQuery.ownerId = {
+      $in: arrayUsersId,
+    };
+
+    if (categoryArray) {
+      matchQuery.categoryId = {
+        $in: categoryArray.map((categoryString) => ObjectId(categoryString)),
+      };
+    }
 
     const aggregation = [
       {
-        $match: {
-          ownerId: {
-            $in: arrayUsersId,
-          },
-          status: "on_going",
-        },
+        $match: matchQuery,
       },
       {
         $lookup: {

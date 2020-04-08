@@ -25,8 +25,14 @@ class HelpService {
     return Help;
   }
 
-  async getHelpList(id, status, except, helper) {
-    const Helplist = await this.HelpRepository.list(id, status, except, helper);
+  async getHelpList(id, status, except, helper, categoryArray) {
+    const Helplist = await this.HelpRepository.list(
+      id,
+      status,
+      except,
+      helper,
+      categoryArray
+    );
     if (!Helplist) {
       throw new Error("Pedidos de ajuda não encontrados");
     }
@@ -34,17 +40,13 @@ class HelpService {
     return Helplist;
   }
 
-  async getHelpListByStatus(id, status) {
-    const Helplist = await this.HelpRepository.listByStatus(id, status);
-    if (!Helplist) {
-      throw new Error("Pedidos de ajuda não encontrados");
-    }
-
-    return Helplist;
-  }
-
-  async getNearHelpList(coords) {
-    const Helplist = await this.HelpRepository.listNear(coords);
+  async getNearHelpList(coords, except, id, categoryArray) {
+    const Helplist = await this.HelpRepository.listNear(
+      coords,
+      except,
+      id,
+      categoryArray
+    );
     if (!Helplist) {
       throw new Error(
         "Pedidos de ajuda não encontrados no seu raio de distância"
@@ -52,6 +54,16 @@ class HelpService {
     }
 
     return Helplist;
+  }
+
+  async deleteHelpLogically(id) {
+    const help = await this.getHelpByid(id);
+
+    help.active = false;
+
+    await this.HelpRepository.update(help);
+
+    return { message: `Help ${id} deleted!` };
   }
 }
 
