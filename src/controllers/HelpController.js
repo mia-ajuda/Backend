@@ -41,6 +41,8 @@ class HelpController {
     const category = req.query.categoryId
       ? req.query.categoryId.split(",")
       : null;
+      /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
+         sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço*/
     try {
       let result;
       result = await this.HelpService.getHelpList(
