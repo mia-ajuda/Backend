@@ -24,7 +24,7 @@ class HelpService {
         const Help = await this.HelpRepository.getById(id);
 
         if (!Help) {
-            throw new Error('Pedido de ajuda não encontrado');
+            throw { Help: 'Ajuda não encontrada' };
         }
 
         return Help;
@@ -33,13 +33,21 @@ class HelpService {
     async getHelpList(id, status, except, helper) {
         const Helplist = await this.HelpRepository.list(id, status, except, helper);
         if (!Helplist) {
-            throw new Error('Pedidos de ajuda não encontrados');
+            throw { Helplist: 'Nenhuma Ajuda com esse status foi encontrada' };
         }
 
         return Helplist;
     }
 
-   
+    async deleteHelpLogically(id) {
+        const help = await this.getHelpByid(id);
+
+        help.active = false;
+
+        await this.HelpRepository.update(help);
+
+        return {'message': `Help ${id} deleted!`};
+    }
 }
 
 module.exports = HelpService;

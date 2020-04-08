@@ -16,6 +16,10 @@ class HelpRepository extends BaseRepository {
         return result;
     }
 
+    async update(help) {
+        return await super.$update(help);
+    }
+
     async list(id, status, except, helper) {
         const ownerId = except ? { $ne: id } : helper ? null : id;
         const helperId = helper ? id : null;
