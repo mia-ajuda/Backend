@@ -28,7 +28,9 @@ class UserRepository extends BaseRepository {
     }
 
     async removeUser({id, email}) {
-        const query = {id, email};
+        const query = {}
+        query._id = id
+        query.email = email
 
         await super.$destroy(query);
     }
