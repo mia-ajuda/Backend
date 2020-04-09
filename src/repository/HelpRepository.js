@@ -2,6 +2,7 @@ const BaseRepository = require("./BaseRepository");
 const HelpSchema = require("../models/Help");
 const UserSchema = require("../models/User");
 const ObjectId = require("mongodb").ObjectID;
+const calculateDistance = require("../utils/geolocation/calculateDistance");
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -84,7 +85,22 @@ class HelpRepository extends BaseRepository {
     ];
 
     try {
-      return await super.$listAggregate(aggregation);
+      const helps = await super.$listAggregate(aggregation);
+      const helpsWithDistance = helps.map((help) => {
+        const coordinates = {
+          latitude: coords[1],
+          longitude: coords[0],
+        };
+        const helpCoords = {
+          latitude: help.user[0].location.coordinates[1],
+          longitude: help.user[0].location.coordinates[0],
+        };
+        help.distance = calculateDistance(coordinates, helpCoords);
+
+        return help;
+      });
+
+      return helpsWithDistance;
     } catch (error) {
       console.log(error);
     }
