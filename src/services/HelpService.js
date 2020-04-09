@@ -10,7 +10,7 @@ class HelpService {
             
             const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
             if (countHelp >= 5) {
-                throw { countHelp: ' Limite máximo de pedidos atingido' };
+                throw ' Limite máximo de pedidos atingido';
             }
             
             const createdHelp = await this.HelpRepository.create(data);
@@ -24,7 +24,7 @@ class HelpService {
         const Help = await this.HelpRepository.getById(id);
 
         if (!Help) {
-            throw { Help: 'Ajuda não encontrada' };
+            throw 'Ajuda não encontrada';
         }
 
         return Help;
@@ -33,7 +33,7 @@ class HelpService {
     async getHelpList(id, status, category, except, helper) {
         const Helplist = await this.HelpRepository.list(id, status, category, except, helper);
         if (!Helplist) {
-            throw { Helplist: 'Nenhuma Ajuda com esse status foi encontrada' };
+            throw 'Nenhuma Ajuda com esse status foi encontrada' ;
         }
 
         return Helplist;

@@ -24,7 +24,7 @@ class UserService {
         const user = await this.userRepository.getById(id);
 
         if (!user) {
-            throw { user: 'Usuário não encontrado' };
+            throw 'Usuário não encontrado';
         }
 
         return user;
@@ -36,7 +36,7 @@ class UserService {
         const user = await this.getUser(id);
 
         if (!user) {
-            throw { user: 'Usuário não encontrado' };
+            throw 'Usuário não encontrado';
         }
 
         user.photo = photo || user.photo;
@@ -55,7 +55,7 @@ class UserService {
         const user = await this.getUser(id);
 
         if (!user) {
-            throw ({ user: 'Usuário não encontrado' });
+            throw 'Usuário não encontrado';
         }
 
         const address = {
@@ -77,7 +77,7 @@ class UserService {
         const user = await this.getUser(id);
 
         if (!user) {
-            throw { user: 'Usuário não encontrado' };
+            throw 'Usuário não encontrado';
         }
 
         console.log(latitude, longitude);
