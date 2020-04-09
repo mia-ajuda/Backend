@@ -20,8 +20,8 @@ class UserController {
             location,
             ...req.body,
         }
-
-        if(password.length < 8) {
+        
+        if(data.password.length < 8) {
             res.status(400).json({ error: 'Senha inválida' });
             next();
         }
@@ -41,7 +41,7 @@ class UserController {
             res.status(201).json(result);
             next();
         } catch (err) {
-            await this.userService.removeUser(email);
+            await this.userService.removeUser(data.email);
             res.status(400).json({ error: err });
             next();
         }
