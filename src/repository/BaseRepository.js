@@ -51,7 +51,7 @@ class BaseRepository {
     };
 
     if (active) {
-      query["active"] = true;
+      query.active = true;
     }
 
     const recordModel = await this.modelClass.findOne(query);
@@ -62,6 +62,11 @@ class BaseRepository {
   async $list(query) {
     const recordModel = await this.modelClass.find(query);
     return recordModel;
+  }
+
+  async $countDocuments(query) {
+    const numberDocuments = await this.modelClass.countDocuments(query);
+    return numberDocuments;
   }
 
   async findOne(query, mongoSession = {}) {
