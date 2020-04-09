@@ -24,7 +24,6 @@ class UserService {
         if (!id && !email) {
             throw { id: 'Nenhum identificador encontrado' };
         }
-        console.log("ID:",id, '\n', "Email:",email)
         let user;
 
         if (id) {
@@ -32,7 +31,6 @@ class UserService {
         } else {
             user = await this.userRepository.getUserByEmail(email);
         }
-
         if (!user) {
             throw { user: 'Usuário não encontrado' };
         }
@@ -43,7 +41,7 @@ class UserService {
     async editUserById({
         id, photo, name, phone,notificationToken
     }) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         if (!user) {
             throw { user: 'Usuário não encontrado' };
@@ -63,7 +61,7 @@ class UserService {
     async editUserAddressById({
         id, cep, number, city, state, complement,
     }) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         if (!user) {
             throw ({ user: 'Usuário não encontrado' });
@@ -85,13 +83,11 @@ class UserService {
     }
 
     async updateUserLocationById({ id, longitude, latitude }) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         if (!user) {
             throw { user: 'Usuário não encontrado' };
         }
-
-        console.log(latitude, longitude);
 
         if (longitude || latitude) {
             user.location.coordinates[0] = longitude || user.location.coordinates[0];
@@ -104,7 +100,7 @@ class UserService {
     }
 
     async deleteUserLogically(id) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         user.active = false;
 

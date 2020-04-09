@@ -19,7 +19,7 @@ class UserRepository extends BaseRepository {
     
     async getUserByEmail(email) {
         const result = await super.$list({email});
-        return result;
+        return result[0];
     }
 
     async update(user) {
