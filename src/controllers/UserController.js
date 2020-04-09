@@ -17,13 +17,8 @@ class UserController {
         };
 
         const data = {
+            location,
             ...req.body,
-            name: req.body.name,
-            photo: req.body.photo,
-            phone: req.body.phone,
-            email: req.body.email,
-            password: req.body.password, // Não será salvo local, somente para ser utilizado no firebase.
-            location
         }
 
         if(password.length < 8) {
@@ -37,11 +32,11 @@ class UserController {
 
             // Cria o usuário no firebase
             await firebase.auth().createUser({
-                photoURL: data.photo,
-                email: data.email,
-                password: data.password,
-                displayName: data.name,
-                phoneNumber: data.phone
+                photoURL: req.body.photo,
+                email: req.body.email,
+                password: req.body.password,
+                displayName: req.body.name,
+                phoneNumber: req.body.phone
             });
 
             res.status(201).json(result);
