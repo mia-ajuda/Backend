@@ -26,6 +26,8 @@ class UserController {
             next();
         }
 
+        let firebaseUser;
+
         try {
             // Cria o usuário no miaAjuda
             const result = await this.userService.createUser(data);
@@ -36,12 +38,15 @@ class UserController {
                 password: req.body.password,
                 displayName: req.body.name,
                 phoneNumber: req.body.phone
-            });
-
-            res.status(201).json(result);
-            next();
+            }).then(() => {
+                res.status(201).json(result);
+                next();
+            }).catch(async err => {
+                await this.userService.removeUser(data.email);
+                res.status(400).json({ error: err });
+                next();
+            });            
         } catch (err) {
-            await this.userService.removeUser(data.email);
             res.status(400).json({ error: err });
             next();
         }
