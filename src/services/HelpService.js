@@ -48,6 +48,28 @@ class HelpService {
 
         return {'message': `Help ${id} deleted!`};
     }
+
+    async updatePossibleHelpers(id,idHelper) {
+
+        const help = await this.getHelpByid(id);
+
+        if (!help) {
+            throw 'Ajuda não encontrada';
+        }
+
+        for(let i = 0; i < help.possibleHelpers.length; i++){
+            if(idHelper == help.possibleHelpers[i]){
+                throw 'Você já se cadastrou nessa ajuda';
+            }
+        }
+        
+        help.possibleHelpers.push(idHelper);
+       
+
+        const result = await this.HelpRepository.update(help);
+
+        return result;
+    }
 }
 
 module.exports = HelpService;
