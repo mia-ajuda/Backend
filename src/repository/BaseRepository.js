@@ -68,6 +68,10 @@ class BaseRepository {
         return recordModel;
     }
 
+    async $countDocuments(query) {
+        const numberDocuments = await this.modelClass.countDocuments(query);
+        return numberDocuments;
+    }
 
     async findOne(query, mongoSession = {}) {
         let result;
