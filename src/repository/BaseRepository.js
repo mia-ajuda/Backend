@@ -85,6 +85,11 @@ class BaseRepository {
 
         return result;
     }
+
+    async $destroy(query) {
+        const result = await this.modelClass.deleteOne(query);
+        return result;
+    }
 }
 
 module.exports = BaseRepository;

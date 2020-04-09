@@ -112,6 +112,15 @@ class UserService {
 
         return {'message': `User ${id} deleted!`};
     }
+
+    async removeUser(email) {
+        try {
+            const user = await this.getUser({email});
+            await this.userRepository.removeUser({id: user._id, email});
+        } catch {
+            return
+        }
+    }
 }
 
 module.exports = UserService;

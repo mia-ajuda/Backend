@@ -26,6 +26,12 @@ class UserRepository extends BaseRepository {
         const result = await super.$update(user);
         return result;
     }
+
+    async removeUser({id, email}) {
+        const query = {id, email};
+
+        await super.$destroy(query);
+    }
 }
 
 module.exports = UserRepository;

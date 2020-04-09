@@ -32,7 +32,6 @@ class UserController {
 
             // Cria o usuário no firebase
             await firebase.auth().createUser({
-                photoURL: req.body.photo,
                 email: req.body.email,
                 password: req.body.password,
                 displayName: req.body.name,
@@ -42,6 +41,7 @@ class UserController {
             res.status(201).json(result);
             next();
         } catch (err) {
+            await this.userService.removeUser(email);
             res.status(400).json({ error: err });
             next();
         }
