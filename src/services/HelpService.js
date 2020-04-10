@@ -50,15 +50,16 @@ class HelpService {
     }
 
     async chooseHelper(data){
-        console.log(data.idHelp)
+        //console.log(data.idHelp)
         const help = await this.getHelpByid(data.idHelp);
         if(!help){
             throw 'Ajuda não encontrada';
         }
         var val=help.possibleHelpers.indexOf(data.idHelper);
-        console.log(val)
+        //console.log(val)
         if(val>=0){
-            const result = await this.HelpRepository.chooseHelper(data);
+            help.helperId = data.idHelper;
+            const result = await this.HelpRepository.update(help);
             return result;
         }
         else{

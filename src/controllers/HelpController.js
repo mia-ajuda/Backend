@@ -76,7 +76,7 @@ class HelpController {
   async chooseHelper(req,res,next){
     const data = { ...req.params } 
     
-    console.log(data.idHelp+'   '+data.idHelper);
+    //console.log(data.idHelp+'   '+data.idHelper);
     try {
       const result = await this.HelpService.chooseHelper(data);
       res.status(200).json(result);
