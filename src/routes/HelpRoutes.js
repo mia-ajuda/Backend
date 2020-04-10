@@ -18,5 +18,8 @@ routes.get('/help', async (req, res, next) => {
 routes.delete('/help/:id', async (req, res, next) => {
     helpController.deleteHelpLogic(req, res, next);
 });
+routes.put('/help/:idHelp&:idHelper', async (req, res, next) =>{
+    helpController.chooseHelper(req,res,next);
+});
 
 module.exports = routes;

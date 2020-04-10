@@ -72,6 +72,22 @@ class HelpController {
       return next();
     }
   }
+
+  async chooseHelper(req,res,next){
+    const data = { ...req.params } 
+    
+    console.log(data.idHelp+'   '+data.idHelper);
+    try {
+      const result = await this.HelpService.chooseHelper(data);
+      res.status(200).json(result);
+      return next();
+    } catch (err) {
+      res.status(400).json(err);
+      return next();
+    }
+
+  }
+
 }
 
 module.exports = HelpController;

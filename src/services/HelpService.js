@@ -48,6 +48,25 @@ class HelpService {
 
         return {'message': `Help ${id} deleted!`};
     }
+
+    async chooseHelper(data){
+        console.log(data.idHelp)
+        const help = await this.getHelpByid(data.idHelp);
+        if(!help){
+            throw 'Ajuda não encontrada';
+        }
+        var val=help.possibleHelpers.indexOf(data.idHelper);
+        console.log(val)
+        if(val>=0){
+            const result = await this.HelpRepository.chooseHelper(data);
+            return result;
+        }
+        else{
+            throw 'Ajudante não encontrado';
+        }
+
+        
+    }
 }
 
 module.exports = HelpService;
