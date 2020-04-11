@@ -45,7 +45,11 @@ class BaseRepository {
         let finalIdFormat = id;
         
         if (typeof id === 'string') {
-            finalIdFormat = mongoose.Types.ObjectId(id);
+            try {
+                finalIdFormat = mongoose.Types.ObjectId(id);
+            } catch(err) {
+                throw 'Tamanho ou formato de id inválido';
+            };
         }
 
         const query = {

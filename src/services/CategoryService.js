@@ -6,10 +6,12 @@ class CategoryService {
     }
 
     async getCategoryByid(id) {
+        
         const Category = await this.CategoryRepository.getById(id);
-
+        
+        
         if (!Category) {
-            throw new Error('Categoria não encontrada');
+            throw 'Categoria não encontrada';
         }
 
         return Category;
@@ -18,7 +20,7 @@ class CategoryService {
     async getCategoryList(id) {
         const Categorylist = await this.CategoryRepository.list(id);
         if (!Categorylist) {
-            throw new Error('Categorias não encontradas');
+            throw 'Categorias não encontrada';
         }
 
         return Categorylist;
