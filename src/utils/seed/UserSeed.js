@@ -15,7 +15,7 @@ const seedUser = async () => {
         }
 
         const users = [];
-        const quantity = 10;
+        const quantity = 10;1
         for (let i = 0; i < quantity; i++) {
             const sampleRiskGroup = await lodash.sampleSize(diseases, faker.random.number(5));
 
@@ -42,11 +42,11 @@ const seedUser = async () => {
                     },
                     riskGroup: sampleRiskGroup,
                     ismentalHealthProfessional: faker.random.boolean(),
-                    phone: faker.phone.phoneNumber('+55 (##) 9####-####'),
+                    phone: faker.phone.phoneNumber('+55######-####'),
+                    active: true
                 }),
             );
         }
-
         await User.deleteMany({});
 
         users.forEach((user) => {

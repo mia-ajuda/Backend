@@ -1,5 +1,7 @@
 const UserService = require('../services/UserService');
 const { riskGroups } = require('../models/RiskGroup');
+const firebase = require('../config/authFirebase');
+
 
 class UserController {
     constructor() {
@@ -15,14 +17,35 @@ class UserController {
         };
 
         const data = {
-            ...req.body,
             location,
-        };
+            ...req.body,
+        }
+        
+        if(data.password.length < 8) {
+            res.status(400).json({ error: 'Senha inválida' });
+            next();
+        }
+
+        let firebaseUser;
 
         try {
+            // Cria o usuário no miaAjuda
             const result = await this.userService.createUser(data);
-            res.status(201).json(result);
-            next();
+
+            // Cria o usuário no firebase
+            await firebase.auth().createUser({
+                email: req.body.email,
+                password: req.body.password,
+                displayName: req.body.name,
+                phoneNumber: req.body.phone
+            }).then(() => {
+                res.status(201).json(result);
+                next();
+            }).catch(async err => {
+                await this.userService.removeUser(data.email);
+                res.status(400).json({ error: err });
+                next();
+            });            
         } catch (err) {
             res.status(400).json({ error: err });
             next();
@@ -36,6 +59,7 @@ class UserController {
             photo: req.body.photo,
             name: req.body.name,
             phone: req.body.phone,
+            notificationToken: req.body.notificationToken
         };
         try {
             const result = await this.userService.editUserById(data);
@@ -83,10 +107,13 @@ class UserController {
 
 
     async getUserById(req, res, next) {
-        const { id } = req.params;
+        const data = {
+            id: req.params.id,
+            email: req.decodedToken.email
+        }
 
         try {
-            const result = await this.userService.getUser(id);
+            const result = await this.userService.getUser(data);
             res.status(200).json(result);
             next();
         } catch (err) {

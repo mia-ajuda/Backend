@@ -41,6 +41,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Firebase config
+src/config/firebaseConfig.js
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
@@ -116,6 +119,3 @@ dist
 
 # package-lock (main is yarn.lock)
 package-lock.json
-
-# ignore firebase autentication keys
-firebaseConfig.js
