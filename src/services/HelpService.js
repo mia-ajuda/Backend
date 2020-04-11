@@ -1,8 +1,10 @@
 const HelpRepository = require('../repository/HelpRepository');
+const UserService = require('./UserService');
 
 class HelpService {
     constructor() {
         this.HelpRepository = new HelpRepository();
+        this.UserService = new UserService();
     }
 
     async createHelp(data) {
@@ -50,21 +52,22 @@ class HelpService {
     }
 
     async updatePossibleHelpers(id,idHelper) {
-
         const help = await this.getHelpByid(id);
-
         if (!help) {
             throw 'Ajuda não encontrada';
         }
+        
+        const user = await this.UserService.getUser(idHelper);
+        if (!user) {
+            throw 'Usuário não encontrado';
+        }
 
-        for(let i = 0; i < help.possibleHelpers.length; i++){
-            if(idHelper == help.possibleHelpers[i]){
-                throw 'Você já se cadastrou nessa ajuda';
-            }
+        const userPosition = help.possibleHelpers.indexOf(idHelper);
+        if(userPosition>-1){
+            throw 'Usuário já é um possível ajudante';
         }
         
         help.possibleHelpers.push(idHelper);
-       
 
         const result = await this.HelpRepository.update(help);
 

@@ -19,7 +19,7 @@ routes.delete('/help/:id', async (req, res, next) => {
     helpController.deleteHelpLogic(req, res, next);
 });
 
-routes.put('/help/:id&:idHelper',async(req,res,next)=>{
+routes.put('/help/possibleHelpers/:id&:idHelper',async(req,res,next)=>{
     helpController.updatePossibleHelpers(req,res,next);
 });
 
