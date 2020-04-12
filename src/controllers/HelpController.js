@@ -72,6 +72,21 @@ class HelpController {
       return next();
     }
   }
+
+  async ownerConfirmation(req ,res ,next){
+    const data = {...req.params};
+    console.log(data.ownerId+'  '+data.helpId)
+    try {
+      const result = await this.HelpService.ownerConfirmation(data);
+      res.status(200).json(result);
+      return next();
+    } catch (err) {
+      res.status(400).json({error:err});
+      return next();
+    }
+  }
+
 }
+
 
 module.exports = HelpController;
