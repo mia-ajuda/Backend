@@ -54,14 +54,17 @@ class HelpService {
         if(!help){
             throw 'Ajuda não encontrada';
         }
-        if(help.ownerId!=data.ownerId){
+        else if(help.ownerId!=data.ownerId){
             throw 'Usuário não é o dono da ajuda';
         }
-        if(help.status == 'helperFinished'){
+        else if(help.status == 'helperFinished'){
             help.status = 'finished';
         }
-        if(help.status == 'ownerFinished'){
+        else if(help.status == 'ownerFinished'){
             throw 'Usuário já confirmou a finalização da ajuda';
+        }
+        else if(help.status == 'finished'){
+            throw 'Essa ajuda já foi finalizada';
         }
         else{
             help.status = 'ownerFinished';

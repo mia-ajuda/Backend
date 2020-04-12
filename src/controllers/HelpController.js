@@ -75,7 +75,6 @@ class HelpController {
 
   async ownerConfirmation(req ,res ,next){
     const data = {...req.params};
-    console.log(data.ownerId+'  '+data.helpId)
     try {
       const result = await this.HelpService.ownerConfirmation(data);
       res.status(200).json(result);
