@@ -54,7 +54,9 @@ class HelpService {
         if(!help){
             throw 'Ajuda não encontrada';
         }
-
+        if(help.helperId){
+            throw 'Você já escolheu o seu ajudante';
+        }
         const userPosition = help.possibleHelpers.indexOf(data.idHelper);
         if(userPosition >= 0) {
             help.helperId = data.idHelper;
