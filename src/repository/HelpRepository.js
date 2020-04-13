@@ -44,13 +44,9 @@ class HelpRepository extends BaseRepository {
   async listToExpire() {
     let date = new Date()
     date.setDate(date.getDate() - 14)
-    return await super.$list({ creationDate: { $lt: new Date(date) }, status: { $in: [helpStatusEnum.WAITING, helpStatusEnum.ON_GOING] } })
+    return await super.$list({ creationDate: { $lt: new Date(date) }, active: true })
   }
 
-  async delete(help) {
-    help.status = helpStatusEnum.DELETED;
-    return await super.$update(help)
-  }
 }
 
 module.exports = HelpRepository;
