@@ -119,4 +119,3 @@ dist
 
 # package-lock (main is yarn.lock)
 package-lock.json
-yarn.lock
