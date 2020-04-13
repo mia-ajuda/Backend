@@ -8,7 +8,6 @@ const dailySchedule = require('./src/utils/schedule')
 
 const app = express()
 
-const setRoutes = require('./src/routes/BaseRoutes')
 const databaseConnect = require('./src/config/database')
 
 app.use(cors())
