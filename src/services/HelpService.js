@@ -5,19 +5,17 @@ class HelpService {
     this.HelpRepository = new HelpRepository();
   }
 
-    async createHelp(data) {
-        try {
-            
-            const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
-            if (countHelp >= 5) {
-                throw { countHelp: ' Limite máximo de pedidos atingido' };
-            }
-            
-            const createdHelp = await this.HelpRepository.create(data);
-            return createdHelp;
-        } catch (err) {
-            throw err;
-        }
+  async createHelp(data) {
+    try {
+      const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
+      if (countHelp >= 5) {
+        throw { countHelp: " Limite máximo de pedidos atingido" };
+      }
+
+      const createdHelp = await this.HelpRepository.create(data);
+      return createdHelp;
+    } catch (err) {
+      throw err;
     }
   }
 
