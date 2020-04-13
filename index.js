@@ -16,6 +16,6 @@ app.use(bodyParser.json())
 databaseConnect()
 dailySchedule()
 setRoutes(app)
-dailySchedule()
+
 
 app.listen(8000)
