@@ -12,7 +12,7 @@ const helpSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['waiting', 'on_going', 'finished', 'deleted'],
+        enum: ['waiting', 'on_going','ownerFinished','finished', 'deleted'],
         default: 'on_going',
     },
     possibleHelpers: {

@@ -51,6 +51,33 @@ class HelpService {
         return {'message': `Help ${id} deleted!`};
     }
 
+    async ownerConfirmation(data) {
+        const help = await this.getHelpByid(data.helpId);
+        if(!help){
+            throw 'Ajuda não encontrada';
+        }
+        else if(help.ownerId!=data.ownerId){
+            throw 'Usuário não é o dono da ajuda';
+        }
+        else if(help.status == 'helperFinished'){
+            help.status = 'finished';
+        }
+        else if(help.status == 'ownerFinished'){
+            throw 'Usuário já confirmou a finalização da ajuda';
+        }
+        else if(help.status == 'finished'){
+            throw 'Essa ajuda já foi finalizada';
+        }
+        else{
+            help.status = 'ownerFinished';
+        }
+        
+        
+       const result = await this.HelpRepository.update(help);
+       return result;
+    }
+
+
     async chooseHelper(data){
         const help = await this.getHelpByid(data.idHelp);
         if(!help){

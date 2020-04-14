@@ -73,6 +73,18 @@ class HelpController {
     }
   }
 
+  async ownerConfirmation(req ,res ,next){
+    const data = {...req.params};
+    try {
+      const result = await this.HelpService.ownerConfirmation(data);
+      res.status(200).json(result);
+      return next();
+    } catch (err) {
+      res.status(400).json({error:err});
+      return next();
+    }
+  }
+  
     async chooseHelper(req,res,next){
         const data = { ...req.params } 
 
@@ -101,5 +113,6 @@ class HelpController {
 
 
 }
+
 
 module.exports = HelpController;
