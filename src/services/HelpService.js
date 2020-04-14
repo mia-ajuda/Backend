@@ -51,7 +51,7 @@ class HelpService {
         return {'message': `Help ${id} deleted!`};
     }
 
-    async updatePossibleHelpers(id,idHelper) {
+    async addPossibleHelpers(id,idHelper) {
         const help = await this.getHelpByid(id);
         if (!help) {
             throw 'Ajuda não encontrada';
