@@ -10,6 +10,7 @@ const app = express()
 
 const databaseConnect = require('./src/config/database')
 
+
 app.use(cors())
 app.use(bodyParser.json())
 
