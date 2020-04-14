@@ -34,16 +34,20 @@ class BaseRepository {
   async $listAggregate(aggregationPipeline) {
     return await this.modelClass.aggregate(aggregationPipeline).exec();
   }
-
   /**
    * @param {string} id Id do objeto
-   * @param {Boolean} [active = true] se vou pegar ou não elementos deletados. Se for false, mesmo elementos removidos serão exibidos.
+   * @param {Boolean} [active = true] se vou pegar ou não elementos deletados,
+   * Se for false, mesmo elementos removidos serão exibidos.
    */
   async $getById(id, active = true) {
     let finalIdFormat = id;
 
     if (typeof id === "string") {
-      finalIdFormat = mongoose.Types.ObjectId(id);
+      try {
+        finalIdFormat = mongoose.Types.ObjectId(id);
+      } catch (err) {
+        throw "Tamanho ou formato de id inválido";
+      }
     }
 
     const query = {
@@ -80,6 +84,11 @@ class BaseRepository {
     }
     result = await this.modelClass.findOne(query);
 
+    return result;
+  }
+
+  async $destroy(query) {
+    const result = await this.modelClass.deleteOne(query);
     return result;
   }
 }

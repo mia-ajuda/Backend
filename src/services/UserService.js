@@ -20,28 +20,37 @@ class UserService {
         }
     }
 
-    async getUser(id) {
-        const user = await this.userRepository.getById(id);
+    async getUser({id = undefined, email = undefined}) {
+        if (!id && !email) {
+            throw { id: 'Nenhum identificador encontrado' };
+        }
+        let user;
 
+        if (id) {
+            user = await this.userRepository.getById(id);
+        } else {
+            user = await this.userRepository.getUserByEmail(email);
+        }
         if (!user) {
-            throw { user: 'Usuário não encontrado' };
+            throw 'Usuário não encontrado';
         }
 
         return user;
     }
 
     async editUserById({
-        id, photo, name, phone,
+        id, photo, name, phone,notificationToken
     }) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         if (!user) {
-            throw { user: 'Usuário não encontrado' };
+            throw 'Usuário não encontrado';
         }
 
         user.photo = photo || user.photo;
         user.name = name || user.name;
         user.phone = phone || user.phone;
+        user.notificationToken = notificationToken || user.notificationToken
 
         const result = await this.userRepository.update(user);
 
@@ -52,10 +61,10 @@ class UserService {
     async editUserAddressById({
         id, cep, number, city, state, complement,
     }) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         if (!user) {
-            throw ({ user: 'Usuário não encontrado' });
+            throw 'Usuário não encontrado';
         }
 
         const address = {
@@ -74,13 +83,11 @@ class UserService {
     }
 
     async updateUserLocationById({ id, longitude, latitude }) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         if (!user) {
-            throw { user: 'Usuário não encontrado' };
+            throw 'Usuário não encontrado';
         }
-
-        console.log(latitude, longitude);
 
         if (longitude || latitude) {
             user.location.coordinates[0] = longitude || user.location.coordinates[0];
@@ -93,13 +100,22 @@ class UserService {
     }
 
     async deleteUserLogically(id) {
-        const user = await this.getUser(id);
+        const user = await this.getUser({id});
 
         user.active = false;
 
         await this.userRepository.update(user);
 
         return {'message': `User ${id} deleted!`};
+    }
+
+    async removeUser(email) {
+        try {
+            const user = await this.getUser({email});
+            await this.userRepository.removeUser({id: user._id, email});
+        } catch {
+            return
+        }
     }
 }
 
