@@ -2,13 +2,15 @@ const HelpService = require('../services/HelpService')
 const UserService = require('../services/UserService')
 const notify = require('./Notification')
 const nodeSchedule = require('node-schedule')
-
+// * * 08,18 * * *
 function dailySchedule() {
-    nodeSchedule.scheduleJob('* * 08,18 * * *', async () => {
+    nodeSchedule.scheduleJob('5 * * * * *', async () => {
         const helpService = new HelpService();
         const userService = new UserService();
         const helpsToDelete = await helpService.getListToDelete()
-        console.log(helpsToDelete)
+        if(!helpsToDelete.length){
+            return
+        }
         let messages = []
         for (let help of helpsToDelete) {
             let user = userService.getUser(help.ownerId)
