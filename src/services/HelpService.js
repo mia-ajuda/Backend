@@ -56,12 +56,11 @@ class HelpService {
         if (!help) {
             throw 'Ajuda não encontrada';
         }
-        
-        const user = await this.UserService.getUser(idHelper);
-        if (!user) {
-            throw 'Usuário não encontrado';
+        if(idHelper == help.ownerId){
+            throw 'Você não pode ser ajudante de sua própria ajuda'
         }
-
+        
+        await this.UserService.getUser({id:idHelper});
         const userPosition = help.possibleHelpers.indexOf(idHelper);
         if(userPosition > -1){
             throw 'Usuário já é um possível ajudante';

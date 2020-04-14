@@ -74,7 +74,7 @@ class HelpController {
   }
   
   async updatePossibleHelpers(req, res, next) {
-    const id = req.params.id;
+    const id = req.params.idHelp;
     const idHelper = req.params.idHelper;
   
     try {
