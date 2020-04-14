@@ -51,6 +51,26 @@ class HelpService {
         return {'message': `Help ${id} deleted!`};
     }
 
+    async chooseHelper(data){
+        const help = await this.getHelpByid(data.idHelp);
+        if(!help){
+            throw 'Ajuda não encontrada';
+        }
+        if(help.helperId){
+            throw 'Ajuda já possui ajudante';
+        }
+
+        const userPosition = help.possibleHelpers.indexOf(data.idHelper);
+        if(userPosition >= 0) {
+            help.helperId = data.idHelper;
+            const result = await this.HelpRepository.update(help);
+            return result;
+        }
+        else {
+            throw 'Ajudante não encontrado';
+        }
+    }
+
     async addPossibleHelpers(id,idHelper) {
         const help = await this.getHelpByid(id);
         if (!help) {
