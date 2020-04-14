@@ -1,8 +1,10 @@
 const HelpRepository = require('../repository/HelpRepository');
+const UserService = require('./UserService');
 
 class HelpService {
     constructor() {
         this.HelpRepository = new HelpRepository();
+        this.UserService = new UserService();
     }
 
     async createHelp(data) {
@@ -76,6 +78,47 @@ class HelpService {
     }
 
 
+    async chooseHelper(data){
+        const help = await this.getHelpByid(data.idHelp);
+        if(!help){
+            throw 'Ajuda não encontrada';
+        }
+        if(help.helperId){
+            throw 'Ajuda já possui ajudante';
+        }
+
+        const userPosition = help.possibleHelpers.indexOf(data.idHelper);
+        if(userPosition >= 0) {
+            help.helperId = data.idHelper;
+            const result = await this.HelpRepository.update(help);
+            return result;
+        }
+        else {
+            throw 'Ajudante não encontrado';
+        }
+    }
+
+    async addPossibleHelpers(id,idHelper) {
+        const help = await this.getHelpByid(id);
+        if (!help) {
+            throw 'Ajuda não encontrada';
+        }
+        if(idHelper == help.ownerId){
+            throw 'Você não pode ser ajudante de sua própria ajuda'
+        }
+        
+        await this.UserService.getUser({id:idHelper});
+        const userPosition = help.possibleHelpers.indexOf(idHelper);
+        if(userPosition > -1){
+            throw 'Usuário já é um possível ajudante';
+        }
+        
+        help.possibleHelpers.push(idHelper);
+
+        const result = await this.HelpRepository.update(help);
+
+        return result;
+    }
 }
 
 module.exports = HelpService;
