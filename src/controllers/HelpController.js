@@ -72,6 +72,22 @@ class HelpController {
       return next();
     }
   }
+  
+  async addPossibleHelpers(req, res, next) {
+    const id = req.params.idHelp;
+    const idHelper = req.params.idHelper;
+  
+    try {
+      const result = await this.HelpService.addPossibleHelpers(id, idHelper);
+      res.status(200).json(result);
+      return next();
+    } catch (err) {
+      res.status(400).json({ error: err });
+      return next();
+    }
+  }
+
+
 }
 
 module.exports = HelpController;
