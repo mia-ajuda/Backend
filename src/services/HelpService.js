@@ -59,17 +59,17 @@ class HelpService {
         else if (help.helperId != data.helperId) {
             throw 'Usuário não é o ajudante dessa ajuda';
         }
-        else if (help.status == 'ownerFinished') {
+        else if (help.status == 'owner_finished') {
             help.status = 'finished';
         }
-        else if (help.status == 'helperFinished') {
+        else if (help.status == 'helper_finished') {
             throw 'Usuário já confirmou a finalização da ajuda';
         }
         else if(help.status == 'finished'){
             throw 'Ajuda já foi finalizada';
         }
         else {
-            help.status = 'helperFinished';
+            help.status = 'helper_finished';
         }
 
         const result = await this.HelpRepository.update(help);
@@ -84,17 +84,17 @@ class HelpService {
         else if(help.ownerId!=data.ownerId){
             throw 'Usuário não é o dono da ajuda';
         }
-        else if(help.status == 'helperFinished'){
+        else if(help.status == 'helper_finished'){
             help.status = 'finished';
         }
-        else if(help.status == 'ownerFinished'){
+        else if(help.status == 'owner_finished'){
             throw 'Usuário já confirmou a finalização da ajuda';
         }
         else if(help.status == 'finished'){
             throw 'Essa ajuda já foi finalizada';
         }
         else{
-            help.status = 'ownerFinished';
+            help.status = 'owner_finished';
         }
         
         
