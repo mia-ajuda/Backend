@@ -68,23 +68,37 @@ class HelpController {
       res.status(200).json(result);
       return next();
     } catch (err) {
-      res.status(400).json(err);
+      res.status(400).json({ error: err });
       return next();
     }
   }
 
-  async chooseHelper(req,res,next){
-    const data = { ...req.params } 
+    async chooseHelper(req,res,next){
+        const data = { ...req.params } 
 
-    try {
-      const result = await this.HelpService.chooseHelper(data);
-      res.status(200).json(result);
-      return next();
-    } catch (err) {
-      res.status(400).json(err);
-      return next();
+        try {
+            await this.HelpService.chooseHelper(data);
+            res.status(204);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+        }
     }
-  }
+  
+    async addPossibleHelpers(req, res, next) {
+        const id = req.params.idHelp;
+        const idHelper = req.params.idHelper;
+    
+        try {
+            await this.HelpService.addPossibleHelpers(id, idHelper);
+            res.status(204);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
+    }
+
 
 }
 
