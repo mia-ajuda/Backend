@@ -92,6 +92,7 @@ class HelpService {
 
     return result;
   }
+
   async ownerConfirmation(data) {
     const help = await this.getHelpByid(data.helpId);
     if (!help) {
@@ -126,9 +127,49 @@ class HelpService {
       help.helperId = data.idHelper;
       const result = await this.HelpRepository.update(help);
       return result;
-    } else {
-      throw "Ajudante não encontrado";
     }
+    throw "Ajudante não encontrado";
+  }
+
+  async helperConfirmation(data) {
+    const help = await this.getHelpByid(data.helpId);
+    if (!help) {
+      throw "Ajuda não encontrada";
+    } else if (help.helperId != data.helperId) {
+      throw "Usuário não é o ajudante dessa ajuda";
+    } else if (help.status == "owner_finished") {
+      help.status = "finished";
+    } else if (help.status == "helper_finished") {
+      throw "Usuário já confirmou a finalização da ajuda";
+    } else if (help.status == "finished") {
+      throw "Ajuda já foi finalizada";
+    } else {
+      help.status = "helper_finished";
+    }
+
+    const result = await this.HelpRepository.update(help);
+
+    return result;
+  }
+
+  async ownerConfirmation(data) {
+    const help = await this.getHelpByid(data.helpId);
+    if (!help) {
+      throw "Ajuda não encontrada";
+    } else if (help.ownerId != data.ownerId) {
+      throw "Usuário não é o dono da ajuda";
+    } else if (help.status == "helper_finished") {
+      help.status = "finished";
+    } else if (help.status == "owner_finished") {
+      throw "Usuário já confirmou a finalização da ajuda";
+    } else if (help.status == "finished") {
+      throw "Essa ajuda já foi finalizada";
+    } else {
+      help.status = "owner_finished";
+    }
+
+    const result = await this.HelpRepository.update(help);
+    return result;
   }
 
   async addPossibleHelpers(id, idHelper) {
@@ -151,6 +192,15 @@ class HelpService {
     const result = await this.HelpRepository.update(help);
 
     return result;
+  }
+
+  async getListToDelete() {
+    const Helplist = await this.HelpRepository.listToExpire();
+    if (!Helplist) {
+      throw new Error("Pedidos de ajuda não encontrados");
+    }
+
+    return Helplist;
   }
 }
 

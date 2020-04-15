@@ -5,7 +5,7 @@ const Category = require('../../models/Category');
 const Help = require('../../models/Help');
 const User = require('../../models/User');
 
-const status = ['waiting', 'on_going', 'finished', 'deleted'];
+const status = ['waiting', 'on_going', 'finished', 'helper_finished', 'owner_finished'];
 
 const seedHelp = async () => {
     try {

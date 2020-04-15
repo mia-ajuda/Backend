@@ -114,6 +114,15 @@ class HelpRepository extends BaseRepository {
 
     return result;
   }
+
+  async listToExpire() {
+    const date = new Date();
+    date.setDate(date.getDate() - 14);
+    return await super.$list({
+      creationDate: { $lt: new Date(date) },
+      active: true,
+    });
+  }
 }
 
 module.exports = HelpRepository;
