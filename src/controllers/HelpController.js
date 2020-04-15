@@ -38,21 +38,38 @@ class HelpController {
     const temp = except ? "except" : helper ? "helper" : null;
     const id = temp ? req.query[`id.${temp}`] : req.query.id;
     const status = req.query.status || null;
-    const category = req.query.categoryId
+    const categoryArray = req.query.categoryId
       ? req.query.categoryId.split(",")
       : null;
-      /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
-         sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço*/
+    /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
+         sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço */
+
+    const near = !!req.query.near;
+    const coords = near
+      ? req.query.coords.split(",").map((coord) => Number(coord))
+      : null;
+
     try {
       let result;
-      result = await this.HelpService.getHelpList(
-        id,
-        status,
-        category,
-        except,
-        helper
-      );
-      res.status(200).json(result);
+
+      if (near) {
+        result = await this.HelpService.getNearHelpList(
+          coords,
+          except,
+          id,
+          categoryArray
+        );
+      } else {
+        result = await this.HelpService.getHelpList(
+          id,
+          status,
+          except,
+          helper,
+          categoryArray
+        );
+      }
+      res.status(200);
+      res.json(result);
       next();
     } catch (err) {
       res.status(400).json({ error: err });
