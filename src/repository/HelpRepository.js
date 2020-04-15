@@ -55,6 +55,7 @@ class HelpRepository extends BaseRepository {
     const matchQuery = {};
 
     matchQuery.status = "waiting";
+    matchQuery.active = true;
 
     matchQuery.ownerId = {
       $in: arrayUsersId,
