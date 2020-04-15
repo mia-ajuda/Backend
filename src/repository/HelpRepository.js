@@ -74,6 +74,14 @@ class HelpRepository extends BaseRepository {
           as: "user",
         },
       },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
     ];
 
     try {
