@@ -47,11 +47,11 @@ class HelpRepository extends BaseRepository {
     const ownerId = except ? { $ne: id } : null;
 
     query.location = location;
-    query.ownerId = ownerId;
-
+    query._id = ownerId;
+    
     const users = await UserSchema.find(query);
     const arrayUsersId = users.map((user) => user._id);
-
+    
     const matchQuery = {};
 
     matchQuery.status = "waiting";
