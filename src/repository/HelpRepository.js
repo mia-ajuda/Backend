@@ -17,6 +17,10 @@ class HelpRepository extends BaseRepository {
     return await super.$getById(id);
   }
 
+  async update(help) {
+    return await super.$update(help);
+  }
+
   async list(id, status, except, helper, categoryArray) {
     const ownerId = except ? { $ne: id } : helper ? null : id;
     const helperId = helper ? id : null;
@@ -50,7 +54,7 @@ class HelpRepository extends BaseRepository {
 
     const matchQuery = {};
 
-    matchQuery.status = "on_going";
+    matchQuery.status = "waiting";
 
     matchQuery.ownerId = {
       $in: arrayUsersId,
