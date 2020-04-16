@@ -1,5 +1,6 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
+const notify = require("../utils/Notification");
 
 class HelpService {
   constructor() {
@@ -110,11 +111,15 @@ class HelpService {
     }
 
     const result = await this.HelpRepository.update(help);
+
+
     return result;
   }
 
   async chooseHelper(data) {
     const help = await this.getHelpByid(data.idHelp);
+    const helper = await this.UserService.getUser(data.idHelper);
+    const owner = await this.UserService.getUser(help.ownerId);
     if (!help) {
       throw "Ajuda não encontrada";
     }
@@ -122,10 +127,26 @@ class HelpService {
       throw "Ajuda já possui ajudante";
     }
 
+    let messages = []
+
+    const message = {
+      to: helper.deviceId,
+      sound: 'default',
+      title: owner.name + ' aceitou sua oferta de ajuda!',
+      body: 'Sua oferta para ' + help.title + ' foi aceita!',
+      data: { Pedido: help.description },
+      _displayInForeground: true
+    }
+    messages.push(message)
     const userPosition = help.possibleHelpers.indexOf(data.idHelper);
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
       const result = await this.HelpRepository.update(help);
+      try {
+        notify(messages)
+      } catch (err) {
+        console.log(err)
+      }
       return result;
     }
     throw "Ajudante não encontrado";
