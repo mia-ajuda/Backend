@@ -1,5 +1,6 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
+const notify = require("../utils/Notification")
 
 class HelpService {
   constructor() {
@@ -174,6 +175,7 @@ class HelpService {
 
   async addPossibleHelpers(id, idHelper) {
     const help = await this.getHelpByid(id);
+    const owner = await this.UserService.getUser({ id: help.ownerId });
     if (!help) {
       throw "Ajuda não encontrada";
     }
@@ -181,13 +183,29 @@ class HelpService {
       throw "Você não pode ser ajudante de sua própria ajuda";
     }
 
-    await this.UserService.getUser({ id: idHelper });
+    const helper = await this.UserService.getUser({ id: idHelper });
     const userPosition = help.possibleHelpers.indexOf(idHelper);
     if (userPosition > -1) {
       throw "Usuário já é um possível ajudante";
     }
 
     help.possibleHelpers.push(idHelper);
+    let messages = []
+ 
+    const message = {
+      to: owner.deviceId,
+      sound: 'default',
+      title: helper.name + ' quer te ajudar!',
+      body: 'Seu pedido ' + help.title + ' recebeu uma oferta de ajuda!',
+      data: { Pedido: help.description },
+      _displayInForeground: true
+    }
+    messages.push(message)
+    try {
+      notify(messages)
+    } catch (err) {
+      console.log(err)
+    }
 
     const result = await this.HelpRepository.update(help);
 
