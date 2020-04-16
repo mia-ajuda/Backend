@@ -1,63 +1,37 @@
 const UserService = require("../services/UserService");
 const { riskGroups } = require("../models/RiskGroup");
-const firebase = require("../config/authFirebase");
 
 class UserController {
   constructor() {
     this.userService = new UserService();
   }
 
-  async createUser(req, res, next) {
-    const { latitude, longitude } = req.body;
+    async createUser(req, res, next) {
+        const { latitude, longitude } = req.body;
 
-    const location = {
-      type: "Point",
-      coordinates: [longitude, latitude],
-    };
+        const location = {
+            type: "Point",
+            coordinates: [longitude, latitude],
+        };
 
-    const data = {
-      location,
-      ...req.body,
-    };
+        const data = {
+            location,
+            ...req.body,
+        };
 
-    if (data.password.length < 8) {
-      res.status(400).json({ error: "Senha inválida" });
-      next();
+        try {
+            const result = await this.userService.createUser(data);
+            res.status(201).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
     }
-
-    let firebaseUser;
-
-    try {
-      // Cria o usuário no miaAjuda
-      const result = await this.userService.createUser(data);
-
-      // Cria o usuário no firebase
-      await firebase
-        .auth()
-        .createUser({
-          email: req.body.email,
-          password: req.body.password,
-          displayName: req.body.name,
-          phoneNumber: req.body.phone,
-        })
-        .then(() => {
-          res.status(201).json(result);
-          next();
-        })
-        .catch(async (err) => {
-          await this.userService.removeUser(data.email);
-          res.status(400).json({ error: err });
-          next();
-        });
-    } catch (err) {
-      res.status(400).json({ error: err });
-      next();
-    }
-  }
 
   async editUserById(req, res, next) {
     const data = {
-      id: req.params.id,
+      email:  req.decodedToken.email,
       photo: req.body.photo,
       name: req.body.name,
       phone: req.body.phone,
@@ -75,7 +49,7 @@ class UserController {
 
   async editUserAddressById(req, res, next) {
     const data = {
-      id: req.params.id,
+      email:  req.decodedToken.email,
       cep: req.body.cep,
       number: req.body.number,
       city: req.body.city,
@@ -94,10 +68,10 @@ class UserController {
   }
 
   async deleteUserLogic(req, res, next) {
-    const { id } = req.params;
+    const { email } = req.decodedToken;
 
     try {
-      const result = await this.userService.deleteUserLogically(id);
+      const result = await this.userService.deleteUserLogically(email);
       res.status(200).json(result);
       return next();
     } catch (err) {
@@ -108,7 +82,6 @@ class UserController {
 
   async getUserById(req, res, next) {
     const data = {
-      id: req.params.id,
       email: req.decodedToken.email,
     };
 
@@ -124,7 +97,7 @@ class UserController {
 
   async updateUserLocationById(req, res, next) {
     const data = {
-      id: req.params.id,
+      email:  req.decodedToken.email,
       latitude: req.body.latitude,
       longitude: req.body.longitude,
     };

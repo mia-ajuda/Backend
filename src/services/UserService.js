@@ -1,4 +1,6 @@
 const UserRepository = require('../repository/UserRepository');
+const firebase = require("../config/authFirebase");
+
 
 class UserService {
     constructor() {
@@ -7,12 +9,30 @@ class UserService {
 
 
     async createUser(data) {
+        if (data.password.length < 8) {
+            throw "Senha inválida"
+        }
+
         if (data.cpf.length >= 11) {
             data.cpf = data.cpf.replace(/[-.]/g, '');
         }
 
         try {
             const createdUser = await this.userRepository.create(data);
+            
+            // Cria o usuário no firebase
+            await firebase
+                .auth()
+                .createUser({
+                    email: data.email,
+                    password: data.password,
+                    displayName: data.name,
+                    phoneNumber: data.phone,
+                })
+                .catch(async (err) => {
+                    await this.removeUser(data.email);
+                    throw err;
+                });
 
             return createdUser;
         } catch (err) {
@@ -39,9 +59,9 @@ class UserService {
     }
 
     async editUserById({
-        id, photo, name, phone,notificationToken
+        email, photo, name, phone,notificationToken
     }) {
-        const user = await this.getUser({id});
+        const user = await this.getUser({email});
 
         if (!user) {
             throw 'Usuário não encontrado';
@@ -59,9 +79,9 @@ class UserService {
 
 
     async editUserAddressById({
-        id, cep, number, city, state, complement,
+        email, cep, number, city, state, complement,
     }) {
-        const user = await this.getUser({id});
+        const user = await this.getUser({email});
 
         if (!user) {
             throw 'Usuário não encontrado';
@@ -82,8 +102,8 @@ class UserService {
         return result;
     }
 
-    async updateUserLocationById({ id, longitude, latitude }) {
-        const user = await this.getUser({id});
+    async updateUserLocationById({ email, longitude, latitude }) {
+        const user = await this.getUser({email});
 
         if (!user) {
             throw 'Usuário não encontrado';
@@ -99,8 +119,8 @@ class UserService {
         return result;
     }
 
-    async deleteUserLogically(id) {
-        const user = await this.getUser({id});
+    async deleteUserLogically(email) {
+        const user = await this.getUser({email});
 
         user.active = false;
 
