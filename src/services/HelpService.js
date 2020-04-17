@@ -117,9 +117,11 @@ class HelpService {
   }
 
   async chooseHelper(data) {
+    const idHelper = data.idHelper
     const help = await this.getHelpByid(data.idHelp);
-    const helper = await this.UserService.getUser(data.idHelper);
-    const owner = await this.UserService.getUser(help.ownerId);
+    const ownerId = help.ownerId
+    const helper = await this.UserService.getUser({ id: idHelper });
+    const owner = await this.UserService.getUser({ id: ownerId });
     if (!help) {
       throw "Ajuda não encontrada";
     }
