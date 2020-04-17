@@ -17,6 +17,7 @@ class UserController {
         const data = {
             location,
             ...req.body,
+            hasUser: req.query.hasUser
         };
 
         try {
@@ -82,6 +83,7 @@ class UserController {
 
   async getUserById(req, res, next) {
     const data = {
+      id: req.params.id,
       email: req.decodedToken.email,
     };
 

@@ -20,19 +20,20 @@ class UserService {
         try {
             const createdUser = await this.userRepository.create(data);
             
-            // Cria o usuário no firebase
-            await firebase
-                .auth()
-                .createUser({
-                    email: data.email,
-                    password: data.password,
-                    displayName: data.name,
-                    phoneNumber: data.phone,
-                })
-                .catch(async (err) => {
-                    await this.removeUser(data.email);
-                    throw err;
-                });
+            if (!data.hasUser) {
+                // Cria o usuário no firebase
+                await firebase
+                    .auth()
+                    .createUser({
+                        email: data.email,
+                        password: data.password,
+                        displayName: data.name,
+                    })
+                    .catch(async (err) => {
+                        await this.removeUser(data.email);
+                        throw err;
+                    });
+            }
 
             return createdUser;
         } catch (err) {

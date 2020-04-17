@@ -10,7 +10,7 @@ const isAuthenticated = require("../validation/middlewares/authFirebase");
 routes.post("/user", async (req, res, next) => {
     userController.createUser(req, res, next);
 });
-routes.get('/user', isAuthenticated, async (req, res, next) => {
+routes.get('/user/:id*?/', isAuthenticated, async (req, res, next) => {
     userController.getUserById(req, res, next)
 })
 routes.put('/user', isAuthenticated, async (req, res, next) => {
