@@ -138,6 +138,16 @@ class UserService {
             return
         }
     }
+
+    async checkUserExistence(identificator) {
+        const result = await this.userRepository.checkUserExistence(identificator);
+
+        if (result) {
+            return true
+        }
+
+        return false
+    }
 }
 
 module.exports = UserService;

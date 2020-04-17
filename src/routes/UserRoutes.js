@@ -28,5 +28,8 @@ routes.delete('/user', isAuthenticated, async (req, res, next) => {
 routes.get('/groupRisk', async (req, res, next) => {
     userController.getUserGroupRiskList(req, res, next);
 });
+routes.get('/checkUserExistence/:value', async (req, res, next) => {
+    userController.checkUserExistence(req, res, next);
+});
 
 module.exports = routes;

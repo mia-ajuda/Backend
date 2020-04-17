@@ -30,89 +30,101 @@ class UserController {
         }
     }
 
-  async editUserById(req, res, next) {
-    const data = {
-      email:  req.decodedToken.email,
-      photo: req.body.photo,
-      name: req.body.name,
-      phone: req.body.phone,
-      notificationToken: req.body.notificationToken,
-    };
-    try {
-      const result = await this.userService.editUserById(data);
-      res.status(200).json(result);
-      return next();
-    } catch (err) {
-      res.status(400).json({ error: err });
-      return next();
+    async editUserById(req, res, next) {
+        const data = {
+            email:  req.decodedToken.email,
+            photo: req.body.photo,
+            name: req.body.name,
+            phone: req.body.phone,
+            notificationToken: req.body.notificationToken,
+        };
+        try {
+            const result = await this.userService.editUserById(data);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
     }
-  }
 
-  async editUserAddressById(req, res, next) {
-    const data = {
-      email:  req.decodedToken.email,
-      cep: req.body.cep,
-      number: req.body.number,
-      city: req.body.city,
-      state: req.body.state,
-      complement: req.body.complement,
-    };
+    async editUserAddressById(req, res, next) {
+        const data = {
+            email:  req.decodedToken.email,
+            cep: req.body.cep,
+            number: req.body.number,
+            city: req.body.city,
+            state: req.body.state,
+            complement: req.body.complement,
+        };
 
-    try {
-      const result = await this.userService.editUserAddressById(data);
-      res.status(200).json(result);
-      return next();
-    } catch (err) {
-      res.status(400).json({ error: err });
-      return next();
+        try {
+            const result = await this.userService.editUserAddressById(data);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
     }
-  }
 
-  async deleteUserLogic(req, res, next) {
-    const { email } = req.decodedToken;
+    async deleteUserLogic(req, res, next) {
+        const { email } = req.decodedToken;
 
-    try {
-      const result = await this.userService.deleteUserLogically(email);
-      res.status(200).json(result);
-      return next();
-    } catch (err) {
-      res.status(400).json({ error: err });
-      return next();
+        try {
+            const result = await this.userService.deleteUserLogically(email);
+            res.status(200).json(result);
+            return next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            return next();
+        }
     }
-  }
 
-  async getUserById(req, res, next) {
-    const data = {
-      id: req.params.id,
-      email: req.decodedToken.email,
-    };
+    async getUserById(req, res, next) {
+        const data = {
+            id: req.params.id,
+            email: req.decodedToken.email,
+        };
 
-    try {
-      const result = await this.userService.getUser(data);
-      res.status(200).json(result);
-      next();
-    } catch (err) {
-      res.status(400).json({ error: err });
-      next();
+        try {
+            const result = await this.userService.getUser(data);
+            res.status(200).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
     }
-  }
 
-  async updateUserLocationById(req, res, next) {
-    const data = {
-      email:  req.decodedToken.email,
-      latitude: req.body.latitude,
-      longitude: req.body.longitude,
-    };
+    async updateUserLocationById(req, res, next) {
+        const data = {
+            email:  req.decodedToken.email,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
+        };
 
-    try {
-      const result = await this.userService.updateUserLocationById(data);
-      res.status(200).json(result);
-      next();
-    } catch (err) {
-      res.status(400).json({ error: err });
-      next();
+        try {
+            const result = await this.userService.updateUserLocationById(data);
+            res.status(200).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
     }
-  }
+    async checkUserExistence(req, res, next) {
+        const { value } = req.params
+
+        try {
+            const result = await this.userService.checkUserExistence(value);
+            res.status(200).json(result);
+            next();
+        } catch (err) {
+            res.status(400).json({ error: err });
+            next();
+        }
+    }
 
   async getUserGroupRiskList(req, res, next) {
     res.status(200).json(riskGroups);
