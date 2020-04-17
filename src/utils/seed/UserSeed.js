@@ -2,7 +2,6 @@ const User = require('../../models/User');
 const faker = require('faker/locale/pt_BR');
 const lodash = require('lodash');
 const { cpf } = require('cpf-cnpj-validator');
-
 const diseases = ['dc','hiv','diab','hiperT','doenCardio'];
 
 const seedUser = async () => {
@@ -15,7 +14,7 @@ const seedUser = async () => {
         }
 
         const users = [];
-        const quantity = 10;1
+        const quantity = 100;
         for (let i = 0; i < quantity; i++) {
             const sampleRiskGroup = await lodash.sampleSize(diseases, faker.random.number(5));
 
@@ -36,8 +35,9 @@ const seedUser = async () => {
                     location: {
                         type: 'Point',
                         coordinates: [
-                            faker.address.longitude(),
-                            faker.address.latitude(),
+                            //trocar os numeros(-47....) pela longitude e latitude(-15....) perto da sua casa
+                            -47.930348 + faker.random.number({min:-999,max:999})/10000,
+                            -15.8007974 + faker.random.number({min:-999,max:999})/10000
                         ],
                     },
                     riskGroup: sampleRiskGroup,
