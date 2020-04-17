@@ -2,23 +2,24 @@ const User = require('../../models/User');
 const faker = require('faker/locale/pt_BR');
 const lodash = require('lodash');
 const { cpf } = require('cpf-cnpj-validator');
-
 const diseases = ['dc','hiv','diab','hiperT','doenCardio'];
-
+var latitude = process.env.LATITUDE_ENV;
+var longitude = process.env.LONGITUDE_ENV;
 const seedUser = async () => {
     try {
         const userCollection = await User.find();
-
+        
         // this condition avoid populate duplicate users
         if (userCollection.length > 0) {
             return;
         }
 
         const users = [];
-        const quantity = 10;1
+        const quantity = 100;
         for (let i = 0; i < quantity; i++) {
             const sampleRiskGroup = await lodash.sampleSize(diseases, faker.random.number(5));
-
+            longitude = Number(longitude) + (faker.random.number({ min: -999, max: 999 }) / 100000);
+            latitude = Number(latitude) + (faker.random.number({ min: -999, max: 999 }) / 100000);
             users.push(
                 new User({
                     name: faker.name.findName(),
@@ -36,8 +37,9 @@ const seedUser = async () => {
                     location: {
                         type: 'Point',
                         coordinates: [
-                            faker.address.longitude(),
-                            faker.address.latitude(),
+                            //trocar os numeros(-47....) pela longitude e latitude(-15....) perto da sua casa
+                            longitude,
+                            latitude
                         ],
                     },
                     riskGroup: sampleRiskGroup,
@@ -48,7 +50,7 @@ const seedUser = async () => {
             );
         }
         await User.deleteMany({});
-
+    
         users.forEach((user) => {
             User.create(user);
         });
