@@ -1,5 +1,6 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
+const notify = require("../utils/Notification");
 
 class HelpService {
   constructor() {
@@ -72,49 +73,12 @@ class HelpService {
     return { message: `Help ${id} deleted!` };
   }
 
-  async helperConfirmation(data) {
-    const help = await this.getHelpByid(data.helpId);
-    if (!help) {
-      throw "Ajuda não encontrada";
-    } else if (help.helperId != data.helperId) {
-      throw "Usuário não é o ajudante dessa ajuda";
-    } else if (help.status == "ownerFinished") {
-      help.status = "finished";
-    } else if (help.status == "helperFinished") {
-      throw "Usuário já confirmou a finalização da ajuda";
-    } else if (help.status == "finished") {
-      throw "Ajuda já foi finalizada";
-    } else {
-      help.status = "helperFinished";
-    }
-
-    const result = await this.HelpRepository.update(help);
-
-    return result;
-  }
-
-  async ownerConfirmation(data) {
-    const help = await this.getHelpByid(data.helpId);
-    if (!help) {
-      throw "Ajuda não encontrada";
-    } else if (help.ownerId != data.ownerId) {
-      throw "Usuário não é o dono da ajuda";
-    } else if (help.status == "helperFinished") {
-      help.status = "finished";
-    } else if (help.status == "ownerFinished") {
-      throw "Usuário já confirmou a finalização da ajuda";
-    } else if (help.status == "finished") {
-      throw "Essa ajuda já foi finalizada";
-    } else {
-      help.status = "ownerFinished";
-    }
-
-    const result = await this.HelpRepository.update(help);
-    return result;
-  }
-
   async chooseHelper(data) {
+    const idHelper = data.idHelper
     const help = await this.getHelpByid(data.idHelp);
+    const ownerId = help.ownerId
+    const helper = await this.UserService.getUser({ id: idHelper });
+    const owner = await this.UserService.getUser({ id: ownerId });
     if (!help) {
       throw "Ajuda não encontrada";
     }
@@ -122,10 +86,26 @@ class HelpService {
       throw "Ajuda já possui ajudante";
     }
 
+    let messages = []
+
+    const message = {
+      to: helper.deviceId,
+      sound: 'default',
+      title: owner.name + ' aceitou sua oferta de ajuda!',
+      body: 'Sua oferta para ' + help.title + ' foi aceita!',
+      data: { Pedido: help.description },
+      _displayInForeground: true
+    }
+    messages.push(message)
     const userPosition = help.possibleHelpers.indexOf(data.idHelper);
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
       const result = await this.HelpRepository.update(help);
+      try {
+        notify(messages)
+      } catch (err) {
+        console.log(err)
+      }
       return result;
     }
     throw "Ajudante não encontrado";
