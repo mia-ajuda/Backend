@@ -17,6 +17,13 @@ class HelpRepository extends BaseRepository {
     return await super.$getById(id);
   }
 
+  async getByOwnerId(ownerId) {
+    const query = {};
+    query.ownerId = ownerId;
+    const result = await super.$list(query);
+    return result;
+  }
+
   async update(help) {
     return await super.$update(help);
   }

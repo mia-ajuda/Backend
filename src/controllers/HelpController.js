@@ -32,6 +32,24 @@ class HelpController {
     }
   }
 
+  async getOwnedHelpList(req, res, next) {
+    const ownerId = req.query.id;
+    /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
+         sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço */
+
+    try {
+      let result;
+      result = await this.HelpService.getHelpByOwnerId(ownerId);
+      res.status(200);
+      res.json(result);
+      next();
+    } catch (err) {
+      res.status(400).json({ error: err });
+      next();
+    }
+  }
+
+
   async getHelpList(req, res, next) {
     const except = !!req.query["id.except"];
     const helper = !!req.query["id.helper"];

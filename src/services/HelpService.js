@@ -21,6 +21,16 @@ class HelpService {
     }
   }
 
+  async getHelpByOwnerId(ownerId, id, status, category, except, helper){
+    const Helplist = await this.HelpRepository.getByOwnerId(ownerId);
+    
+    if (!Helplist) {
+      throw "Nenhuma Ajuda com esse status foi encontrada";
+    }
+
+    return Helplist;
+  }
+
   async getHelpByid(id) {
     const Help = await this.HelpRepository.getById(id);
 
