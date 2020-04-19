@@ -1,8 +1,12 @@
 const HelpService = require("../services/HelpService");
+const { findConnections, sendMessage } = require('../../websocket')
+const UserService = require("../services/UserService")
+const { getDistance } = require('../utils/geolocation/calculateDistance')
 
 class HelpController {
   constructor() {
     this.HelpService = new HelpService();
+    this.UserService = new UserService();
   }
 
   async createHelp(req, res, next) {
@@ -12,6 +16,17 @@ class HelpController {
 
     try {
       const result = await this.HelpService.createHelp(data);
+      const user = await this.UserService.getUser({id: data.ownerId})
+      let help = JSON.parse(JSON.stringify(result));
+      help.user = [user]
+      const userCoords = {
+        longitude: user.location.coordinates[0],
+        latitude: user.location.coordinates[1]
+      }
+      const sendSocketMessageTo = findConnections(userCoords)
+
+      sendMessage(sendSocketMessageTo, 'new-help', help)
+
       res.status(201).json(result);
       next();
     } catch (err) {
