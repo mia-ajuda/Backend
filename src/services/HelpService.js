@@ -1,5 +1,6 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
+const { findConnections, sendMessage } = require('../../websocket')
 
 class HelpService {
   constructor() {
@@ -15,6 +16,18 @@ class HelpService {
       }
 
       const createdHelp = await this.HelpRepository.create(data);
+
+      const user = await this.UserService.getUser({id: createdHelp.ownerId})
+      let help = JSON.parse(JSON.stringify(createdHelp));
+      help.user = [user]
+      const userCoords = {
+        longitude: user.location.coordinates[0],
+        latitude: user.location.coordinates[1]
+      }
+      const sendSocketMessageTo = findConnections(userCoords)
+
+      sendMessage(sendSocketMessageTo, 'new-help', help)
+
       return createdHelp;
     } catch (err) {
       throw err;
@@ -69,7 +82,16 @@ class HelpService {
 
     await this.HelpRepository.update(help);
 
-    return { message: `Help ${id} deleted!`, ownerId: help.ownerId };
+    const user = await this.UserService.getUser({id: help.ownerId})
+    const userCoords = {
+      longitude: user.location.coordinates[0],
+      latitude: user.location.coordinates[1]
+    }
+
+    const sendSocketMessageTo = findConnections(userCoords)
+    sendMessage(sendSocketMessageTo, 'delete-help', id)
+
+    return { message: `Help ${id} deleted!` };
   }
 
   async helperConfirmation(data) {
