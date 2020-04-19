@@ -97,6 +97,16 @@ class HelpController {
 
     try {
       const result = await this.HelpService.deleteHelpLogically(id);
+      console.log(result)
+      const user = await this.UserService.getUser({id: result.ownerId})
+      const userCoords = {
+        longitude: user.location.coordinates[0],
+        latitude: user.location.coordinates[1]
+      }
+
+      const sendSocketMessageTo = findConnections(userCoords)
+      sendMessage(sendSocketMessageTo, 'delete-help', id)
+
       res.status(200).json(result);
       return next();
     } catch (err) {

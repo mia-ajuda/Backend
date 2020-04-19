@@ -69,7 +69,7 @@ class HelpService {
 
     await this.HelpRepository.update(help);
 
-    return { message: `Help ${id} deleted!` };
+    return { message: `Help ${id} deleted!`, ownerId: help.ownerId };
   }
 
   async helperConfirmation(data) {
