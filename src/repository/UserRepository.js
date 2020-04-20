@@ -26,6 +26,29 @@ class UserRepository extends BaseRepository {
         const result = await super.$update(user);
         return result;
     }
+    
+    async checkUserExistence(id) {
+        const users = await super.$listAggregate([
+            {
+                '$match': {
+                    '$or': [
+                        { 'cpf': id }, 
+                        { 'email': id }
+                    ]
+                }
+            }, {
+                '$count': 'id'
+            }
+        ]);
+
+        let result = 0
+
+        if (users[0] && users[0].id > 0) {
+            result = users[0].id
+        }
+
+        return result;
+    }
 
     async removeUser({id, email}) {
         const query = {}

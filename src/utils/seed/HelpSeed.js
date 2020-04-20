@@ -18,7 +18,7 @@ const seedHelp = async () => {
             return;
         }
         
-        const quantity = 10;
+        const quantity = 100;
         const helps = [];
         for (let i = 0; i < quantity; i++) {
             const sampleStatus = await lodash.sample(status);
