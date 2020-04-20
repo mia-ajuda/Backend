@@ -83,10 +83,10 @@ class HelpController {
     try {
       const result = await this.HelpService.deleteHelpLogically(id);
       res.status(200).json(result);
-      return next();
+      next();
     } catch (err) {
       res.status(400).json({ error: err });
-      return next();
+      next();
     }
   }
   async helperConfirmation(req, res, next) {
@@ -94,10 +94,10 @@ class HelpController {
     try {
       const result = await this.HelpService.helperConfirmation(data);
       res.status(200).json(result);
-      return next();
+      next();
     } catch (err) {
       res.status(400).json({ error: err });
-      return next();
+      next();
     }
   }
 
@@ -106,10 +106,10 @@ class HelpController {
     try {
       const result = await this.HelpService.ownerConfirmation(data);
       res.status(200).json(result);
-      return next();
+      next();
     } catch (err) {
       res.status(400).json({error:err});
-      return next();
+      next();
     }
   }
   
@@ -118,8 +118,8 @@ class HelpController {
 
         try {
             await this.HelpService.chooseHelper(data);
-            res.status(204);
-            return next();
+            res.status(204).json();
+            next();
         } catch (err) {
             res.status(400).json({ error: err });
         }
@@ -131,11 +131,11 @@ class HelpController {
     
         try {
             await this.HelpService.addPossibleHelpers(id, idHelper);
-            res.status(204);
-            return next();
+            res.status(204).json();
+            next();
         } catch (err) {
             res.status(400).json({ error: err });
-            return next();
+            next();
         }
     }
     
