@@ -75,7 +75,11 @@ class HelpService {
   }
 
   async chooseHelper(data) {
+    const idHelper = data.idHelper
     const help = await this.getHelpByid(data.idHelp);
+    const ownerId = help.ownerId
+    const helper = await this.UserService.getUser({ id: idHelper });
+    const owner = await this.UserService.getUser({ id: ownerId });
     if (!help) {
       throw "Ajuda não encontrada";
     }
@@ -83,10 +87,14 @@ class HelpService {
       throw "Ajuda já possui ajudante";
     }
 
+    const title = owner.name + ' aceitou sua oferta de ajuda!'
+    const body = 'Sua oferta para ' + help.title + ' foi aceita!'
+
     const userPosition = help.possibleHelpers.indexOf(data.idHelper);
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
       const result = await this.HelpRepository.update(help);
+      this.NotificationMixin(helper.deviceId, title, body)
       return result;
     }
     throw "Ajudante não encontrado";
