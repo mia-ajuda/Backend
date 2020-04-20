@@ -7,7 +7,7 @@ class NotificationService {
     let messages = []
 
     const message = {
-      to: 'ExponentPushToken[r3lDLzOR1fp3QHG7aYZzDq]',
+      to: deviceId,
       sound: 'default',
       title: title,
       body: body,
