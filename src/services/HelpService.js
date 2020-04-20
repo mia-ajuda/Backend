@@ -1,10 +1,12 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
+const NotificationMixin = require("../utils/NotificationMixin");
 
 class HelpService {
   constructor() {
     this.HelpRepository = new HelpRepository();
     this.UserService = new UserService();
+    this.NotificationMixin = new NotificationMixin();
   }
 
   async createHelp(data) {
@@ -72,47 +74,6 @@ class HelpService {
     return { message: `Help ${id} deleted!` };
   }
 
-  async helperConfirmation(data) {
-    const help = await this.getHelpByid(data.helpId);
-    if (!help) {
-      throw "Ajuda não encontrada";
-    } else if (help.helperId != data.helperId) {
-      throw "Usuário não é o ajudante dessa ajuda";
-    } else if (help.status == "ownerFinished") {
-      help.status = "finished";
-    } else if (help.status == "helperFinished") {
-      throw "Usuário já confirmou a finalização da ajuda";
-    } else if (help.status == "finished") {
-      throw "Ajuda já foi finalizada";
-    } else {
-      help.status = "helperFinished";
-    }
-
-    const result = await this.HelpRepository.update(help);
-
-    return result;
-  }
-
-  async ownerConfirmation(data) {
-    const help = await this.getHelpByid(data.helpId);
-    if (!help) {
-      throw "Ajuda não encontrada";
-    } else if (help.ownerId != data.ownerId) {
-      throw "Usuário não é o dono da ajuda";
-    } else if (help.status == "helperFinished") {
-      help.status = "finished";
-    } else if (help.status == "ownerFinished") {
-      throw "Usuário já confirmou a finalização da ajuda";
-    } else if (help.status == "finished") {
-      throw "Essa ajuda já foi finalizada";
-    } else {
-      help.status = "ownerFinished";
-    }
-
-    const result = await this.HelpRepository.update(help);
-    return result;
-  }
-
   async chooseHelper(data) {
     const help = await this.getHelpByid(data.idHelp);
     if (!help) {
@@ -133,11 +94,19 @@ class HelpService {
 
   async helperConfirmation(data) {
     const help = await this.getHelpByid(data.helpId);
+    const owner = await this.UserService.getUser({id: help.ownerId})
+    
     if (!help) {
       throw "Ajuda não encontrada";
     } else if (help.helperId != data.helperId) {
       throw "Usuário não é o ajudante dessa ajuda";
     } else if (help.status == "owner_finished") {
+    
+      const title = 'Pedido de ajuda finalizado!'
+      const body = 'Seu pedido ' + help.title + ' foi finalizado'
+
+      this.NotificationMixin.sendNotification(owner.deviceId, title, body)
+
       help.status = "finished";
     } else if (help.status == "helper_finished") {
       throw "Usuário já confirmou a finalização da ajuda";
@@ -154,11 +123,18 @@ class HelpService {
 
   async ownerConfirmation(data) {
     const help = await this.getHelpByid(data.helpId);
+    const owner = await this.UserService.getUser({id: help.ownerId})
     if (!help) {
       throw "Ajuda não encontrada";
     } else if (help.ownerId != data.ownerId) {
       throw "Usuário não é o dono da ajuda";
     } else if (help.status == "helper_finished") {
+
+      const title = 'Pedido de ajuda finalizado!'
+      const body = 'Seu pedido ' + help.title + ' foi finalizado'
+
+      this.NotificationMixin.sendNotification(owner.id, title, body)
+
       help.status = "finished";
     } else if (help.status == "owner_finished") {
       throw "Usuário já confirmou a finalização da ajuda";
@@ -174,6 +150,7 @@ class HelpService {
 
   async addPossibleHelpers(id, idHelper) {
     const help = await this.getHelpByid(id);
+    const owner = await this.UserService.getUser({ id: help.ownerId });
     if (!help) {
       throw "Ajuda não encontrada";
     }
@@ -181,15 +158,20 @@ class HelpService {
       throw "Você não pode ser ajudante de sua própria ajuda";
     }
 
-    await this.UserService.getUser({ id: idHelper });
+    const helper = await this.UserService.getUser({ id: idHelper });
     const userPosition = help.possibleHelpers.indexOf(idHelper);
     if (userPosition > -1) {
       throw "Usuário já é um possível ajudante";
     }
 
     help.possibleHelpers.push(idHelper);
-
+    
     const result = await this.HelpRepository.update(help);
+
+    const title = helper.name + ' quer te ajudar!'
+    const body = 'Seu pedido ' + help.title + ' recebeu uma oferta de ajuda!'
+
+    this.NotificationMixin.sendNotification(owner.deviceId, title, body)
 
     return result;
   }
