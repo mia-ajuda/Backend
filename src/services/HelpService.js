@@ -1,11 +1,12 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
-const notify = require("../utils/Notification")
+const NotificationMixin = require("../utils/NotificationMixin");
 
 class HelpService {
   constructor() {
     this.HelpRepository = new HelpRepository();
     this.UserService = new UserService();
+    this.NotificationMixin = new NotificationMixin();
   }
 
   async createHelp(data) {
@@ -100,21 +101,12 @@ class HelpService {
     } else if (help.helperId != data.helperId) {
       throw "Usuário não é o ajudante dessa ajuda";
     } else if (help.status == "owner_finished") {
-      let messages = []
-      const message = {
-        to: owner.deviceId,
-        sound: 'default',
-        title: 'Pedido de ajuda finalizado!',
-        body: 'Seu pedido ' + help.title + ' foi finalizado',
-        data: { Pedido: help.description },
-        _displayInForeground: true
-      }
-      messages.push(message)
-      try {
-        notify(messages)
-      } catch (err) {
-        console.log(err)
-      }
+    
+      const title = 'Pedido de ajuda finalizado!'
+      const body = 'Seu pedido ' + help.title + ' foi finalizado'
+
+      this.NotificationMixin.sendNotification(owner.deviceId, title, body)
+
       help.status = "finished";
     } else if (help.status == "helper_finished") {
       throw "Usuário já confirmou a finalização da ajuda";
@@ -137,21 +129,12 @@ class HelpService {
     } else if (help.ownerId != data.ownerId) {
       throw "Usuário não é o dono da ajuda";
     } else if (help.status == "helper_finished") {
-      let messages = []
-      const message = {
-        to: owner.deviceId,
-        sound: 'default',
-        title: 'Pedido de ajuda finalizado!',
-        body: 'Seu pedido ' + help.title + ' foi finalizado',
-        data: { Pedido: help.description },
-        _displayInForeground: true
-      }
-      messages.push(message)
-      try {
-        notify(messages)
-      } catch (err) {
-        console.log(err)
-      }
+
+      const title = 'Pedido de ajuda finalizado!'
+      const body = 'Seu pedido ' + help.title + ' foi finalizado'
+
+      this.NotificationMixin.sendNotification(owner.id, title, body)
+
       help.status = "finished";
     } else if (help.status == "owner_finished") {
       throw "Usuário já confirmou a finalização da ajuda";
@@ -182,24 +165,13 @@ class HelpService {
     }
 
     help.possibleHelpers.push(idHelper);
-    let messages = []
-
-    const message = {
-      to: owner.deviceId,
-      sound: 'default',
-      title: helper.name + ' quer te ajudar!',
-      body: 'Seu pedido ' + help.title + ' recebeu uma oferta de ajuda!',
-      data: { Pedido: help.description },
-      _displayInForeground: true
-    }
-    messages.push(message)
-    try {
-      notify(messages)
-    } catch (err) {
-      console.log(err)
-    }
-
+    
     const result = await this.HelpRepository.update(help);
+
+    const title = helper.name + ' quer te ajudar!'
+    const body = 'Seu pedido ' + help.title + ' recebeu uma oferta de ajuda!'
+
+    this.NotificationMixin.sendNotification(owner.deviceId, title, body)
 
     return result;
   }
