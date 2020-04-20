@@ -26,7 +26,7 @@ exports.findConnections = (coordinates) => {
     return connections.filter(connection => {
         const distance = calculateDistance(coordinates, connection.coordinates)
         connection.distance = convertDistance(distance)
-        return distance <= 10
+        return distance <= 2
     })
 }
 

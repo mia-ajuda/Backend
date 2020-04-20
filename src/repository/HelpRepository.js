@@ -66,7 +66,7 @@ class HelpRepository extends BaseRepository {
           type: "Point",
           coordinates: coords,
         },
-        $maxDistance: 20000,
+        $maxDistance: 2000,
       },
     };
     const ownerId = except ? { $ne: id } : null;
