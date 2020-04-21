@@ -32,7 +32,7 @@ const seedHelp = async () => {
       const sampleUsers = await lodash.sampleSize(userCollection, 2);
       const samplePossibleHelpers = await lodash.sampleSize(
         userCollection,
-        faker.random.number(userCollection.length - 2)
+        faker.random.number(5)
       );
       const samplePossibleHelpsID = [];
       samplePossibleHelpers.forEach((item) => {

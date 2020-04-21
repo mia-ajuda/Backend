@@ -68,6 +68,8 @@ class HelpRepository extends BaseRepository {
       matchQuery.categoryId = {
         $in: categoryArray.map((categoryString) => ObjectId(categoryString)),
       };
+
+      console.log(matchQuery.categoryId);
     }
     const aggregation = [
       {
