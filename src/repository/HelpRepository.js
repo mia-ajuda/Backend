@@ -60,6 +60,9 @@ class HelpRepository extends BaseRepository {
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
+    matchQuery.helperId = {
+      $eq: undefined,
+    };
 
     if (categoryArray) {
       matchQuery.categoryId = {
