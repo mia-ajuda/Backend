@@ -31,14 +31,13 @@ class HelpService {
     return Help;
   }
 
-  async getHelpList(id, status, category, except, helper, populate) {
+  async getHelpList(id, status, category, except, helper) {
     const Helplist = await this.HelpRepository.list(
       id,
       status,
       category,
       except,
-      helper,
-      populate
+      helper
     );
     if (!Helplist) {
       throw "Nenhuma Ajuda com esse status foi encontrada";
