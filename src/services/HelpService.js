@@ -31,13 +31,14 @@ class HelpService {
     return Help;
   }
 
-  async getHelpList(id, status, category, except, helper) {
+  async getHelpList(id, status, category, except, helper, populate) {
     const Helplist = await this.HelpRepository.list(
       id,
       status,
       category,
       except,
-      helper
+      helper,
+      populate
     );
     if (!Helplist) {
       throw "Nenhuma Ajuda com esse status foi encontrada";
@@ -125,6 +126,7 @@ class HelpService {
     const userPosition = help.possibleHelpers.indexOf(data.idHelper);
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
+      help.status = "on_going";
       const result = await this.HelpRepository.update(help);
       return result;
     }

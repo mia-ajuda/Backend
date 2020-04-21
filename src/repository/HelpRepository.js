@@ -48,15 +48,15 @@ class HelpRepository extends BaseRepository {
 
     query.location = location;
     query._id = ownerId;
-    
+
     const users = await UserSchema.find(query);
     const arrayUsersId = users.map((user) => user._id);
-    
+
     const matchQuery = {};
 
     matchQuery.status = "waiting";
     matchQuery.active = true;
-
+    matchQuery.possibleHelpers = { $not: { $in: [ObjectId(id)] } };
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
@@ -66,7 +66,6 @@ class HelpRepository extends BaseRepository {
         $in: categoryArray.map((categoryString) => ObjectId(categoryString)),
       };
     }
-
     const aggregation = [
       {
         $match: matchQuery,
