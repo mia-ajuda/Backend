@@ -52,18 +52,18 @@ class HelpRepository extends BaseRepository {
     const users = await UserSchema.find(query);
     const arrayUsersId = users.map((user) => user._id);
 
-    const matchQuery = {};
+    let matchQuery = {};
 
-    matchQuery.status = "waiting";
     matchQuery.active = true;
     matchQuery.possibleHelpers = { $not: { $in: [ObjectId(id)] } };
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
-    matchQuery.helperId = {
-      $eq: undefined,
+    matchQuery = {
+      ...matchQuery,
+      $or: [{status:"waiting"},{helperId:ObjectId(id)}]
     };
-
+    
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((categoryString) => ObjectId(categoryString)),

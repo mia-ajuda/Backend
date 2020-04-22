@@ -126,6 +126,7 @@ class HelpService {
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
       help.status = "on_going";
+      help.possibleHelpers = [];
       const result = await this.HelpRepository.update(help);
       return result;
     }
