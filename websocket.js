@@ -8,25 +8,39 @@ exports.setupWebsocket = (server) => {
     io = socketio(server)
 
     io.on('connection', (socket) => {
-        const { locations, currentRegion } = socket.handshake.query
+        console.log('conectou')
+        const { locations, currentRegion, categories } = socket.handshake.query
 
         connections.push({
             id: socket.id,
             currentRegion,
-            locations
+            locations,
+            categories
         })
 
+        socket.on('disconnect', () => {
+            const index = connections.map(connection => connection.id).indexOf(socket.id)
+            if(index >= 0) {
+                console.log('desconectou')
+                connections.splice(index, 1)
+            }
+        })
     })
 }
 
-exports.findConnections = (coordinates) => {
+exports.findConnections = (coordinates, category) => {
     return connections.filter(connection => {
+        const categories = JSON.parse(connection.categories)
+        if(categories.length && !categories.includes(category)) {
+            return false
+        }
         let should = false
         const locs = JSON.parse(connection.locations)
         locs.every(location => {
-            const distance = calculateDistance(coordinates, location)
+            let distance = calculateDistance(coordinates, location)
             if(distance < 2) {
-                connection.distance = getDistance(JSON.parse(connection.currentRegion), coordinates)
+                distance = getDistance(JSON.parse(connection.currentRegion), coordinates)
+                connection.distance = distance
                 should = true
                 return false
             }

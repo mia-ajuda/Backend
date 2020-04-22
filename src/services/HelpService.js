@@ -24,8 +24,8 @@ class HelpService {
         longitude: user.location.coordinates[0],
         latitude: user.location.coordinates[1]
       }
-      const sendSocketMessageTo = findConnections(userCoords)
-
+      const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
+      // console.log(sendSocketMessageTo)
       sendMessage(sendSocketMessageTo, 'new-help', help)
 
       return createdHelp;
@@ -87,8 +87,8 @@ class HelpService {
       longitude: user.location.coordinates[0],
       latitude: user.location.coordinates[1]
     }
-
-    const sendSocketMessageTo = findConnections(userCoords)
+    const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
+    // console.log(sendSocketMessageTo)
     sendMessage(sendSocketMessageTo, 'delete-help', id)
 
     return { message: `Help ${id} deleted!` };

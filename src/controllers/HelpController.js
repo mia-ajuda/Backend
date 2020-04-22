@@ -1,7 +1,5 @@
 const HelpService = require("../services/HelpService");
-const { findConnections, sendMessage } = require('../../websocket')
 const UserService = require("../services/UserService")
-const { getDistance } = require('../utils/geolocation/calculateDistance')
 
 class HelpController {
   constructor() {
