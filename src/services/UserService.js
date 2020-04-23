@@ -60,7 +60,7 @@ class UserService {
     }
 
     async editUserById({
-        email, photo, name, phone,notificationToken
+        email, photo, name, phone, notificationToken, deviceId
     }) {
         const user = await this.getUser({email});
 
@@ -71,7 +71,8 @@ class UserService {
         user.photo = photo || user.photo;
         user.name = name || user.name;
         user.phone = phone || user.phone;
-        user.notificationToken = notificationToken || user.notificationToken
+        user.notificationToken = notificationToken || user.notificationToken;
+        user.deviceId = deviceId || user.deviceId;
 
         const result = await this.userRepository.update(user);
 
