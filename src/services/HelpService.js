@@ -12,7 +12,7 @@ class HelpService {
     try {
       const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
       if (countHelp >= 5) {
-        throw " Limite máximo de pedidos atingido";
+        throw "Limite máximo de pedidos atingido";
       }
 
       const createdHelp = await this.HelpRepository.create(data);
@@ -25,12 +25,11 @@ class HelpService {
         latitude: user.location.coordinates[1]
       }
       const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
-      // console.log(sendSocketMessageTo)
       sendMessage(sendSocketMessageTo, 'new-help', help)
 
       return createdHelp;
     } catch (err) {
-      throw err;
+      throw 'Não foi possível criar a ajuda';
     }
   }
 
@@ -88,7 +87,6 @@ class HelpService {
       latitude: user.location.coordinates[1]
     }
     const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
-    // console.log(sendSocketMessageTo)
     sendMessage(sendSocketMessageTo, 'delete-help', id)
 
     return { message: `Help ${id} deleted!` };
