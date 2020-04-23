@@ -1,51 +1,74 @@
-const mongoose = require('mongoose')
-const helpStatusEnum = require('../utils/enums/helpStatusEnum')
+const mongoose = require("mongoose");
+const helpStatusEnum = require("../utils/enums/helpStatusEnum");
 
-const helpSchema = new mongoose.Schema({
+const helpSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     description: {
-        type: String,
-        maxlength: 120,
-        required: true,
+      type: String,
+      maxlength: 120,
+      required: true,
     },
     status: {
-        type: String,
-        enum: Object.values(helpStatusEnum),
-        default: helpStatusEnum.WAITING,
+      type: String,
+      enum: Object.values(helpStatusEnum),
+      default: helpStatusEnum.WAITING,
     },
     possibleHelpers: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'User',
-        required: false,
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      required: false,
     },
     categoryId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'Category',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
     ownerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     helperId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: false,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
     },
     creationDate: {
-        type: Date,
-        default: Date.now,
+      type: Date,
+      default: Date.now,
     },
     finishedDate: {
-        type: Date,
-        required: false,
+      type: Date,
+      required: false,
     },
     active: {
-        default: true,
-        type: Boolean,
+      default: true,
+      type: Boolean,
     },
-}, { collection: 'userHelp' });
+  },
+  {
+    collection: "userHelp",
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
 
-module.exports = mongoose.model('Help', helpSchema);
+helpSchema.virtual("category", {
+  ref: "Category",
+  localField: "categoryId",
+  foreignField: "_id",
+});
+helpSchema.virtual("user", {
+  ref: "User",
+  localField: "ownerId",
+  foreignField: "_id",
+});
+
+module.exports = mongoose.model("Help", helpSchema);
