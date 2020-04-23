@@ -17,7 +17,7 @@ class UserController {
         const data = {
             location,
             ...req.body,
-            hasUser: req.query.hasUser
+            hasUser: req.query.hasUser === 'true'
         };
 
         try {
