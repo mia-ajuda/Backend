@@ -16,7 +16,7 @@ const notificationTypesEnum = {
     outros: 'outros',
 };
 
-const Notification = new mongoose.Schema({
+const NotificationSchema = new mongoose.Schema({
     helpId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Help',
@@ -42,6 +42,8 @@ const Notification = new mongoose.Schema({
 }, { 
     collection: 'notification',
 });
+
+const Notification = mongoose.model('Notification', NotificationSchema);
 
 module.exports = {
     Notification,
