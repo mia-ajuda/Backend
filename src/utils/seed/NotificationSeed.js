@@ -21,11 +21,13 @@ const notificationSeed = async () => {
         const quantity = 500;
         const notifications = [];
         for(let i = 0; i < quantity; i++) {
+            const sampleUser = await lodash.sample(userCollection);
             const sampleHelp = await lodash.sample(helpCollection);
             const sampleNotificationType = await lodash.sample(
                 notificationTypes);
             
             notifications.push({
+                userId: sampleUser._id,
                 helpId: sampleHelp._id,
                 title: faker.lorem.words(5),
                 body: faker.lorem.paragraph(),
@@ -35,23 +37,9 @@ const notificationSeed = async () => {
 
         await Notification.deleteMany({});
 
-        for(let i = 0; i < quantity; i++) {
-            await Notification.create(notifications[i]);
-        }
-
-        const notificationCollectionId = await Notification.find({}, '_id');
-        const notificationArrayId = await notificationCollectionId.map((obj) => {
-            return obj.id;
+        notifications.forEach((notification) => {
+            Notification.create(notification);
         })
-
-        for(let i = 0; i < userCollection.length; i++) {
-            const sampleNotifications = await lodash.sampleSize(
-                notificationArrayId,
-                faker.random.number(quantity % faker.random.number({'min': 1, 'max': 50})));
-            
-            userCollection[i].notificationHistory = await sampleNotifications;
-            await userCollection[i].save();
-        }
 
         console.log('Notificações populadas com sucesso!');
     } catch (error) {

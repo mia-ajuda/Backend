@@ -46,11 +46,6 @@ const userSchema = new mongoose.Schema({
     notificationToken: {
         type: String,
     },
-    notificationHistory: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Notification',
-        required: false,
-    },
     address: {
         cep: {
             type: String,

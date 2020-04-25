@@ -17,6 +17,11 @@ const notificationTypesEnum = {
 };
 
 const NotificationSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false,
+    },
     helpId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Help',
