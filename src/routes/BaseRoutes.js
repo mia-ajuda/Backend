@@ -1,7 +1,8 @@
 const userRoutes = require('./UserRoutes');
 const helpRoutes = require('./HelpRoutes');
 const categoryRoutes = require('./CategoryRoutes');
+const notificationRoutes = require('./NotificationRoutes');
 
 module.exports = (app) => {
-    app.use('/api', [userRoutes, helpRoutes, categoryRoutes]);
+    app.use('/api', [userRoutes, helpRoutes, categoryRoutes, notificationRoutes]);
 };
