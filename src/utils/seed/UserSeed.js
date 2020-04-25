@@ -3,8 +3,8 @@ const faker = require('faker/locale/pt_BR');
 const lodash = require('lodash');
 const { cpf } = require('cpf-cnpj-validator');
 const diseases = ['dc','hiv','diab','hiperT','doenCardio'];
-var latitude = process.env.LATITUDE_ENV;
-var longitude = process.env.LONGITUDE_ENV;
+var latitude = process.env.LATITUDE_ENV || -15.824544;
+var longitude = process.env.LONGITUDE_ENV || -48.060878;
 const seedUser = async () => {
     try {
         const userCollection = await User.find();
@@ -23,7 +23,7 @@ const seedUser = async () => {
             users.push(
                 new User({
                     name: faker.name.findName(),
-                    birthday: Date.parse(faker.date.between('1900-01-01', '2020-01-01')),
+                    birthday: Date.parse(faker.date.between('1940-01-01', '2020-01-01')),
                     cpf: cpf.generate(),
                     email: faker.internet.email(),
                     photo: faker.image.avatar(),
@@ -37,7 +37,6 @@ const seedUser = async () => {
                     location: {
                         type: 'Point',
                         coordinates: [
-                            //trocar os numeros(-47....) pela longitude e latitude(-15....) perto da sua casa
                             longitude,
                             latitude
                         ],
