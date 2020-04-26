@@ -75,7 +75,7 @@ class HelpService {
   }
 
   async deleteHelpLogically(id) {
-    const help = await this.getHelpByid(id);
+    let help = await this.getHelpByid(id);
 
     help.active = false;
 
@@ -86,8 +86,8 @@ class HelpService {
       longitude: user.location.coordinates[0],
       latitude: user.location.coordinates[1]
     }
+    help = JSON.parse(JSON.stringify(help));
     const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
-    //console.log(sendSocketMessageTo+'peixe')
     sendMessage(sendSocketMessageTo, 'delete-help', id)
 
     return { message: `Help ${id} deleted!` };
