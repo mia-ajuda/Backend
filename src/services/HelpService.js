@@ -87,10 +87,12 @@ class HelpService {
       latitude: user.location.coordinates[1]
     }
     const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
+    //console.log(sendSocketMessageTo+'peixe')
     sendMessage(sendSocketMessageTo, 'delete-help', id)
 
     return { message: `Help ${id} deleted!` };
   }
+
 
   async helperConfirmation(data) {
     const help = await this.getHelpByid(data.helpId);
