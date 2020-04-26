@@ -93,6 +93,8 @@ class HelpService {
     const userPosition = help.possibleHelpers.indexOf(data.idHelper);
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
+      help.status = "on_going";
+      help.possibleHelpers = [];
       const result = await this.HelpRepository.update(help);
       this.NotificationMixin(helper.deviceId, title, body);
       return result;
