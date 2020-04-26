@@ -17,7 +17,7 @@ class UserController {
         const data = {
             location,
             ...req.body,
-            hasUser: req.query.hasUser
+            hasUser: req.query.hasUser === 'true'
         };
 
         try {
@@ -37,6 +37,7 @@ class UserController {
             name: req.body.name,
             phone: req.body.phone,
             notificationToken: req.body.notificationToken,
+            deviceId: req.body.deviceId,
         };
         try {
             const result = await this.userService.editUserById(data);

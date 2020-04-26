@@ -54,7 +54,9 @@ class HelpRepository extends BaseRepository {
     if (categoryArray) query.categoryId = { $in: categoryArray };
     if (helper) query.helperId = helperId;
     else query.ownerId = ownerId;
-    const result = await super.$list(query);
+
+    const populate = "category";
+    const result = await super.$list(query, populate);
     return result;
   }
 
@@ -73,17 +75,20 @@ class HelpRepository extends BaseRepository {
 
     query.location = location;
     query._id = ownerId;
-    
+
     const users = await UserSchema.find(query);
     const arrayUsersId = users.map((user) => user._id);
-    
-    const matchQuery = {};
 
-    matchQuery.status = "waiting";
+    let matchQuery = {};
+
     matchQuery.active = true;
-
+    matchQuery.possibleHelpers = { $not: { $in: [ObjectId(id)] } };
     matchQuery.ownerId = {
       $in: arrayUsersId,
+    };
+    matchQuery = {
+      ...matchQuery,
+      $or: [{ status: "waiting" }, { helperId: ObjectId(id) }],
     };
 
     if (categoryArray) {
@@ -91,7 +96,6 @@ class HelpRepository extends BaseRepository {
         $in: categoryArray.map((categoryString) => ObjectId(categoryString)),
       };
     }
-
     const aggregation = [
       {
         $match: matchQuery,
