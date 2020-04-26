@@ -8,10 +8,11 @@ exports.setupWebsocket = (server) => {
     io = socketio(server);
 
     io.on('connection', (socket) => {
-        const { currentRegion } = socket.handshake.query;
+        const { currentRegion, userId } = socket.handshake.query;
         
         connections.push({
             id: socket.id,
+            userId,
             currentRegion,
             locations: [currentRegion],
             categories:[]
@@ -49,8 +50,11 @@ function canParse(locs){
         return false;
     }
 }
-exports.findConnections = (coordinates, category) => {
+exports.findConnections = (coordinates, category, userId) => {
     let filtered =  connections.filter((connection) => {
+        if (userId === connection.userId) {
+            return false
+        }
         if (connection.categories && connection.categories.length) {
             const categories = connection.categories;
             if (!categories.includes(category)) {

@@ -26,7 +26,7 @@ class HelpService {
         longitude: user.location.coordinates[0],
         latitude: user.location.coordinates[1]
       }
-      const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
+      const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
       sendMessage(sendSocketMessageTo, 'new-help', help)
 
       return createdHelp;
@@ -89,7 +89,7 @@ class HelpService {
       latitude: user.location.coordinates[1]
     }
     help = JSON.parse(JSON.stringify(help));
-    const sendSocketMessageTo = findConnections(userCoords, help.categoryId)
+    const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
     sendMessage(sendSocketMessageTo, 'delete-help', id)
 
     return { message: `Help ${id} deleted!` };
