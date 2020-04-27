@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
         required: true,
     },
     notificationToken: {
-        type: String
+        type: String,
     },
     address: {
         cep: {
