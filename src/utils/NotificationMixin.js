@@ -13,7 +13,10 @@ class NotificationService {
       body: body,
       _displayInForeground: true
     }
-
+    if(!message.to){
+      console.log("O usuário não possui deviceId")
+      return
+    }
     messages.push(message)
     
     try {
