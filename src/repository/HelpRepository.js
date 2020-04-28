@@ -47,16 +47,89 @@ class HelpRepository extends BaseRepository {
   }
 
   async list(id, status, except, helper, categoryArray) {
-    const ownerId = except ? { $ne: id } : helper ? null : id;
-    const helperId = helper ? id : null;
+    const ownerId = except ? { $ne: ObjectId(id) } : helper ? null : ObjectId(id);
+    const helperId = helper ? ObjectId(id) : null;
     const query = {};
     if (status) query.status = status;
     if (categoryArray) query.categoryId = { $in: categoryArray };
     if (helper) query.helperId = helperId;
     else query.ownerId = ownerId;
 
-    const populate = "category";
-    const result = await super.$list(query, populate);
+    const result = await super.$listAggregate([
+        {
+            $match: query,
+        },
+        {
+            $lookup: {
+            from: "user",
+            localField: "ownerId",
+            foreignField: "_id",
+            as: "user",
+            },
+        },
+        {
+            '$unwind': {
+            'path': '$user', 
+            'preserveNullAndEmptyArrays': false
+            }
+        }, {
+            '$addFields': {
+            'ageRisk': {
+                '$cond': [
+                {
+                    '$gt': [
+                    {
+                        '$subtract': [
+                        {
+                            '$year': '$$NOW'
+                        }, {
+                            '$year': '$user.birthday'
+                        }
+                        ]
+                    }, 60
+                    ]
+                }, 1, 0
+                ]
+            }, 
+            'cardio': {
+                '$cond': [
+                {
+                    '$in': [
+                    '$user.riskGroup', [
+                        [
+                        'doenCardio'
+                        ]
+                    ]
+                    ]
+                }, 1, 0
+                ]
+            }, 
+            'risco': {
+                '$size': '$user.riskGroup'
+            }
+            }
+        }, {
+            '$sort': {
+            'ageRisk': -1, 
+            'cardio': -1, 
+            'risco': -1
+            }
+        }, {
+            '$project': {
+            'ageRisk': 0, 
+            'cardio': 0, 
+            'risco': 0
+            }
+        },
+        {
+            $lookup: {
+                from: "category",
+                localField: "categoryId",
+                foreignField: "_id",
+                as: "category",
+            },
+        },
+    ]);
     return result;
   }
 
@@ -109,6 +182,60 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
+        '$unwind': {
+          'path': '$user', 
+          'preserveNullAndEmptyArrays': false
+        }
+      }, {
+        '$addFields': {
+          'ageRisk': {
+            '$cond': [
+              {
+                '$gt': [
+                  {
+                    '$subtract': [
+                      {
+                        '$year': '$$NOW'
+                      }, {
+                        '$year': '$user.birthday'
+                      }
+                    ]
+                  }, 60
+                ]
+              }, 1, 0
+            ]
+          }, 
+          'cardio': {
+            '$cond': [
+              {
+                '$in': [
+                  '$user.riskGroup', [
+                    [
+                      'doenCardio'
+                    ]
+                  ]
+                ]
+              }, 1, 0
+            ]
+          }, 
+          'risco': {
+            '$size': '$user.riskGroup'
+          }
+        }
+      }, {
+        '$sort': {
+          'ageRisk': -1, 
+          'cardio': -1, 
+          'risco': -1
+        }
+      }, {
+        '$project': {
+          'ageRisk': 0, 
+          'cardio': 0, 
+          'risco': 0
+        }
+      },
+      {
         $lookup: {
           from: "category",
           localField: "categoryId",
@@ -126,8 +253,8 @@ class HelpRepository extends BaseRepository {
           longitude: coords[0],
         };
         const helpCoords = {
-          latitude: help.user[0].location.coordinates[1],
-          longitude: help.user[0].location.coordinates[0],
+          latitude: help.user.location.coordinates[1],
+          longitude: help.user.location.coordinates[0],
         };
         help.distance = getDistance(coordinates, helpCoords);
 
