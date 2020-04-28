@@ -2,7 +2,7 @@ const BaseRepository = require("./BaseRepository");
 const HelpSchema = require("../models/Help");
 const UserSchema = require("../models/User");
 const ObjectId = require("mongodb").ObjectID;
-const calculateDistance = require("../utils/geolocation/calculateDistance");
+const { getDistance } = require("../utils/geolocation/calculateDistance");
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -10,7 +10,32 @@ class HelpRepository extends BaseRepository {
   }
 
   async create(help) {
-    return await super.$save(help);
+    const result = await super.$save(help);
+
+    const aggregation = [
+      {
+        $match: { _id: result._id},
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+    ];
+
+    const helps = await super.$listAggregate(aggregation)
+    return helps[0]
   }
 
   async getById(id) {
@@ -43,7 +68,7 @@ class HelpRepository extends BaseRepository {
           type: "Point",
           coordinates: coords,
         },
-        $maxDistance: 20000,
+        $maxDistance: 2000,
       },
     };
     const ownerId = except ? { $ne: id } : null;
@@ -104,7 +129,7 @@ class HelpRepository extends BaseRepository {
           latitude: help.user[0].location.coordinates[1],
           longitude: help.user[0].location.coordinates[0],
         };
-        help.distance = calculateDistance(coordinates, helpCoords);
+        help.distance = getDistance(coordinates, helpCoords);
 
         return help;
       });

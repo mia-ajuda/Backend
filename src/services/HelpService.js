@@ -1,5 +1,6 @@
 const HelpRepository = require("../repository/HelpRepository");
 const UserService = require("./UserService");
+const { findConnections, sendMessage } = require('../../websocket')
 const NotificationMixin = require("../utils/NotificationMixin");
 
 class HelpService {
@@ -13,13 +14,24 @@ class HelpService {
     try {
       const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
       if (countHelp >= 5) {
-        throw " Limite máximo de pedidos atingido";
+        throw "Limite máximo de pedidos atingido";
       }
 
       const createdHelp = await this.HelpRepository.create(data);
+
+      const user = await this.UserService.getUser({id: createdHelp.ownerId})
+      let help = JSON.parse(JSON.stringify(createdHelp));
+      help.user = [user]
+      const userCoords = {
+        longitude: user.location.coordinates[0],
+        latitude: user.location.coordinates[1]
+      }
+      const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
+      sendMessage(sendSocketMessageTo, 'new-help', help)
+
       return createdHelp;
     } catch (err) {
-      throw err;
+      throw 'Não foi possível criar a ajuda';
     }
   }
 
@@ -65,11 +77,20 @@ class HelpService {
   }
 
   async deleteHelpLogically(id) {
-    const help = await this.getHelpByid(id);
+    let help = await this.getHelpByid(id);
 
     help.active = false;
 
     await this.HelpRepository.update(help);
+
+    const user = await this.UserService.getUser({id: help.ownerId})
+    const userCoords = {
+      longitude: user.location.coordinates[0],
+      latitude: user.location.coordinates[1]
+    }
+    help = JSON.parse(JSON.stringify(help));
+    const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
+    sendMessage(sendSocketMessageTo, 'delete-help', id)
 
     return { message: `Help ${id} deleted!` };
   }

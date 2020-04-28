@@ -1,8 +1,10 @@
 const HelpService = require("../services/HelpService");
+const UserService = require("../services/UserService")
 
 class HelpController {
   constructor() {
     this.HelpService = new HelpService();
+    this.UserService = new UserService();
   }
 
   async createHelp(req, res, next) {
@@ -12,6 +14,7 @@ class HelpController {
 
     try {
       const result = await this.HelpService.createHelp(data);
+
       res.status(201).json(result);
       next();
     } catch (err) {
@@ -82,6 +85,7 @@ class HelpController {
 
     try {
       const result = await this.HelpService.deleteHelpLogically(id);
+
       res.status(200).json(result);
       next();
     } catch (err) {
