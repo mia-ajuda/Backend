@@ -1,4 +1,6 @@
 const HelpRepository = require("../repository/HelpRepository");
+const NotificationService = require('./NotificationService');
+const { notificationTypesEnum } = require('../models/Notification')
 const UserService = require("./UserService");
 const { findConnections, sendMessage } = require('../../websocket')
 const NotificationMixin = require("../utils/NotificationMixin");
@@ -7,6 +9,7 @@ class HelpService {
   constructor() {
     this.HelpRepository = new HelpRepository();
     this.UserService = new UserService();
+    this.NotificationService = new NotificationService();
     this.NotificationMixin = new NotificationMixin();
   }
 
@@ -135,7 +138,20 @@ class HelpService {
       const title = "Pedido de ajuda finalizado!";
       const body = "Seu pedido " + help.title + " foi finalizado";
 
-      this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+      const notificationHistory = {
+        userId: help.ownerId,
+        helpId: help._id,
+        title: title,
+        body: body,
+        notificationType: notificationTypesEnum.ajudaFinalizada,
+      };
+
+      try {
+        this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+        this.NotificationService.createNotification(notificationHistory);
+      } catch(err) {
+        throw "Não foi possível enviar a notificação!";
+      }
 
       help.status = "finished";
     } else if (help.status == "helper_finished") {
@@ -162,7 +178,20 @@ class HelpService {
       const title = "Pedido de ajuda finalizado!";
       const body = "Seu pedido " + help.title + " foi finalizado";
 
-      this.NotificationMixin.sendNotification(owner.id, title, body);
+      const notificationHistory = {
+        userId: help.ownerId,
+        helpId: help._id,
+        title: title,
+        body: body,
+        notificationType: notificationTypesEnum.ajudaFinalizada,
+      };
+  
+      try {
+        this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+        this.NotificationService.createNotification(notificationHistory);
+      } catch(err) {
+        throw "Não foi possível enviar a notificação!";
+      }
 
       help.status = "finished";
     } else if (help.status == "owner_finished") {
@@ -200,7 +229,20 @@ class HelpService {
     const title = helper.name + " quer te ajudar!";
     const body = "Seu pedido " + help.title + " recebeu uma oferta de ajuda!";
 
-    this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+    const notificationHistory = {
+      userId: help.ownerId,
+      helpId: help._id,
+      title: title,
+      body: body,
+      notificationType: notificationTypesEnum.ajudaRecebida,
+    };
+
+    try {
+      this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+      this.NotificationService.createNotification(notificationHistory);
+    } catch(err) {
+      throw "Não foi possível enviar a notificação!";
+    }
 
     return result;
   }
