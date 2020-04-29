@@ -120,7 +120,7 @@ class HelpService {
       help.status = "on_going";
       help.possibleHelpers = [];
       const result = await this.HelpRepository.update(help);
-      this.NotificationMixin(helper.deviceId, title, body);
+      //this.NotificationMixin(helper.deviceId, title, body);
       return result;
     }
     throw "Ajudante não encontrado";
