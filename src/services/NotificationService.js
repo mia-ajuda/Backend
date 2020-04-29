@@ -6,9 +6,15 @@ class NotificationService {
     }
 
     async getUserNotificationsById(id) {
-        const userNotifications = this.notificationRepository.getUserNotificationsById(id);
+        const userNotifications = await this.notificationRepository.getUserNotificationsById(id);
 
         return userNotifications;
+    }
+
+    async createNotification(notification) {
+        const createdNotification = await this.notificationRepository.create(notification);
+
+        return createdNotification;
     }
 
 }
