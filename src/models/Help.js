@@ -9,7 +9,7 @@ const helpSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      maxlength: 120,
+      maxlength: 300,
       required: true,
     },
     status: {
