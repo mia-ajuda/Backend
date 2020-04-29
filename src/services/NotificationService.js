@@ -12,9 +12,9 @@ class NotificationService {
     }
 
     async createNotification(notification) {
-        const createdNotification = await this.notificationRepository.create(notification);
+        const notificationCreated = await this.notificationRepository.create(notification);
 
-        return createdNotification;
+        return notificationCreated;
     }
 
 }

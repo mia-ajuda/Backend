@@ -1,8 +1,8 @@
 const HelpRepository = require("../repository/HelpRepository");
 const NotificationService = require('./NotificationService');
-const { notificationTypesEnum } = require('../models/Notification')
+const { notificationTypesEnum } = require('../models/Notification');
 const UserService = require("./UserService");
-const { findConnections, sendMessage } = require('../../websocket')
+const { findConnections, sendMessage } = require('../../websocket');
 const NotificationMixin = require("../utils/NotificationMixin");
 
 class HelpService {
