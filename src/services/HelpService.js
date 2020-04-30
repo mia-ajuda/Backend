@@ -14,28 +14,26 @@ class HelpService {
   }
 
   async createHelp(data) {
-    try {
-      const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
-      if (countHelp >= 5) {
-        throw "Limite máximo de pedidos atingido";
-      }
-
-      const createdHelp = await this.HelpRepository.create(data);
-
-      const user = await this.UserService.getUser({id: createdHelp.ownerId})
-      let help = JSON.parse(JSON.stringify(createdHelp));
-      help.user = [user]
-      const userCoords = {
-        longitude: user.location.coordinates[0],
-        latitude: user.location.coordinates[1]
-      }
-      const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
-      sendMessage(sendSocketMessageTo, 'new-help', help)
-
-      return createdHelp;
-    } catch (err) {
-      throw 'Não foi possível criar a ajuda';
+    const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
+    if (countHelp >= 5) {
+      throw "Limite máximo de pedidos atingido";
     }
+
+    const createdHelp = await this.HelpRepository.create(data);
+
+    const user = await this.UserService.getUser({ id: createdHelp.ownerId });
+    const userCoords = {
+      longitude: user.location.coordinates[0],
+      latitude: user.location.coordinates[1],
+    };
+    const sendSocketMessageTo = findConnections(
+      userCoords,
+      createdHelp.categoryId,
+      JSON.parse(JSON.stringify(user._id))
+    );
+    sendMessage(sendSocketMessageTo, "new-help", createdHelp);
+
+    return createdHelp;
   }
 
   async getHelpByid(id) {
