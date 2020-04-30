@@ -14,7 +14,7 @@ class HelpRepository extends BaseRepository {
 
     const aggregation = [
       {
-        $match: { _id: result._id},
+        $match: { _id: result._id },
       },
       {
         $lookup: {
@@ -22,6 +22,12 @@ class HelpRepository extends BaseRepository {
           localField: "ownerId",
           foreignField: "_id",
           as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
         },
       },
       {
@@ -34,10 +40,10 @@ class HelpRepository extends BaseRepository {
       },
     ];
 
-    const helps = await super.$listAggregate(aggregation)
-    return helps[0]
+    const helps = await super.$listAggregate(aggregation);
+    return helps[0];
+    
   }
-
   async getById(id) {
     return await super.$getById(id);
   }
