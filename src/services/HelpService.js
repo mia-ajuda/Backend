@@ -84,7 +84,7 @@ class HelpService {
 
     await this.HelpRepository.update(help);
 
-    const user = await this.UserService.getUser({id: help.ownerId})
+    const user = await this.UserService.getUser({ id: help.ownerId })
     const userCoords = {
       longitude: user.location.coordinates[0],
       latitude: user.location.coordinates[1]
@@ -118,7 +118,19 @@ class HelpService {
       help.status = "on_going";
       help.possibleHelpers = [];
       const result = await this.HelpRepository.update(help);
-      //this.NotificationMixin(helper.deviceId, title, body);
+      const notificationHistory = {
+        userId: helper.ownerId,
+        helpId: help._id,
+        title: title,
+        body: body,
+        notificationType: notificationTypesEnum.ajudaAceita,
+      };
+      try {
+        this.NotificationService.createNotification(notificationHistory);
+        this.NotificationMixin.sendNotification(helper.deviceId, title, body);
+      } catch (err) {
+        console.log("Não foi possível enviar a notificação!");
+      }
       return result;
     }
     throw "Ajudante não encontrado";
@@ -147,8 +159,8 @@ class HelpService {
       try {
         this.NotificationMixin.sendNotification(owner.deviceId, title, body);
         this.NotificationService.createNotification(notificationHistory);
-      } catch(err) {
-        throw "Não foi possível enviar a notificação!";
+      } catch (err) {
+         console.log("Não foi possível enviar a notificação!");
       }
 
       help.status = "finished";
@@ -183,12 +195,12 @@ class HelpService {
         body: body,
         notificationType: notificationTypesEnum.ajudaFinalizada,
       };
-  
+
       try {
         this.NotificationMixin.sendNotification(owner.deviceId, title, body);
         this.NotificationService.createNotification(notificationHistory);
-      } catch(err) {
-        throw "Não foi possível enviar a notificação!";
+      } catch (err) {
+        console.log ("Não foi possível enviar a notificação!");
       }
 
       help.status = "finished";
@@ -238,8 +250,8 @@ class HelpService {
     try {
       this.NotificationMixin.sendNotification(owner.deviceId, title, body);
       this.NotificationService.createNotification(notificationHistory);
-    } catch(err) {
-      throw "Não foi possível enviar a notificação!";
+    } catch (err) {
+       console.log("Não foi possível enviar a notificação!");
     }
 
     return result;
