@@ -173,10 +173,7 @@ class HelpRepository extends BaseRepository {
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
-    matchQuery = {
-      ...matchQuery,
-      $or: [{ status: "waiting" }, { helperId: ObjectId(id) }],
-    };
+    matchQuery.status = "waiting";
 
     if (categoryArray) {
       matchQuery.categoryId = {
