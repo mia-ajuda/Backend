@@ -109,6 +109,20 @@ class HelpService {
       throw "Ajuda já possui ajudante";
     }
 
+    
+    const ownerCoords = {
+      longitude: owner.location.coordinates[0],
+      latitude: owner.location.coordinates[1],
+    };
+    const sendSocketMessageTo = findConnections(
+      ownerCoords,
+      help.categoryId,
+      JSON.parse(JSON.stringify(owner._id))
+    );
+    sendMessage(sendSocketMessageTo, 'delete-help', help._id)
+
+
+
     const title = owner.name + " aceitou sua oferta de ajuda!";
     const body = "Sua oferta para " + help.title + " foi aceita!";
 
