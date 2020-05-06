@@ -42,7 +42,6 @@ class HelpRepository extends BaseRepository {
 
     const helps = await super.$listAggregate(aggregation);
     return helps[0];
-    
   }
   async getById(id) {
     return await super.$getById(id);
@@ -53,7 +52,11 @@ class HelpRepository extends BaseRepository {
   }
 
   async list(id, status, except, helper, categoryArray) {
-    const ownerId = except ? { $ne: ObjectId(id) } : helper ? null : ObjectId(id);
+    const ownerId = except
+      ? { $ne: ObjectId(id) }
+      : helper
+      ? null
+      : ObjectId(id);
     const helperId = helper ? ObjectId(id) : null;
     const query = {};
     if (status) query.status = status;
@@ -62,92 +65,95 @@ class HelpRepository extends BaseRepository {
     else query.ownerId = ownerId;
 
     const result = await super.$listAggregate([
-        {
-            $match: query,
+      {
+        $match: query,
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
-        {
-            $lookup: {
-            from: "user",
-            localField: "ownerId",
-            foreignField: "_id",
-            as: "user",
-            },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
         },
-        {
-            '$unwind': {
-            'path': '$user', 
-            'preserveNullAndEmptyArrays': false
-            }
-        }, {
-            '$addFields': {
-            'ageRisk': {
-                '$cond': [
-                {
-                    '$gt': [
-                    {
-                        '$subtract': [
-                        {
-                            '$year': '$$NOW'
-                        }, {
-                            '$year': '$user.birthday'
-                        }
-                        ]
-                    }, 60
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'cardio': {
-                '$cond': [
-                {
-                    '$in': [
-                    '$user.riskGroup', [
-                        [
-                        'doenCardio'
-                        ]
-                    ]
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'risco': {
-                '$size': '$user.riskGroup'
-            }
-            }
-        }, {
-            '$sort': {
-            'ageRisk': -1, 
-            'cardio': -1, 
-            'risco': -1
-            }
-        }, {
-            '$project': {
-                'ageRisk': 0, 
-                'cardio': 0, 
-                'risco': 0
-            }
+      },
+      {
+        $addFields: {
+          ageRisk: {
+            $cond: [
+              {
+                $gt: [
+                  {
+                    $subtract: [
+                      {
+                        $year: "$$NOW",
+                      },
+                      {
+                        $year: "$user.birthday",
+                      },
+                    ],
+                  },
+                  60,
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+          cardio: {
+            $cond: [
+              {
+                $in: ["$user.riskGroup", [["doenCardio"]]],
+              },
+              1,
+              0,
+            ],
+          },
+          risco: {
+            $size: "$user.riskGroup",
+          },
         },
-        {
-            '$lookup': {
-                'from': "category",
-                'localField': "categoryId",
-                'foreignField': "_id",
-                'as': "category",
-            },
+      },
+      {
+        $sort: {
+          ageRisk: -1,
+          cardio: -1,
+          risco: -1,
         },
-        {
-            '$lookup': {
-                'from': "user",
-                'localField': "possibleHelpers",
-                'foreignField': "_id",
-                'as': "possibleHelpers",
-            },
+      },
+      {
+        $project: {
+          ageRisk: 0,
+          cardio: 0,
+          risco: 0,
         },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
+        },
+      },
     ]);
     return result;
   }
 
-  async listNear(coords, except, id, categoryArray) {
+  async listNear(coords, except, id, categoryArray, userCoords) {
     const query = {};
     const location = {
       $near: {
@@ -181,87 +187,90 @@ class HelpRepository extends BaseRepository {
       };
     }
     const aggregation = [
-        {
-            $match: matchQuery,
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
-        {
-            $lookup: {
-            from: "user",
-            localField: "ownerId",
-            foreignField: "_id",
-            as: "user",
-            },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
         },
-        {
-            '$unwind': {
-            'path': '$user', 
-            'preserveNullAndEmptyArrays': false
-            }
-        }, {
-            '$addFields': {
-            'ageRisk': {
-                '$cond': [
-                {
-                    '$gt': [
-                    {
-                        '$subtract': [
-                        {
-                            '$year': '$$NOW'
-                        }, {
-                            '$year': '$user.birthday'
-                        }
-                        ]
-                    }, 60
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'cardio': {
-                '$cond': [
-                {
-                    '$in': [
-                    '$user.riskGroup', [
-                        [
-                        'doenCardio'
-                        ]
-                    ]
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'risco': {
-                '$size': '$user.riskGroup'
-            }
-            }
-        }, {
-            '$sort': {
-                'ageRisk': -1, 
-                'cardio': -1, 
-                'risco': -1
-            }
-        }, {
-            '$project': {
-                'ageRisk': 0, 
-                'cardio': 0, 
-                'risco': 0
-            }
+      },
+      {
+        $addFields: {
+          ageRisk: {
+            $cond: [
+              {
+                $gt: [
+                  {
+                    $subtract: [
+                      {
+                        $year: "$$NOW",
+                      },
+                      {
+                        $year: "$user.birthday",
+                      },
+                    ],
+                  },
+                  60,
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+          cardio: {
+            $cond: [
+              {
+                $in: ["$user.riskGroup", [["doenCardio"]]],
+              },
+              1,
+              0,
+            ],
+          },
+          risco: {
+            $size: "$user.riskGroup",
+          },
         },
-        {
-            '$lookup': {
-                'from': "category",
-                'localField': "categoryId",
-                'foreignField': "_id",
-                'as': "category",
-            },
+      },
+      {
+        $sort: {
+          ageRisk: -1,
+          cardio: -1,
+          risco: -1,
         },
-        {
-            '$lookup': {
-                'from': "user",
-                'localField': "possibleHelpers",
-                'foreignField': "_id",
-                'as': "possibleHelpers",
-            },
+      },
+      {
+        $project: {
+          ageRisk: 0,
+          cardio: 0,
+          risco: 0,
         },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
+        },
+      },
     ];
 
     try {
@@ -275,14 +284,18 @@ class HelpRepository extends BaseRepository {
           latitude: help.user.location.coordinates[1],
           longitude: help.user.location.coordinates[0],
         };
-        help.distance = getDistance(coordinates, helpCoords);
+        const userCoordinates = {
+          latitude: userCoords[1],
+          longitude: userCoords[0],
+        };
+        help.distance = getDistance(userCoordinates, helpCoords);
 
         return help;
       });
 
       return helpsWithDistance;
     } catch (error) {
-        throw error;
+      throw error;
     }
   }
 

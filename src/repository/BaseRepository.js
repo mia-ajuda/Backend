@@ -41,7 +41,6 @@ class BaseRepository {
    */
   async $getById(id, active = true) {
     let finalIdFormat = id;
-
     if (typeof id === "string") {
       try {
         finalIdFormat = mongoose.Types.ObjectId(id);
@@ -49,7 +48,6 @@ class BaseRepository {
         throw "Tamanho ou formato de id inválido";
       }
     }
-
     const query = {
       _id: finalIdFormat,
     };

@@ -1,9 +1,9 @@
 const HelpRepository = require("../repository/HelpRepository");
-const NotificationService = require('./NotificationService');
-const { notificationTypesEnum } = require('../models/Notification');
+const NotificationService = require("./NotificationService");
+const { notificationTypesEnum } = require("../models/Notification");
 const UserService = require("./UserService");
 const CategoryService = require("./CategoryService");
-const { findConnections, sendMessage } = require('../../websocket');
+const { findConnections, sendMessage } = require("../../websocket");
 const NotificationMixin = require("../utils/NotificationMixin");
 
 class HelpService {
@@ -20,7 +20,7 @@ class HelpService {
     if (countHelp >= 5) {
       throw "Limite máximo de pedidos atingido";
     }
-    
+
     await this.CategoryService.getCategoryByid(data.categoryId);
 
     const createdHelp = await this.HelpRepository.create(data);
@@ -65,12 +65,14 @@ class HelpService {
     return Helplist;
   }
 
-  async getNearHelpList(coords, except, id, categoryArray) {
+  async getNearHelpList(coords, except, id, categoryArray, userEmail) {
+    const user = await this.UserService.getUser({ email: userEmail });
     const Helplist = await this.HelpRepository.listNear(
       coords,
       except,
       id,
-      categoryArray
+      categoryArray,
+      user.location.coordinates
     );
     if (!Helplist) {
       throw new Error(
@@ -88,14 +90,18 @@ class HelpService {
 
     await this.HelpRepository.update(help);
 
-    const user = await this.UserService.getUser({ id: help.ownerId })
+    const user = await this.UserService.getUser({ id: help.ownerId });
     const userCoords = {
       longitude: user.location.coordinates[0],
-      latitude: user.location.coordinates[1]
-    }
+      latitude: user.location.coordinates[1],
+    };
     help = JSON.parse(JSON.stringify(help));
-    const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
-    sendMessage(sendSocketMessageTo, 'delete-help', id)
+    const sendSocketMessageTo = findConnections(
+      userCoords,
+      help.categoryId,
+      JSON.parse(JSON.stringify(user._id))
+    );
+    sendMessage(sendSocketMessageTo, "delete-help", id);
 
     return { message: `Help ${id} deleted!` };
   }
@@ -113,7 +119,6 @@ class HelpService {
       throw "Ajuda já possui ajudante";
     }
 
-    
     const ownerCoords = {
       longitude: owner.location.coordinates[0],
       latitude: owner.location.coordinates[1],
@@ -123,9 +128,7 @@ class HelpService {
       help.categoryId,
       JSON.parse(JSON.stringify(owner._id))
     );
-    sendMessage(sendSocketMessageTo, 'delete-help', help._id)
-
-
+    sendMessage(sendSocketMessageTo, "delete-help", help._id);
 
     const title = owner.name + " aceitou sua oferta de ajuda!";
     const body = "Sua oferta para " + help.title + " foi aceita!";
@@ -178,7 +181,7 @@ class HelpService {
         this.NotificationMixin.sendNotification(owner.deviceId, title, body);
         this.NotificationService.createNotification(notificationHistory);
       } catch (err) {
-         console.log("Não foi possível enviar a notificação!");
+        console.log("Não foi possível enviar a notificação!");
       }
 
       help.status = "finished";
@@ -218,7 +221,7 @@ class HelpService {
         this.NotificationMixin.sendNotification(owner.deviceId, title, body);
         this.NotificationService.createNotification(notificationHistory);
       } catch (err) {
-        console.log ("Não foi possível enviar a notificação!");
+        console.log("Não foi possível enviar a notificação!");
       }
 
       help.status = "finished";
@@ -273,7 +276,7 @@ class HelpService {
       this.NotificationMixin.sendNotification(owner.deviceId, title, body);
       this.NotificationService.createNotification(notificationHistory);
     } catch (err) {
-       console.log("Não foi possível enviar a notificação!");
+      console.log("Não foi possível enviar a notificação!");
     }
 
     return result;

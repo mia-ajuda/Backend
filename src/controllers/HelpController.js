@@ -1,5 +1,5 @@
 const HelpService = require("../services/HelpService");
-const UserService = require("../services/UserService")
+const UserService = require("../services/UserService");
 
 class HelpController {
   constructor() {
@@ -41,6 +41,7 @@ class HelpController {
     const temp = except ? "except" : helper ? "helper" : null;
     const id = temp ? req.query[`id.${temp}`] : req.query.id;
     const status = req.query.status || null;
+    const userEmail = req.decodedToken.email;
     const categoryArray = req.query.categoryId
       ? req.query.categoryId.split(",")
       : null;
@@ -60,7 +61,8 @@ class HelpController {
           coords,
           except,
           id,
-          categoryArray
+          categoryArray,
+          userEmail
         );
       } else {
         result = await this.HelpService.getHelpList(
@@ -105,57 +107,56 @@ class HelpController {
     }
   }
 
-  async ownerConfirmation(req ,res ,next){
-    const data = {...req.params};
+  async ownerConfirmation(req, res, next) {
+    const data = { ...req.params };
     try {
       const result = await this.HelpService.ownerConfirmation(data);
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({error:err});
+      res.status(400).json({ error: err });
       next();
     }
   }
-  
-    async chooseHelper(req,res,next){
-        const data = { ...req.params } 
 
-        try {
-            await this.HelpService.chooseHelper(data);
-            res.status(204).json();
-            next();
-        } catch (err) {
-            res.status(400).json({ error: err });
-        }
+  async chooseHelper(req, res, next) {
+    const data = { ...req.params };
+
+    try {
+      await this.HelpService.chooseHelper(data);
+      res.status(204).json();
+      next();
+    } catch (err) {
+      res.status(400).json({ error: err });
     }
-  
-    async addPossibleHelpers(req, res, next) {
-        const id = req.params.idHelp;
-        const idHelper = req.params.idHelper;
-    
-        try {
-            await this.HelpService.addPossibleHelpers(id, idHelper);
-            res.status(204).json();
-            next();
-        } catch (err) {
-            res.status(400).json({ error: err });
-            next();
-        }
+  }
+
+  async addPossibleHelpers(req, res, next) {
+    const id = req.params.idHelp;
+    const idHelper = req.params.idHelper;
+
+    try {
+      await this.HelpService.addPossibleHelpers(id, idHelper);
+      res.status(204).json();
+      next();
+    } catch (err) {
+      res.status(400).json({ error: err });
+      next();
     }
-    
-    async getToExpireList(req, res, next) {
-        try {
-            const result = await this.HelpService.getListToDelete()
-            res.status(200);
-            res.json(result);
-            next();
-        } catch (err) {
-            res.status(400);
-            res.json(err);
-            next();
-        }
+  }
+
+  async getToExpireList(req, res, next) {
+    try {
+      const result = await this.HelpService.getListToDelete();
+      res.status(200);
+      res.json(result);
+      next();
+    } catch (err) {
+      res.status(400);
+      res.json(err);
+      next();
     }
+  }
 }
-
 
 module.exports = HelpController;
