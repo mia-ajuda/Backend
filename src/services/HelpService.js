@@ -2,6 +2,7 @@ const HelpRepository = require("../repository/HelpRepository");
 const NotificationService = require('./NotificationService');
 const { notificationTypesEnum } = require('../models/Notification');
 const UserService = require("./UserService");
+const CategoryService = require("./CategoryService");
 const { findConnections, sendMessage } = require('../../websocket');
 const NotificationMixin = require("../utils/NotificationMixin");
 
@@ -9,6 +10,7 @@ class HelpService {
   constructor() {
     this.HelpRepository = new HelpRepository();
     this.UserService = new UserService();
+    this.CategoryService = new CategoryService();
     this.NotificationService = new NotificationService();
     this.NotificationMixin = new NotificationMixin();
   }
@@ -18,6 +20,8 @@ class HelpService {
     if (countHelp >= 5) {
       throw "Limite máximo de pedidos atingido";
     }
+    
+    await this.CategoryService.getCategoryByid(data.categoryId);
 
     const createdHelp = await this.HelpRepository.create(data);
 
