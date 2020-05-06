@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  version: v1
+  title: API MiaAjuda
+  description: API MiaAjuda
+  termsOfService: None
+  contact:
+    name: Mia Ajuda
+    url: 'https://github.com/mia-ajuda'
+    
+paths:
+  /user:
+    post:
+      tags:
+        - User
+      operationId: postUser
+      description: Rota de criação de usuário
+      parameters:
+        - name: hasUser
+          in: query
+          required: false
+          description: Parâmetro que indica se o usuário possui ou não um usuário. Só deve ser usado quando a conta for criada usando o Facebook ou gmail, onde o hasUser deve ser true
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUserRequest'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /user/getUser/{userId}:
+    get:
+      tags:
+        - User
+      operationId: GetApplicationById
+      description: Rota de obtenção de detalhes de uma aplicação por id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  
+components:
+  schemas:
+    
+    ############### User ################
+    
+    PostUserRequest:
+      type: object
+      properties:
+        groupRisc:
+          type: array
+          items: 
+            type: string
+        name: 
+          type: string
+        email: 
+          type: string
+        birthday:
+          type: string
+          format: date
+        cpf: 
+          type: string
+        photo: 
+          type: string
+        address:
+          type: object
+          properties:
+            cep: 
+              type: string
+            number: 
+              type: number
+            city: 
+              type: string
+            state: 
+              type: string
+            complement: 
+              type: string
+        password: 
+          type: string
+          minLength: 8
+        latitude: 
+          type: number
+        longitude: 
+          type: number
+        phone: 
+          type: string
+          minLength: 9
+    
+    PostUserResponse:
+      type: object
+      properties:
+        ismentalHealthProfessional: 
+          type: boolean
+        active: 
+          type: boolean
+        _id: 
+          type: string
+        location: 
+          type: object
+          properties:
+            coordinates: 
+              type: array
+              items:
+                type: number
+            id:
+              type: string
+            type:
+              type: string
+              default: "Point"
+        groupRisc:
+          type: array
+          items: 
+            type: string
+        name: 
+          type: string
+        email: 
+          type: string
+        birthday:
+          type: string
+          format: date
+        cpf: 
+          type: string
+        photo: 
+          type: string
+        address:
+          type: object
+          properties:
+            cep: 
+              type: string
+            number: 
+              type: number
+            city: 
+              type: string
+            state: 
+              type: string
+            complement: 
+              type: string
+        password: 
+          type: string
+        latitude: 
+          type: number
+        longitude: 
+          type: number
+        phone: 
+          type: string
+        
+    
+    ############# End User ##############
+   
+    ProblemDetailsResponse:
+      type: object
+      properties:
+        error:
+          type: string
+    IdResponse:
+      type: object
+      properties:
+        id:
+          type: string
