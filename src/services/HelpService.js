@@ -105,7 +105,6 @@ class HelpService {
     if (!help) {
       throw "Ajuda não encontrada";
     }
-    console.log(help.helperId)
     if (help.helperId) {
       throw "Ajuda já possui ajudante";
     }
