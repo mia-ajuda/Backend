@@ -6,8 +6,9 @@ info:
   termsOfService: None
   contact:
     name: Mia Ajuda
-    url: 'https://github.com/mia-ajuda'
-    
+    url: https://github.com/mia-ajuda
+servers:
+  - url: http://localhost:8000/api
 paths:
   /user:
     post:
@@ -46,7 +47,7 @@ paths:
       tags:
         - User
       operationId: GetApplicationById
-      description: Rota de obtenção de detalhes de uma aplicação por id
+      description: Rota para obter detalhes de um usuáiro por id
       parameters:
         - name: userId
           in: path
@@ -72,7 +73,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
-  
+  /category:
+    get:
+      tags:
+        - Category
+      operationId: GetAllCategory
+      description: Rota para obter as categorias dos pedidos de ajuda
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /category/{id}:
+    get:
+      tags:
+        - Category
+      operationId: GetCategoryById
+      description: Rota para obter detalhes de uma categoria
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
 components:
   schemas:
     
@@ -140,7 +186,7 @@ components:
               type: string
             type:
               type: string
-              default: "Point"
+              default: Point
         groupRisc:
           type: array
           items: 
@@ -180,7 +226,23 @@ components:
         
     
     ############# End User ##############
+
+    ########## Start Category ###########
+
+    CategoryResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        active:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
    
+    ########### End Category ###########
+
     ProblemDetailsResponse:
       type: object
       properties:
