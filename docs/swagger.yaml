@@ -30,7 +30,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PostUserRequest'
       responses:
-        '201':
+        '200':
           description: Success
           content:
             application/json:
@@ -42,12 +42,159 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
-  /user/getUser/{userId}:
-    get:
+    put:
+      security:
+        - bearerAuth: []
       tags:
         - User
-      operationId: GetApplicationById
-      description: Rota para obter detalhes de um usuáiro por id
+      operationId: putUser
+      description: Rota de edição de usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutUserRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: deleteUser
+      description: Rota de deleção lógica de usuário
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  '/user/adress':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: putUserAdress
+      description: Rota de edição de endereço do usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutUserAdressRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  '/user/location':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: putUserLocation
+      description: Rota de edição de localização do usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutUserLocationRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /user/getUser/{userId}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: GetUserByIdOrToken
+      description: Rota para obter detalhes de um usuário por id
       parameters:
         - name: userId
           in: path
@@ -60,19 +207,39 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IdResponse'
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
         '404':
           description: Aplicação não encontrada
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
-        '500':
-          description: Internal server error
+  /groupRisk:  
+    get:
+      tags:
+        - User
+      operationId: getGroupRisk
+      description: Rota de obtenção da lista de grupos de risco
+      responses:
+        '200':
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProblemDetailsResponse'
+                $ref: '#/components/schemas/GroupRiskResponse'
+                
   /category:
     get:
       tags:
@@ -165,7 +332,46 @@ components:
         phone: 
           type: string
           minLength: 9
+      required: 
+        - name
+        - email
+        - cpf
+        - password
     
+    PutUserRequest:
+      type: object
+      properties:
+        photo: 
+          type: string
+        name: 
+          type: string
+        notificationToken: 
+          type: string
+        deviceId:
+          type: string
+          
+    PutUserLocationRequest:
+      type: object
+      properties:
+        latutide: 
+          type: number
+        longitude: 
+          type: number
+    
+    PutUserAdressRequest:
+      type: object
+      properties:
+        cep: 
+          type: string
+        number: 
+          type: string
+        city: 
+          type: string
+        state: 
+          type: string
+        complement:
+          type: string
+          
     PostUserResponse:
       type: object
       properties:
@@ -223,7 +429,9 @@ components:
           type: number
         phone: 
           type: string
-        
+    
+    GroupRiskResponse:
+      type: object
     
     ############# End User ##############
 
@@ -242,6 +450,8 @@ components:
           type: string
    
     ########### End Category ###########
+    
+    ############## Misc ################
 
     ProblemDetailsResponse:
       type: object
@@ -253,3 +463,11 @@ components:
       properties:
         id:
           type: string
+          
+    ############## Misc ################
+    
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT   
