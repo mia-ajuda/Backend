@@ -239,6 +239,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GroupRiskResponse'
+  /checkUserExistence/{value}:  
+    get:
+      tags:
+        - User
+      operationId: checkUserExistence
+      description: Rota de verificação de existência de um usuário
+      parameters:
+        - name: value
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Um email ou cpf do usuário.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/checkUserExistenceResponse'
                 
   /category:
     get:
@@ -432,6 +452,31 @@ components:
     
     GroupRiskResponse:
       type: object
+      properties:
+        dc:
+          type: string
+          default: Doença respiratória
+          description: Doença respiratória
+        hiv: 
+          type: string
+          default: HIV
+          description: HIV
+        diab: 
+          type: string
+          default: Diabetes
+          description: Diabetes
+        hiperT: 
+          type: string
+          default: Hipertensão
+          description: Hipertensão
+        doenCardio: 
+          type: string
+          default: Doenças cardiovasculares
+          description: Doenças cardiovasculares
+          
+    checkUserExistenceResponse:
+      type: boolean
+        
     
     ############# End User ##############
 
@@ -457,11 +502,6 @@ components:
       type: object
       properties:
         error:
-          type: string
-    IdResponse:
-      type: object
-      properties:
-        id:
           type: string
           
     ############## Misc ################
