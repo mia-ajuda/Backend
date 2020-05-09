@@ -275,8 +275,20 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CategoryResponse'
-        '400':
-          description: Bad Request
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
           content:
             application/json:
               schema:
@@ -286,7 +298,7 @@ paths:
       tags:
         - Category
       operationId: GetCategoryById
-      description: Rota para obter detalhes de uma categoria
+      description: Rota para obter detalhes de uma categoria de pedido de ajuda
       parameters:
         - name: id
           in: path
@@ -300,12 +312,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CategoryResponse'
-        '400':
-          description: Bad Request
+        '401':
+          description: Usuário não autorizado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+
+  /notification/user/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Notification
+      operationId: getAllUserNotifications
+      description: Rota para obter o histórico de todas as notificações recebidas por um determinado usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucess
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+
 components:
   schemas:
     
@@ -495,6 +562,35 @@ components:
           type: string
    
     ########### End Category ###########
+
+    ######## Start Notification ########
+
+    NotificationResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        helpId:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        registerDate:
+          type: string
+          format: date
+        notificationType:
+          type: string
+          enum:
+            - ajudaRecebida
+            - ajudaAceita
+            - ajudaFinalizada
+            - ajudaExpirada
+            - outros
+
+    ######### End Notification #########
     
     ############## Misc ################
 
