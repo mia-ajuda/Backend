@@ -14,7 +14,7 @@ class UserService {
     if (data.cpf.length >= 11) {
       data.cpf = data.cpf.replace(/[-.]/g, "");
     }
-
+    data.email = data.email.toLowerCase();
     try {
       const createdUser = await this.userRepository.create(data);
 
@@ -44,9 +44,9 @@ class UserService {
       throw { id: "Nenhum identificador encontrado" };
     }
     let user;
+
     if (id) {
       user = await this.userRepository.getById(id);
-      console.log(user);
     } else {
       user = await this.userRepository.getUserByEmail(email);
     }
