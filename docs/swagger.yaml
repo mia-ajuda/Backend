@@ -259,7 +259,112 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/checkUserExistenceResponse'
-                
+  
+  /help:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: postHelp
+      description: Rota de criação de pedidos de ajuda
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostHelpRequest'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostHelpResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: getHelpById
+      description: Rota para obter detalhes de um pedido de ajuda pelo id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: deleteHelpById
+      description: Rota para deletar uma pedido de ajuda pelo id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deleteHelpResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+
   /category:
     get:
       tags:
@@ -546,6 +651,105 @@ components:
         
     
     ############# End User ##############
+
+    ############ Start Help #############
+
+    PostHelpRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        ownerId:
+          type: string
+      required: 
+        - title
+        - description
+        - categoryId
+        - ownerId
+    
+    PostHelpResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        status:
+          type: string
+          default: waiting
+        possibleHelpers:
+          type: array
+          default: []
+          items:
+            type: string
+        active:
+          type: boolean
+          default: true
+        title:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        ownerId:
+          type: string
+        creationDate:
+          type: string
+          format: date
+        user:
+          type: object
+          $ref: '#/components/schemas/PostUserResponse'
+        category:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/CategoryResponse'
+
+    GetHelpResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        status:
+          type: string
+          enum:
+            - waiting
+            - on_going
+            - finished
+            - owner_finished
+            - helper_finished
+        possibleHelpers:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+          default: true
+        title:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        ownerId:
+          type: string
+        creationDate:
+          type: string
+          format: date
+        finishedDate:
+          type: string
+          format: date
+    
+    deleteHelpResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Help 5eb33263b863da00274ce1be deleted!
+
+    ############# End Help ##############
 
     ########## Start Category ###########
 
