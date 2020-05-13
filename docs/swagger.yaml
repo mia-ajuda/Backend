@@ -364,6 +364,174 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/possibleHelpers/{idHelp}/{idHelper}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putPossibleHelpersById
+      description: Rota para inserção de possível ajudante (idHelper) em dada ajuda (idHelp)
+      parameters:
+        - name: idHelp
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: idHelper
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/chooseHelper/{idHelp}/{idHelper}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putChooseHelperById
+      description: Rota para confirmação de escolha de um ajudante (idHelper) em uma dada ajuda (idHelp)
+      parameters:
+        - name: idHelp
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: idHelper
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/helperConfirmation/{helpId}/{helperId}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putHelperConfirmationById
+      description: Rota para confirmação de ajuda efetivada (helpId) por dado ajudante (helperId)
+      parameters:
+        - name: helpId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: helperId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpResponse'
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/ownerConfirmation/{helpId}/{ownerId}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putOwnerConfirmationById
+      description: Rota para confirmação de ajuda efetivada (helpId) pelo dono do pedido de ajuda (ownerId)
+      parameters:
+        - name: helpId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ownerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpResponse'
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
 
   /category:
     get:
@@ -739,6 +907,9 @@ components:
           type: string
           format: date
         finishedDate:
+          type: string
+          format: date
+        helperId:
           type: string
           format: date
     
