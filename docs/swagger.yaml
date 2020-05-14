@@ -287,6 +287,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: getHelpByList
+      description: Rota de obtenção de ajudas próximas ou não
+      parameters:
+        - name: id.except
+          in: query
+          description: Caso queira obter as ajudas com exceção das que possuem o ajudante com o id especificado 
+          schema:
+            type: string
+        - name: id.helper
+          in: query
+          description: Caso queira obter as ajudas de um ajudante específico 
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Caso queira especificar o status das ajudas que serão retornadas 
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          description: Array de id de categorias separados por vírgula. 
+          schema:
+            type: string
+        - name: near
+          in: query
+          description: Booleano que indica se as ajudas devem estar próximas à determinada coordenada. Atributo obrigatório se coords for enviado.
+          schema:
+            type: boolean
+        - name: id.coords
+          in: query
+          description: Array de coordenadas separadas por vírgula.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpListResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Nenhum ajuda encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
   /help/{id}:
     get:
       security:
@@ -321,7 +384,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProblemDetailsResponse'
         '404':
-          description: Aplicação não encontrada
+          description: Ajuda não encontrada
           content:
             application/json:
               schema:
@@ -867,14 +930,57 @@ components:
           type: string
           format: date
         user:
-          type: object
           $ref: '#/components/schemas/PostUserResponse'
         category:
           type: array
           items:
-            type: object
             $ref: '#/components/schemas/CategoryResponse'
-
+    
+    GetHelpListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+          status:
+            type: string
+          possibleHelpers:
+            type: array
+            items:
+              $ref: '#/components/schemas/PostUserResponse'
+          active:
+            type: boolean
+          title: 
+            type: string
+          description: 
+            type: string
+          categoryId: 
+            type: string
+          ownerId:
+            type: string
+          finishedDate:
+            type: string
+            format: date
+          creationDate:
+            type: string
+            format: date
+          user:
+            $ref: '#/components/schemas/PostUserResponse'
+          category:
+            type: array
+            items:
+              type: object
+              properties:
+                _id:
+                  type: string
+                active:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+        
     GetHelpResponse:
       type: object
       properties:
