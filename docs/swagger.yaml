@@ -1,0 +1,1090 @@
+openapi: 3.0.0
+info:
+  version: v1
+  title: API MiaAjuda
+  description: API MiaAjuda
+  termsOfService: None
+  contact:
+    name: Mia Ajuda
+    url: https://github.com/mia-ajuda
+servers:
+  - url: http://localhost:8000/api
+paths:
+  /user:
+    post:
+      tags:
+        - User
+      operationId: postUser
+      description: Rota de criação de usuário
+      parameters:
+        - name: hasUser
+          in: query
+          required: false
+          description: Parâmetro que indica se o usuário possui ou não um usuário. Só deve ser usado quando a conta for criada usando o Facebook ou gmail, onde o hasUser deve ser true
+          schema:
+            type: boolean
+            default: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUserRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: putUser
+      description: Rota de edição de usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutUserRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: deleteUser
+      description: Rota de deleção lógica de usuário
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  '/user/adress':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: putUserAdress
+      description: Rota de edição de endereço do usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutUserAdressRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  '/user/location':
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: putUserLocation
+      description: Rota de edição de localização do usuário
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutUserLocationRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /user/getUser/{userId}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      operationId: GetUserByIdOrToken
+      description: Rota para obter detalhes de um usuário por id
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostUserResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /groupRisk:  
+    get:
+      tags:
+        - User
+      operationId: getGroupRisk
+      description: Rota de obtenção da lista de grupos de risco
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupRiskResponse'
+  /checkUserExistence/{value}:  
+    get:
+      tags:
+        - User
+      operationId: checkUserExistence
+      description: Rota de verificação de existência de um usuário
+      parameters:
+        - name: value
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Um email ou cpf do usuário.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/checkUserExistenceResponse'
+  
+  /help:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: postHelp
+      description: Rota de criação de pedidos de ajuda
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostHelpRequest'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostHelpResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: getHelpByList
+      description: Rota de obtenção de ajudas próximas ou não
+      parameters:
+        - name: id.except
+          in: query
+          description: Caso queira obter as ajudas com exceção das que possuem o ajudante com o id especificado 
+          schema:
+            type: string
+        - name: id.helper
+          in: query
+          description: Caso queira obter as ajudas de um ajudante específico 
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Caso queira especificar o status das ajudas que serão retornadas 
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          description: Array de id de categorias separados por vírgula. 
+          schema:
+            type: string
+        - name: near
+          in: query
+          description: Booleano que indica se as ajudas devem estar próximas à determinada coordenada. Atributo obrigatório se coords for enviado.
+          schema:
+            type: boolean
+        - name: id.coords
+          in: query
+          description: Array de coordenadas separadas por vírgula.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpListResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Nenhum ajuda encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: getHelpById
+      description: Rota para obter detalhes de um pedido de ajuda pelo id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Ajuda não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: deleteHelpById
+      description: Rota para deletar uma pedido de ajuda pelo id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deleteHelpResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/possibleHelpers/{idHelp}/{idHelper}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putPossibleHelpersById
+      description: Rota para inserção de possível ajudante (idHelper) em dada ajuda (idHelp)
+      parameters:
+        - name: idHelp
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: idHelper
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/chooseHelper/{idHelp}/{idHelper}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putChooseHelperById
+      description: Rota para confirmação de escolha de um ajudante (idHelper) em uma dada ajuda (idHelp)
+      parameters:
+        - name: idHelp
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: idHelper
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Success
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/helperConfirmation/{helpId}/{helperId}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putHelperConfirmationById
+      description: Rota para confirmação de ajuda efetivada (helpId) por dado ajudante (helperId)
+      parameters:
+        - name: helpId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: helperId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpResponse'
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /help/ownerConfirmation/{helpId}/{ownerId}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Help
+      operationId: putOwnerConfirmationById
+      description: Rota para confirmação de ajuda efetivada (helpId) pelo dono do pedido de ajuda (ownerId)
+      parameters:
+        - name: helpId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ownerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetHelpResponse'
+        '400':
+          description: Ocorreu um erro no processamento da solicitação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+
+  /category:
+    get:
+      tags:
+        - Category
+      operationId: GetAllCategory
+      description: Rota para obter as categorias dos pedidos de ajuda
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+  /category/{id}:
+    get:
+      tags:
+        - Category
+      operationId: GetCategoryById
+      description: Rota para obter detalhes de uma categoria de pedido de ajuda
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+
+  /notification/user/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Notification
+      operationId: getAllUserNotifications
+      description: Rota para obter o histórico de todas as notificações recebidas por um determinado usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucess
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationResponse'
+        '401':
+          description: Usuário não autorizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '403':
+          description: Usuário não está autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+        '404':
+          description: Aplicação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetailsResponse'
+
+components:
+  schemas:
+    
+    ############### User ################
+    
+    PostUserRequest:
+      type: object
+      properties:
+        groupRisc:
+          type: array
+          items: 
+            type: string
+        name: 
+          type: string
+        email: 
+          type: string
+        birthday:
+          type: string
+          format: date
+        cpf: 
+          type: string
+        photo: 
+          type: string
+        address:
+          type: object
+          properties:
+            cep: 
+              type: string
+            number: 
+              type: number
+            city: 
+              type: string
+            state: 
+              type: string
+            complement: 
+              type: string
+        password: 
+          type: string
+          minLength: 8
+        latitude: 
+          type: number
+        longitude: 
+          type: number
+        phone: 
+          type: string
+          minLength: 9
+      required: 
+        - name
+        - email
+        - cpf
+        - password
+    
+    PutUserRequest:
+      type: object
+      properties:
+        photo: 
+          type: string
+        name: 
+          type: string
+        notificationToken: 
+          type: string
+        deviceId:
+          type: string
+          
+    PutUserLocationRequest:
+      type: object
+      properties:
+        latutide: 
+          type: number
+        longitude: 
+          type: number
+    
+    PutUserAdressRequest:
+      type: object
+      properties:
+        cep: 
+          type: string
+        number: 
+          type: string
+        city: 
+          type: string
+        state: 
+          type: string
+        complement:
+          type: string
+          
+    PostUserResponse:
+      type: object
+      properties:
+        ismentalHealthProfessional: 
+          type: boolean
+        active: 
+          type: boolean
+        _id: 
+          type: string
+        location: 
+          type: object
+          properties:
+            coordinates: 
+              type: array
+              items:
+                type: number
+            id:
+              type: string
+            type:
+              type: string
+              default: Point
+        groupRisc:
+          type: array
+          items: 
+            type: string
+        name: 
+          type: string
+        email: 
+          type: string
+        birthday:
+          type: string
+          format: date
+        cpf: 
+          type: string
+        photo: 
+          type: string
+        address:
+          type: object
+          properties:
+            cep: 
+              type: string
+            number: 
+              type: number
+            city: 
+              type: string
+            state: 
+              type: string
+            complement: 
+              type: string
+        password: 
+          type: string
+        latitude: 
+          type: number
+        longitude: 
+          type: number
+        phone: 
+          type: string
+    
+    GroupRiskResponse:
+      type: object
+      properties:
+        dc:
+          type: string
+          default: Doença respiratória
+          description: Doença respiratória
+        hiv: 
+          type: string
+          default: HIV
+          description: HIV
+        diab: 
+          type: string
+          default: Diabetes
+          description: Diabetes
+        hiperT: 
+          type: string
+          default: Hipertensão
+          description: Hipertensão
+        doenCardio: 
+          type: string
+          default: Doenças cardiovasculares
+          description: Doenças cardiovasculares
+          
+    checkUserExistenceResponse:
+      type: boolean
+        
+    
+    ############# End User ##############
+
+    ############ Start Help #############
+
+    PostHelpRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        ownerId:
+          type: string
+      required: 
+        - title
+        - description
+        - categoryId
+        - ownerId
+    
+    PostHelpResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        status:
+          type: string
+          default: waiting
+        possibleHelpers:
+          type: array
+          default: []
+          items:
+            type: string
+        active:
+          type: boolean
+          default: true
+        title:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        ownerId:
+          type: string
+        creationDate:
+          type: string
+          format: date
+        user:
+          $ref: '#/components/schemas/PostUserResponse'
+        category:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryResponse'
+    
+    GetHelpListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+          status:
+            type: string
+          possibleHelpers:
+            type: array
+            items:
+              $ref: '#/components/schemas/PostUserResponse'
+          active:
+            type: boolean
+          title: 
+            type: string
+          description: 
+            type: string
+          categoryId: 
+            type: string
+          ownerId:
+            type: string
+          finishedDate:
+            type: string
+            format: date
+          creationDate:
+            type: string
+            format: date
+          user:
+            $ref: '#/components/schemas/PostUserResponse'
+          category:
+            type: array
+            items:
+              type: object
+              properties:
+                _id:
+                  type: string
+                active:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+        
+    GetHelpResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        status:
+          type: string
+          enum:
+            - waiting
+            - on_going
+            - finished
+            - owner_finished
+            - helper_finished
+        possibleHelpers:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+          default: true
+        title:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+        ownerId:
+          type: string
+        creationDate:
+          type: string
+          format: date
+        finishedDate:
+          type: string
+          format: date
+        helperId:
+          type: string
+          format: date
+    
+    deleteHelpResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Help 5eb33263b863da00274ce1be deleted!
+
+    ############# End Help ##############
+
+    ########## Start Category ###########
+
+    CategoryResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        active:
+          type: boolean
+        name:
+          type: string
+        description:
+          type: string
+   
+    ########### End Category ###########
+
+    ######## Start Notification ########
+
+    NotificationResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        helpId:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        registerDate:
+          type: string
+          format: date
+        notificationType:
+          type: string
+          enum:
+            - ajudaRecebida
+            - ajudaAceita
+            - ajudaFinalizada
+            - ajudaExpirada
+            - outros
+
+    ######### End Notification #########
+    
+    ############## Misc ################
+
+    ProblemDetailsResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          
+    ############## Misc ################
+    
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT   
