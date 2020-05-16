@@ -286,23 +286,64 @@ class HelpRepository extends BaseRepository {
     }
   }
 
-  async countDocuments(id) {
-    const query = {};
-    query.ownerId = id;
-    query.active = true;
-    const result = await super.$countDocuments(query);
+    async countDocuments(id) {
+        const query = {};
+        query.ownerId = id;
+        query.active = true;
+        const result = await super.$countDocuments(query);
 
-    return result;
-  }
+        return result;
+    }
 
-  async listToExpire() {
-    const date = new Date();
-    date.setDate(date.getDate() - 14);
-    return await super.$list({
-      creationDate: { $lt: new Date(date) },
-      active: true,
-    });
-  }
+    async listToExpire() {
+        const date = new Date();
+        date.setDate(date.getDate() - 14);
+        
+        return await super.$list({
+            creationDate: { $lt: new Date(date) },
+            active: true,
+        });
+    }
+
+    async getHelpListByStatus(ownerId, statusList) {
+        const helpList = await super.$listAggregate(
+            [
+                {
+                    '$match': {
+                    'ownerId': ObjectId(ownerId), 
+                    'status': {
+                        '$in': [...statusList]
+                    }
+                    }
+                }, {
+                    '$lookup': {
+                    'from': 'user', 
+                    'localField': 'possibleHelpers', 
+                    'foreignField': '_id', 
+                    'as': 'possibleHelpers'
+                    }
+                }, {
+                    '$lookup': {
+                    'from': 'user', 
+                    'localField': 'ownerId', 
+                    'foreignField': '_id', 
+                    'as': 'user'
+                    }
+                }, {
+                    '$unwind': {
+                    'path': '$user', 
+                    'preserveNullAndEmptyArrays': false
+                    }
+                }
+            ]
+        )
+
+        if (helpList.length > 0) {
+            return helpList
+        }
+
+        return false
+    }
 }
 
 module.exports = HelpRepository;
