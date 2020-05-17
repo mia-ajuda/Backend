@@ -310,29 +310,37 @@ class HelpRepository extends BaseRepository {
             [
                 {
                     '$match': {
-                    'ownerId': ObjectId(ownerId), 
-                    'status': {
-                        '$in': [...statusList]
-                    }
-                    }
-                }, {
-                    '$lookup': {
-                    'from': 'user', 
-                    'localField': 'possibleHelpers', 
-                    'foreignField': '_id', 
-                    'as': 'possibleHelpers'
+                        'ownerId': ObjectId(ownerId), 
+                        'status': {
+                            '$in': [...statusList]
+                        },
+                        'active': true
                     }
                 }, {
                     '$lookup': {
-                    'from': 'user', 
-                    'localField': 'ownerId', 
-                    'foreignField': '_id', 
-                    'as': 'user'
+                        'from': 'user', 
+                        'localField': 'possibleHelpers', 
+                        'foreignField': '_id', 
+                        'as': 'possibleHelpers'
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'user', 
+                        'localField': 'ownerId', 
+                        'foreignField': '_id', 
+                        'as': 'user'
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'category',
+                        'localField': 'categoryId',
+                        'foreignField': '_id',
+                        'as': 'categoryId'
                     }
                 }, {
                     '$unwind': {
-                    'path': '$user', 
-                    'preserveNullAndEmptyArrays': false
+                        'path': '$user', 
+                        'preserveNullAndEmptyArrays': false
                     }
                 }
             ]
