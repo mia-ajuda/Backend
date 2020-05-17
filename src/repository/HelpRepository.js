@@ -290,6 +290,7 @@ class HelpRepository extends BaseRepository {
     const query = {};
     query.ownerId = id;
     query.active = true;
+    query.status = {$ne:"finished"};
     const result = await super.$countDocuments(query);
 
     return result;
