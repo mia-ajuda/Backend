@@ -335,7 +335,7 @@ class HelpRepository extends BaseRepository {
                         'from': 'category',
                         'localField': 'categoryId',
                         'foreignField': '_id',
-                        'as': 'categoryId'
+                        'as': 'category'
                     }
                 }, {
                     '$unwind': {
@@ -345,12 +345,8 @@ class HelpRepository extends BaseRepository {
                 }
             ]
         )
-
-        if (helpList.length > 0) {
             return helpList
-        }
 
-        return false
     }
 }
 

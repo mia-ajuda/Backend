@@ -92,7 +92,7 @@ class HelpService {
         const helpList = await this.HelpRepository.getHelpListByStatus(ownerId, statusList);
 
         if (!helpList) {
-            throw "Nenhuma ajuda encontrada para os dados especificados"
+            throw "Ocorreu um erro ao procurar as ajudas por status"
         }
 
         return helpList
