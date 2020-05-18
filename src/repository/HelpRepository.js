@@ -310,7 +310,7 @@ class HelpRepository extends BaseRepository {
             [
                 {
                     '$match': {
-                        [helper? 'helperid': 'ownerId']: ObjectId(userId), 
+                        [helper? 'helperId': 'ownerId']: ObjectId(userId), 
                         'status': {
                             '$in': [...statusList]
                         },
