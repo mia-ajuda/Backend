@@ -81,15 +81,19 @@ class HelpController {
     }
 
     async getHelpListByStatus(req,res, next) {
-        const { ownerId } = req.params
+        const { userId } = req.params
 
         /* A lista de status deve vir numa query  separada por vírgulas
          * Ex.: (...)?statusList=on_going,finished
          */
         const statusList = req.query.statusList.split(",")
 
+        // Por padrão é feito uma agregação procurando por um ownerId. Caso queira procurar por um helperId é necessário uma query
+        const helper = req.query.helper === 'true'
+
+
         try {
-            const result = await this.HelpService.getHelpListByStatus({ownerId, statusList});
+            const result = await this.HelpService.getHelpListByStatus({userId, statusList, helper});
 
             res.status(200).json(result);
             next();
