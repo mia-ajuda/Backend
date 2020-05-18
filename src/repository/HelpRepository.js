@@ -305,12 +305,12 @@ class HelpRepository extends BaseRepository {
         });
     }
 
-    async getHelpListByStatus(ownerId, statusList, helper) {
+    async getHelpListByStatus(userId, statusList, helper) {
         const helpList = await super.$listAggregate(
             [
                 {
                     '$match': {
-                        [helper? 'helperid': 'ownerId']: ObjectId(ownerId), 
+                        [helper? 'helperid': 'ownerId']: ObjectId(userId), 
                         'status': {
                             '$in': [...statusList]
                         },

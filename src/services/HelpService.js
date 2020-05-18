@@ -81,7 +81,7 @@ class HelpService {
         return Helplist;
     }
 
-    async getHelpListByStatus({ownerId, statusList, helper = false}) {
+    async getHelpListByStatus({userId, statusList, helper = false}) {
         
         const checkHelpStatusExistence = statusList.filter(item => !Object.values(helpStatusEnum).includes(item))
 
@@ -89,7 +89,7 @@ class HelpService {
             throw "Um dos status informados é ínvalido."
         }
         
-        const helpList = await this.HelpRepository.getHelpListByStatus(ownerId, statusList, helper);
+        const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
 
         return helpList
     }
