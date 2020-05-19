@@ -10,7 +10,6 @@ services:
         command: "yarn start"
         ports:
             - "8000:8000"
-            - "9229:9229"
         depends_on:
             - mongo
         volumes:
