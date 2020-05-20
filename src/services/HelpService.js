@@ -52,6 +52,7 @@ class HelpService {
         return Help;
     }
 
+
     async getHelpList(id, status, category, except, helper) {
         const Helplist = await this.HelpRepository.list(
             id,
@@ -81,19 +82,6 @@ class HelpService {
         return Helplist;
     }
 
-    async getHelpListByStatus({userId, statusList, helper = false}) {
-        
-        const checkHelpStatusExistence = statusList.filter(item => !Object.values(helpStatusEnum).includes(item))
-
-        if (checkHelpStatusExistence.length > 0) {
-            throw "Um dos status informados é ínvalido."
-        }
-        
-        const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
-
-        return helpList
-    }
-
     async deleteHelpLogically(id) {
         let help = await this.getHelpByid(id);
 
@@ -112,6 +100,20 @@ class HelpService {
 
         return { message: `Help ${id} deleted!` };
     }
+    
+    async getHelpListByStatus({userId, statusList, helper = false}) {
+        
+        const checkHelpStatusExistence = statusList.filter(item => !Object.values(helpStatusEnum).includes(item))
+
+        if (checkHelpStatusExistence.length > 0) {
+            throw "Um dos status informados é ínvalido."
+        }
+        
+        const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
+
+        return helpList
+    }
+
 
     async chooseHelper(data) {
         const idHelper = data.idHelper;

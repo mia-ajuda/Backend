@@ -286,11 +286,12 @@ class HelpRepository extends BaseRepository {
     }
   }
 
-    async countDocuments(id) {
-        const query = {};
-        query.ownerId = id;
-        query.active = true;
-        const result = await super.$countDocuments(query);
+  async countDocuments(id) {
+    const query = {};
+    query.ownerId = id;
+    query.active = true;
+    query.status = {$ne:"finished"};
+    const result = await super.$countDocuments(query);
 
         return result;
     }
