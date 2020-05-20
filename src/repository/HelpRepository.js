@@ -293,17 +293,62 @@ class HelpRepository extends BaseRepository {
     query.status = {$ne:"finished"};
     const result = await super.$countDocuments(query);
 
-    return result;
-  }
+        return result;
+    }
 
-  async listToExpire() {
-    const date = new Date();
-    date.setDate(date.getDate() - 14);
-    return await super.$list({
-      creationDate: { $lt: new Date(date) },
-      active: true,
-    });
-  }
+    async listToExpire() {
+        const date = new Date();
+        date.setDate(date.getDate() - 14);
+        
+        return await super.$list({
+            creationDate: { $lt: new Date(date) },
+            active: true,
+        });
+    }
+
+    async getHelpListByStatus(userId, statusList, helper) {
+        const helpList = await super.$listAggregate(
+            [
+                {
+                    '$match': {
+                        [helper? 'helperId': 'ownerId']: ObjectId(userId), 
+                        'status': {
+                            '$in': [...statusList]
+                        },
+                        'active': true
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'user', 
+                        'localField': 'possibleHelpers', 
+                        'foreignField': '_id', 
+                        'as': 'possibleHelpers'
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'user', 
+                        'localField': 'ownerId', 
+                        'foreignField': '_id', 
+                        'as': 'user'
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'category',
+                        'localField': 'categoryId',
+                        'foreignField': '_id',
+                        'as': 'category'
+                    }
+                }, {
+                    '$unwind': {
+                        'path': '$user', 
+                        'preserveNullAndEmptyArrays': false
+                    }
+                }
+            ]
+        )
+            return helpList
+
+    }
 }
 
 module.exports = HelpRepository;
