@@ -93,7 +93,7 @@ class UserController {
             res.status(200).json(result);
             next();
         } catch (err) {
-            res.status(400).json({ error: err });
+            res.status(404).json({ error: err });
             next();
         }
     }
@@ -122,15 +122,15 @@ class UserController {
             res.status(200).json(result);
             next();
         } catch (err) {
-            res.status(400).json({ error: err });
+            res.status(404).json({ error: err });
             next();
         }
     }
 
-  async getUserGroupRiskList(req, res, next) {
-    res.status(200).json(riskGroups);
-    next();
-  }
+    async getUserGroupRiskList(req, res, next) {
+        res.status(200).json(riskGroups);
+        next();
+    }
 }
 
 module.exports = UserController;

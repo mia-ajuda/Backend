@@ -2,7 +2,7 @@ function deg2rad(deg) {
   return deg * (Math.PI / 180);
 }
 
-function getDistance(centerCoordinates, pointCoordinates) {
+function calculateDistance(centerCoordinates, pointCoordinates) {
   const radius = 6371;
 
   const { latitude: lat1, longitude: lon1 } = centerCoordinates;
@@ -21,12 +21,25 @@ function getDistance(centerCoordinates, pointCoordinates) {
   const center = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   let distance = radius * center;
 
-  distance =
-    distance > 1
-      ? `${distance.toFixed(2)} km`
-      : `${(distance * 1000).toFixed(0)} m`;
+  return distance;
+}
+
+function convertDistance(distance) {
+  return distance > 1
+  ? `${distance.toFixed(2)} km`
+  : `${(distance * 1000).toFixed(0)} m`;
+}
+
+function getDistance(centerCoordinates, pointCoordinates) {
+  let distance = calculateDistance(centerCoordinates, pointCoordinates)
+
+  distance = convertDistance(distance)
 
   return distance;
 }
 
-module.exports = getDistance;
+module.exports = {
+  calculateDistance,
+  getDistance,
+  convertDistance
+};

@@ -2,7 +2,7 @@ const BaseRepository = require("./BaseRepository");
 const HelpSchema = require("../models/Help");
 const UserSchema = require("../models/User");
 const ObjectId = require("mongodb").ObjectID;
-const calculateDistance = require("../utils/geolocation/calculateDistance");
+const { getDistance } = require("../utils/geolocation/calculateDistance");
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -10,9 +10,40 @@ class HelpRepository extends BaseRepository {
   }
 
   async create(help) {
-    return await super.$save(help);
-  }
+    const result = await super.$save(help);
 
+    const aggregation = [
+      {
+        $match: { _id: result._id },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+    ];
+
+    const helps = await super.$listAggregate(aggregation);
+    return helps[0];
+    
+  }
   async getById(id) {
     return await super.$getById(id);
   }
@@ -22,16 +53,97 @@ class HelpRepository extends BaseRepository {
   }
 
   async list(id, status, except, helper, categoryArray) {
-    const ownerId = except ? { $ne: id } : helper ? null : id;
-    const helperId = helper ? id : null;
+    const ownerId = except ? { $ne: ObjectId(id) } : helper ? null : ObjectId(id);
+    const helperId = helper ? ObjectId(id) : null;
     const query = {};
     if (status) query.status = status;
     if (categoryArray) query.categoryId = { $in: categoryArray };
     if (helper) query.helperId = helperId;
     else query.ownerId = ownerId;
 
-    const populate = "category";
-    const result = await super.$list(query, populate);
+    const result = await super.$listAggregate([
+        {
+            $match: query,
+        },
+        {
+            $lookup: {
+            from: "user",
+            localField: "ownerId",
+            foreignField: "_id",
+            as: "user",
+            },
+        },
+        {
+            '$unwind': {
+            'path': '$user', 
+            'preserveNullAndEmptyArrays': false
+            }
+        }, {
+            '$addFields': {
+            'ageRisk': {
+                '$cond': [
+                {
+                    '$gt': [
+                    {
+                        '$subtract': [
+                        {
+                            '$year': '$$NOW'
+                        }, {
+                            '$year': '$user.birthday'
+                        }
+                        ]
+                    }, 60
+                    ]
+                }, 1, 0
+                ]
+            }, 
+            'cardio': {
+                '$cond': [
+                {
+                    '$in': [
+                    '$user.riskGroup', [
+                        [
+                        'doenCardio'
+                        ]
+                    ]
+                    ]
+                }, 1, 0
+                ]
+            }, 
+            'risco': {
+                '$size': '$user.riskGroup'
+            }
+            }
+        }, {
+            '$sort': {
+            'ageRisk': -1, 
+            'cardio': -1, 
+            'risco': -1
+            }
+        }, {
+            '$project': {
+                'ageRisk': 0, 
+                'cardio': 0, 
+                'risco': 0
+            }
+        },
+        {
+            '$lookup': {
+                'from': "category",
+                'localField': "categoryId",
+                'foreignField': "_id",
+                'as': "category",
+            },
+        },
+        {
+            '$lookup': {
+                'from': "user",
+                'localField': "possibleHelpers",
+                'foreignField': "_id",
+                'as': "possibleHelpers",
+            },
+        },
+    ]);
     return result;
   }
 
@@ -43,7 +155,7 @@ class HelpRepository extends BaseRepository {
           type: "Point",
           coordinates: coords,
         },
-        $maxDistance: 20000,
+        $maxDistance: 2000,
       },
     };
     const ownerId = except ? { $ne: id } : null;
@@ -61,10 +173,7 @@ class HelpRepository extends BaseRepository {
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
-    matchQuery = {
-      ...matchQuery,
-      $or: [{ status: "waiting" }, { helperId: ObjectId(id) }],
-    };
+    matchQuery.status = "waiting";
 
     if (categoryArray) {
       matchQuery.categoryId = {
@@ -72,25 +181,87 @@ class HelpRepository extends BaseRepository {
       };
     }
     const aggregation = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: "user",
-          localField: "ownerId",
-          foreignField: "_id",
-          as: "user",
+        {
+            $match: matchQuery,
         },
-      },
-      {
-        $lookup: {
-          from: "category",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "category",
+        {
+            $lookup: {
+            from: "user",
+            localField: "ownerId",
+            foreignField: "_id",
+            as: "user",
+            },
         },
-      },
+        {
+            '$unwind': {
+            'path': '$user', 
+            'preserveNullAndEmptyArrays': false
+            }
+        }, {
+            '$addFields': {
+            'ageRisk': {
+                '$cond': [
+                {
+                    '$gt': [
+                    {
+                        '$subtract': [
+                        {
+                            '$year': '$$NOW'
+                        }, {
+                            '$year': '$user.birthday'
+                        }
+                        ]
+                    }, 60
+                    ]
+                }, 1, 0
+                ]
+            }, 
+            'cardio': {
+                '$cond': [
+                {
+                    '$in': [
+                    '$user.riskGroup', [
+                        [
+                        'doenCardio'
+                        ]
+                    ]
+                    ]
+                }, 1, 0
+                ]
+            }, 
+            'risco': {
+                '$size': '$user.riskGroup'
+            }
+            }
+        }, {
+            '$sort': {
+                'ageRisk': -1, 
+                'cardio': -1, 
+                'risco': -1
+            }
+        }, {
+            '$project': {
+                'ageRisk': 0, 
+                'cardio': 0, 
+                'risco': 0
+            }
+        },
+        {
+            '$lookup': {
+                'from': "category",
+                'localField': "categoryId",
+                'foreignField': "_id",
+                'as': "category",
+            },
+        },
+        {
+            '$lookup': {
+                'from': "user",
+                'localField': "possibleHelpers",
+                'foreignField': "_id",
+                'as': "possibleHelpers",
+            },
+        },
     ];
 
     try {
@@ -101,17 +272,17 @@ class HelpRepository extends BaseRepository {
           longitude: coords[0],
         };
         const helpCoords = {
-          latitude: help.user[0].location.coordinates[1],
-          longitude: help.user[0].location.coordinates[0],
+          latitude: help.user.location.coordinates[1],
+          longitude: help.user.location.coordinates[0],
         };
-        help.distance = calculateDistance(coordinates, helpCoords);
+        help.distance = getDistance(coordinates, helpCoords);
 
         return help;
       });
 
       return helpsWithDistance;
     } catch (error) {
-      console.log(error);
+        throw error;
     }
   }
 
@@ -119,19 +290,65 @@ class HelpRepository extends BaseRepository {
     const query = {};
     query.ownerId = id;
     query.active = true;
+    query.status = {$ne:"finished"};
     const result = await super.$countDocuments(query);
 
-    return result;
-  }
+        return result;
+    }
 
-  async listToExpire() {
-    const date = new Date();
-    date.setDate(date.getDate() - 14);
-    return await super.$list({
-      creationDate: { $lt: new Date(date) },
-      active: true,
-    });
-  }
+    async listToExpire() {
+        const date = new Date();
+        date.setDate(date.getDate() - 14);
+        
+        return await super.$list({
+            creationDate: { $lt: new Date(date) },
+            active: true,
+        });
+    }
+
+    async getHelpListByStatus(userId, statusList, helper) {
+        const helpList = await super.$listAggregate(
+            [
+                {
+                    '$match': {
+                        [helper? 'helperId': 'ownerId']: ObjectId(userId), 
+                        'status': {
+                            '$in': [...statusList]
+                        },
+                        'active': true
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'user', 
+                        'localField': 'possibleHelpers', 
+                        'foreignField': '_id', 
+                        'as': 'possibleHelpers'
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'user', 
+                        'localField': 'ownerId', 
+                        'foreignField': '_id', 
+                        'as': 'user'
+                    }
+                }, {
+                    '$lookup': {
+                        'from': 'category',
+                        'localField': 'categoryId',
+                        'foreignField': '_id',
+                        'as': 'category'
+                    }
+                }, {
+                    '$unwind': {
+                        'path': '$user', 
+                        'preserveNullAndEmptyArrays': false
+                    }
+                }
+            ]
+        )
+            return helpList
+
+    }
 }
 
 module.exports = HelpRepository;

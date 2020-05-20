@@ -6,6 +6,12 @@ class NotificationRepository extends BaseRepository {
         super(NotificationSchema);
     }
 
+    async create(notification) {
+        const result = await super.$save(notification);
+        
+        return result;
+    }
+
     async getUserNotificationsById(id) {
         const result = await NotificationSchema.find({"userId": id})
             .sort({"registerDate": -1})
