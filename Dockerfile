@@ -6,3 +6,7 @@ WORKDIR /app
 COPY ./ ./
 # Instala as dependências do projeto
 RUN yarn install
+
+COPY ./ ./
+
+CMD ["yarn", "start"]

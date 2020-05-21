@@ -7,7 +7,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: "yarn start"
         ports:
             - "8000:8000"
         depends_on:
