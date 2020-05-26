@@ -42,7 +42,6 @@ class HelpRepository extends BaseRepository {
 
     const helps = await super.$listAggregate(aggregation);
     return helps[0];
-    
   }
   async getById(id) {
     return await super.$getById(id);
@@ -53,7 +52,11 @@ class HelpRepository extends BaseRepository {
   }
 
   async list(id, status, except, helper, categoryArray) {
-    const ownerId = except ? { $ne: ObjectId(id) } : helper ? null : ObjectId(id);
+    const ownerId = except
+      ? { $ne: ObjectId(id) }
+      : helper
+      ? null
+      : ObjectId(id);
     const helperId = helper ? ObjectId(id) : null;
     const query = {};
     if (status) query.status = status;
@@ -62,87 +65,90 @@ class HelpRepository extends BaseRepository {
     else query.ownerId = ownerId;
 
     const result = await super.$listAggregate([
-        {
-            $match: query,
+      {
+        $match: query,
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
-        {
-            $lookup: {
-            from: "user",
-            localField: "ownerId",
-            foreignField: "_id",
-            as: "user",
-            },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
         },
-        {
-            '$unwind': {
-            'path': '$user', 
-            'preserveNullAndEmptyArrays': false
-            }
-        }, {
-            '$addFields': {
-            'ageRisk': {
-                '$cond': [
-                {
-                    '$gt': [
-                    {
-                        '$subtract': [
-                        {
-                            '$year': '$$NOW'
-                        }, {
-                            '$year': '$user.birthday'
-                        }
-                        ]
-                    }, 60
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'cardio': {
-                '$cond': [
-                {
-                    '$in': [
-                    '$user.riskGroup', [
-                        [
-                        'doenCardio'
-                        ]
-                    ]
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'risco': {
-                '$size': '$user.riskGroup'
-            }
-            }
-        }, {
-            '$sort': {
-            'ageRisk': -1, 
-            'cardio': -1, 
-            'risco': -1
-            }
-        }, {
-            '$project': {
-                'ageRisk': 0, 
-                'cardio': 0, 
-                'risco': 0
-            }
+      },
+      {
+        $addFields: {
+          ageRisk: {
+            $cond: [
+              {
+                $gt: [
+                  {
+                    $subtract: [
+                      {
+                        $year: "$$NOW",
+                      },
+                      {
+                        $year: "$user.birthday",
+                      },
+                    ],
+                  },
+                  60,
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+          cardio: {
+            $cond: [
+              {
+                $in: ["$user.riskGroup", [["doenCardio"]]],
+              },
+              1,
+              0,
+            ],
+          },
+          risco: {
+            $size: "$user.riskGroup",
+          },
         },
-        {
-            '$lookup': {
-                'from': "category",
-                'localField': "categoryId",
-                'foreignField': "_id",
-                'as': "category",
-            },
+      },
+      {
+        $sort: {
+          ageRisk: -1,
+          cardio: -1,
+          risco: -1,
         },
-        {
-            '$lookup': {
-                'from': "user",
-                'localField': "possibleHelpers",
-                'foreignField': "_id",
-                'as': "possibleHelpers",
-            },
+      },
+      {
+        $project: {
+          ageRisk: 0,
+          cardio: 0,
+          risco: 0,
         },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
+        },
+      },
     ]);
     return result;
   }
@@ -181,87 +187,90 @@ class HelpRepository extends BaseRepository {
       };
     }
     const aggregation = [
-        {
-            $match: matchQuery,
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
-        {
-            $lookup: {
-            from: "user",
-            localField: "ownerId",
-            foreignField: "_id",
-            as: "user",
-            },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
         },
-        {
-            '$unwind': {
-            'path': '$user', 
-            'preserveNullAndEmptyArrays': false
-            }
-        }, {
-            '$addFields': {
-            'ageRisk': {
-                '$cond': [
-                {
-                    '$gt': [
-                    {
-                        '$subtract': [
-                        {
-                            '$year': '$$NOW'
-                        }, {
-                            '$year': '$user.birthday'
-                        }
-                        ]
-                    }, 60
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'cardio': {
-                '$cond': [
-                {
-                    '$in': [
-                    '$user.riskGroup', [
-                        [
-                        'doenCardio'
-                        ]
-                    ]
-                    ]
-                }, 1, 0
-                ]
-            }, 
-            'risco': {
-                '$size': '$user.riskGroup'
-            }
-            }
-        }, {
-            '$sort': {
-                'ageRisk': -1, 
-                'cardio': -1, 
-                'risco': -1
-            }
-        }, {
-            '$project': {
-                'ageRisk': 0, 
-                'cardio': 0, 
-                'risco': 0
-            }
+      },
+      {
+        $addFields: {
+          ageRisk: {
+            $cond: [
+              {
+                $gt: [
+                  {
+                    $subtract: [
+                      {
+                        $year: "$$NOW",
+                      },
+                      {
+                        $year: "$user.birthday",
+                      },
+                    ],
+                  },
+                  60,
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+          cardio: {
+            $cond: [
+              {
+                $in: ["$user.riskGroup", [["doenCardio"]]],
+              },
+              1,
+              0,
+            ],
+          },
+          risco: {
+            $size: "$user.riskGroup",
+          },
         },
-        {
-            '$lookup': {
-                'from': "category",
-                'localField': "categoryId",
-                'foreignField': "_id",
-                'as': "category",
-            },
+      },
+      {
+        $sort: {
+          ageRisk: -1,
+          cardio: -1,
+          risco: -1,
         },
-        {
-            '$lookup': {
-                'from': "user",
-                'localField': "possibleHelpers",
-                'foreignField': "_id",
-                'as': "possibleHelpers",
-            },
+      },
+      {
+        $project: {
+          ageRisk: 0,
+          cardio: 0,
+          risco: 0,
         },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
+        },
+      },
     ];
 
     try {
@@ -282,7 +291,7 @@ class HelpRepository extends BaseRepository {
 
       return helpsWithDistance;
     } catch (error) {
-        throw error;
+      throw error;
     }
   }
 
@@ -290,65 +299,79 @@ class HelpRepository extends BaseRepository {
     const query = {};
     query.ownerId = id;
     query.active = true;
-    query.status = {$ne:"finished"};
+    query.status = { $ne: "finished" };
     const result = await super.$countDocuments(query);
 
-        return result;
-    }
+    return result;
+  }
 
-    async listToExpire() {
-        const date = new Date();
-        date.setDate(date.getDate() - 14);
-        
-        return await super.$list({
-            creationDate: { $lt: new Date(date) },
-            active: true,
-        });
-    }
+  async listToExpire() {
+    const date = new Date();
+    date.setDate(date.getDate() - 14);
 
-    async getHelpListByStatus(userId, statusList, helper) {
-        const helpList = await super.$listAggregate(
-            [
-                {
-                    '$match': {
-                        [helper? 'helperId': 'ownerId']: ObjectId(userId), 
-                        'status': {
-                            '$in': [...statusList]
-                        },
-                        'active': true
-                    }
-                }, {
-                    '$lookup': {
-                        'from': 'user', 
-                        'localField': 'possibleHelpers', 
-                        'foreignField': '_id', 
-                        'as': 'possibleHelpers'
-                    }
-                }, {
-                    '$lookup': {
-                        'from': 'user', 
-                        'localField': 'ownerId', 
-                        'foreignField': '_id', 
-                        'as': 'user'
-                    }
-                }, {
-                    '$lookup': {
-                        'from': 'category',
-                        'localField': 'categoryId',
-                        'foreignField': '_id',
-                        'as': 'category'
-                    }
-                }, {
-                    '$unwind': {
-                        'path': '$user', 
-                        'preserveNullAndEmptyArrays': false
-                    }
-                }
-            ]
-        )
-            return helpList
+    return await super.$list({
+      creationDate: { $lt: new Date(date) },
+      active: true,
+    });
+  }
 
+  async getHelpListByStatus(userId, statusList, helper) {
+    const matchQuery = {
+      status: {
+        $in: [...statusList],
+      },
+      active: true,
+    };
+
+    if (helper) {
+      matchQuery.$or = [
+        {
+          possibleHelpers: { $in: [ObjectId(userId)] },
+        },
+        {
+          helperId: ObjectId(userId),
+        },
+      ];
+    } else {
+      matchQuery.ownerId = ObjectId(userId);
     }
+    const helpList = await super.$listAggregate([
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ]);
+    return helpList;
+  }
 }
 
 module.exports = HelpRepository;

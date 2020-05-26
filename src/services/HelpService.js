@@ -73,7 +73,7 @@ class HelpService {
             coords,
             except,
             id,
-            categoryArray
+            categoryArray,
         );
         if (!Helplist) {
             throw "Pedidos de ajuda não encontrados no seu raio de distância"
