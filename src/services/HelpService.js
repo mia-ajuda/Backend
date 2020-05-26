@@ -143,7 +143,7 @@ class HelpService {
 
 
         const title = owner.name + " aceitou sua oferta de ajuda!";
-        const body = "Sua oferta para " + help.title + " foi aceita!";
+        const body = "Sua oferta para " + help.title + " foi aceita";
 
         const userPosition = help.possibleHelpers.indexOf(data.idHelper);
         if (userPosition >= 0) {
@@ -151,13 +151,15 @@ class HelpService {
         help.status = "on_going";
         help.possibleHelpers = [];
         const result = await this.HelpRepository.update(help);
+        
         const notificationHistory = {
-            userId: helper.ownerId,
+            userId: helper._id,
             helpId: help._id,
             title: title,
             body: body,
             notificationType: notificationTypesEnum.ajudaAceita,
         };
+        
         try {
             this.NotificationService.createNotification(notificationHistory);
             this.NotificationMixin.sendNotification(helper.deviceId, title, body);
@@ -172,6 +174,7 @@ class HelpService {
     async helperConfirmation(data) {
         const help = await this.getHelpByid(data.helpId);
         const owner = await this.UserService.getUser({ id: help.ownerId });
+        const helper = await this.UserService.getUser({ id: help.helperId });
 
         if (!help) {
             throw "Ajuda não encontrada";
@@ -180,20 +183,32 @@ class HelpService {
             throw "Usuário não é o ajudante dessa ajuda";
         } 
         else if (help.status == "owner_finished") {
-            const title = "Pedido de ajuda finalizado!";
-            const body = "Seu pedido " + help.title + " foi finalizado";
+            const ownerTitle = "Pedido de ajuda finalizado!";
+            const ownerBody = "Seu pedido " + help.title + " foi finalizado";
 
-            const notificationHistory = {
+            const ownerNotificationHistory = {
                 userId: help.ownerId,
                 helpId: help._id,
-                title: title,
-                body: body,
+                title: ownerTitle,
+                body: ownerBody,
+                notificationType: notificationTypesEnum.ajudaFinalizada,
+            };
+
+            const helperTitle = "Oferta de ajuda finalizada!";
+            const helperBody = "Sua oferta da ajuda " + help.title + " foi finalizada";
+            const helperNotificationHistory = {
+                userId: help.helperId,
+                helpId: help._id,
+                title: helperTitle,
+                body: helperBody,
                 notificationType: notificationTypesEnum.ajudaFinalizada,
             };
 
             try {
-                this.NotificationMixin.sendNotification(owner.deviceId, title, body);
-                this.NotificationService.createNotification(notificationHistory);
+                this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
+                this.NotificationService.createNotification(ownerNotificationHistory);
+                this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
+                this.NotificationService.createNotification(helperNotificationHistory);
             } catch (err) {
                 console.log("Não foi possível enviar a notificação!");
             }
@@ -218,26 +233,39 @@ class HelpService {
     async ownerConfirmation(data) {
         const help = await this.getHelpByid(data.helpId);
         const owner = await this.UserService.getUser({ id: help.ownerId });
+        const helper = await this.UserService.getUser({ id: help.helperId });
 
         if (!help) {
             throw "Ajuda não encontrada";
         } else if (help.ownerId != data.ownerId) {
             throw "Usuário não é o dono da ajuda";
         } else if (help.status == "helper_finished") {
-            const title = "Pedido de ajuda finalizado!";
-            const body = "Seu pedido " + help.title + " foi finalizado";
+            const ownerTitle = "Pedido de ajuda finalizado!";
+            const ownerBody = "Seu pedido " + help.title + " foi finalizado";
 
-            const notificationHistory = {
+            const ownerNotificationHistory = {
                 userId: help.ownerId,
                 helpId: help._id,
-                title: title,
-                body: body,
+                title: ownerTitle,
+                body: ownerBody,
+                notificationType: notificationTypesEnum.ajudaFinalizada,
+            };
+
+            const helperTitle = "Oferta de ajuda finalizada!";
+            const helperBody = "Sua oferta da ajuda " + help.title + " foi finalizada";
+            const helperNotificationHistory = {
+                userId: help.helperId,
+                helpId: help._id,
+                title: helperTitle,
+                body: helperBody,
                 notificationType: notificationTypesEnum.ajudaFinalizada,
             };
 
             try {
-                this.NotificationMixin.sendNotification(owner.deviceId, title, body);
-                this.NotificationService.createNotification(notificationHistory);
+                this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
+                this.NotificationService.createNotification(ownerNotificationHistory);
+                this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
+                this.NotificationService.createNotification(helperNotificationHistory);
             } catch (err) {
                 console.log ("Não foi possível enviar a notificação!");
             }
@@ -282,7 +310,7 @@ class HelpService {
         const result = await this.HelpRepository.update(help);
 
         const title = helper.name + " quer te ajudar!";
-        const body = "Seu pedido " + help.title + " recebeu uma oferta de ajuda!";
+        const body = "Seu pedido " + help.title + " recebeu uma oferta de ajuda";
 
         const notificationHistory = {
             userId: help.ownerId,
