@@ -2,15 +2,18 @@ version: '3'
 services:
     backend:
         container_name: backend
+        environment:
+            - DATABASE_URL=mongodb://mongo/miaAjudaDB
         build:
             context: .
             dockerfile: Dockerfile
-        command: "yarn start"
         ports:
             - "8000:8000"
-        depends_on: 
+        depends_on:
             - mongo
+        volumes:
+            - .:/app
+            - /app/node_modules
     mongo:
         container_name: mongo
-        image: mongo 
-            
+        image: mongo

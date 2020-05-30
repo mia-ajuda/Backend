@@ -41,6 +41,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Firebase config
+src/config/firebaseConfig.js
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
@@ -106,9 +109,13 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+.vscode
 
 # yarn v2
 .yarn/cache
 .yarn/unplugged
 .yarn/build-state.yml
 .pnp.*
+
+# package-lock (main is yarn.lock)
+package-lock.json

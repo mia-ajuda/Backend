@@ -1,24 +1,27 @@
-const bodyParser = require('body-parser');
-const cors = require('cors')
-const express = require('express')
-const mongoose = require('mongoose')
-const setRoutes = require('./src/routes/BaseRoutes')
-const user = require('./src/models/User')
-const help = require('./src/models/Help')
-const category = require('./src/models/Category')
+require("dotenv").config();
 
-const app = express()
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const express = require("express");
+const http = require("http");
+const setRoutes = require("./src/routes/BaseRoutes");
+const dailySchedule = require("./src/utils/schedule");
+const { setupWebsocket } = require("./websocket");
 
-require('dotenv').config()
+const app = express();
+const server = http.Server(app);
 
-app.use(cors())
-app.use(bodyParser.json())
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb" }));
+setupWebsocket(server);
 
-const mongoDB = process.env.DATABASE_URL
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true }).then(
-    ()=> console.log('Conectado')
-).catch(error => console.log(error))
+const databaseConnect = require("./src/config/database");
 
+app.use(cors());
+app.use(bodyParser.json());
 
-setRoutes(app)
-app.listen(8000)
+databaseConnect();
+dailySchedule();
+setRoutes(app);
+
+server.listen(8000);
