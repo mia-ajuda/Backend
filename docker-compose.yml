@@ -4,7 +4,6 @@ services:
         container_name: backend
         environment:
             - DATABASE_URL=mongodb://mongo/miaAjudaDB
-            - NODE_ENV=development
         build:
             context: .
             dockerfile: Dockerfile

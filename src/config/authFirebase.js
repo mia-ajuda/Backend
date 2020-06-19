@@ -2,11 +2,10 @@ const admin = require('firebase-admin');
 
 let firebaseConfig;
 const enviroment = process.env.NODE_ENV;
-
-if (enviroment === 'development') {
-    firebaseConfig = require('./firebaseConfig-dev');
-} else {
+if (enviroment === 'production') {
     firebaseConfig = require('./firebaseConfig');
+} else {
+    firebaseConfig = require('./firebaseConfig-dev');
 }
 
 const { databaseURL, config } = firebaseConfig;
