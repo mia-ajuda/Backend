@@ -23,9 +23,9 @@ const databaseConnect = async () => {
       await HelpSeed();
       await NotificationSeed();
     }
-  } catch (error) {
+  } catch (err) {
     console.log('Não foi possível inicicializar corretamente a base de dados!');
-    console.log(error);
+    console.log(err);
   }
 };
 

@@ -176,7 +176,7 @@ class HelpService {
 
     if (!help) {
       throw 'Ajuda não encontrada';
-    } else if (help.helperId !== data.helperId) {
+    } else if (help.helperId != data.helperId) {
       throw 'Usuário não é o ajudante dessa ajuda';
     } else if (help.status === 'owner_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
@@ -230,7 +230,7 @@ class HelpService {
 
     if (!help) {
       throw 'Ajuda não encontrada';
-    } else if (help.ownerId !== data.ownerId) {
+    } else if (help.ownerId != data.ownerId) {
       throw 'Usuário não é o dono da ajuda';
     } else if (help.status === 'helper_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
@@ -283,7 +283,7 @@ class HelpService {
       throw 'Ajuda não encontrada';
     }
 
-    if (idHelper === help.ownerId) {
+    if (idHelper == help.ownerId) {
       throw 'Você não pode ser ajudante de sua própria ajuda';
     }
     if (help.helperId) {
