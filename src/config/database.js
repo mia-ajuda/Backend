@@ -8,22 +8,25 @@ const databaseURL = process.env.DATABASE_URL || 'mongodb://mongo:27017/miaAjudaD
 const envType = process.env.NODE_ENV || 'development';
 
 const databaseConnect = async () => {
-    try {
-        await mongoose.connect(databaseURL, { useNewUrlParser: true, useUnifiedTopology: true })
-            .then(() => console.log('Banco de dados conectado!'))
-            .catch((error) => console.log('Não foi possível se conectar ao banco de dados!'));
+  try {
+    await mongoose.connect(databaseURL, { useNewUrlParser: true, useUnifiedTopology: true })
+      .then(() => console.log('Banco de dados conectado!'))
+      .catch((err) => {
+        console.log('Não foi possível se conectar ao banco de dados!');
+        console.log(err);
+      });
 
-        await CategorySeed();
-        // só popula usuários e ajudas falsos em desenvolvimento
-        if (envType === 'development') {
-            await UserSeed();
-            await HelpSeed();
-            await NotificationSeed();
-        }
-    } catch (error) {
-        console.log('Não foi possível inicicializar corretamente a base de dados!');
-        console.log(error);
+    await CategorySeed();
+    // só popula usuários e ajudas falsos em desenvolvimento
+    if (envType === 'development') {
+      await UserSeed();
+      await HelpSeed();
+      await NotificationSeed();
     }
+  } catch (error) {
+    console.log('Não foi possível inicicializar corretamente a base de dados!');
+    console.log(error);
+  }
 };
 
 module.exports = databaseConnect;

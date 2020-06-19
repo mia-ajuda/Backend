@@ -1,5 +1,5 @@
-const UserRepository = require("../repository/UserRepository");
-const firebase = require("../config/authFirebase");
+const UserRepository = require('../repository/UserRepository');
+const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
@@ -8,11 +8,11 @@ class UserService {
 
   async createUser(data) {
     if (data.password.length < 8) {
-      throw "Senha inválida";
+      throw 'Senha inválida';
     }
 
     if (data.cpf.length >= 11) {
-      data.cpf = data.cpf.replace(/[-.]/g, "");
+      data.cpf = data.cpf.replace(/[-.]/g, '');
     }
     data.email = data.email.toLowerCase();
     try {
@@ -41,7 +41,7 @@ class UserService {
 
   async getUser({ id = undefined, email = undefined }) {
     if (!id && !email) {
-      throw { id: "Nenhum identificador encontrado" };
+      throw { id: 'Nenhum identificador encontrado' };
     }
     let user;
 
@@ -51,7 +51,7 @@ class UserService {
       user = await this.userRepository.getUserByEmail(email);
     }
     if (!user) {
-      throw "Usuário não encontrado";
+      throw 'Usuário não encontrado';
     }
 
     return user;
@@ -68,7 +68,7 @@ class UserService {
     const user = await this.getUser({ email });
 
     if (!user) {
-      throw "Usuário não encontrado";
+      throw 'Usuário não encontrado';
     }
 
     user.photo = photo || user.photo;
@@ -82,11 +82,13 @@ class UserService {
     return result;
   }
 
-  async editUserAddressById({ email, cep, number, city, state, complement }) {
+  async editUserAddressById({
+    email, cep, number, city, state, complement,
+  }) {
     const user = await this.getUser({ email });
 
     if (!user) {
-      throw "Usuário não encontrado";
+      throw 'Usuário não encontrado';
     }
 
     const address = {
@@ -108,7 +110,7 @@ class UserService {
     const user = await this.getUser({ email });
 
     if (!user) {
-      throw "Usuário não encontrado";
+      throw 'Usuário não encontrado';
     }
 
     if (longitude || latitude) {
@@ -128,15 +130,15 @@ class UserService {
 
     await this.userRepository.update(user);
 
-    return { message: `User ${id} deleted!` };
+    return { message: `User ${user._id} deleted!` };
   }
 
   async removeUser(email) {
     try {
       const user = await this.getUser({ email });
       await this.userRepository.removeUser({ id: user._id, email });
-    } catch {
-      return;
+    } catch (err) {
+      console.log(err);
     }
   }
 
