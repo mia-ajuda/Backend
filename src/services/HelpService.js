@@ -1,343 +1,335 @@
-const HelpRepository = require("../repository/HelpRepository");
+const HelpRepository = require('../repository/HelpRepository');
 const NotificationService = require('./NotificationService');
 const { notificationTypesEnum } = require('../models/Notification');
-const UserService = require("./UserService");
-const CategoryService = require("./CategoryService");
+const UserService = require('./UserService');
+const CategoryService = require('./CategoryService');
 const { findConnections, sendMessage } = require('../../websocket');
-const NotificationMixin = require("../utils/NotificationMixin");
-const helpStatusEnum = require("../utils/enums/helpStatusEnum")
+const NotificationMixin = require('../utils/NotificationMixin');
+const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 
 
 class HelpService {
-    constructor() {
-        this.HelpRepository = new HelpRepository();
-        this.UserService = new UserService();
-        this.CategoryService = new CategoryService();
-        this.NotificationService = new NotificationService();
-        this.NotificationMixin = new NotificationMixin();
+  constructor() {
+    this.HelpRepository = new HelpRepository();
+    this.UserService = new UserService();
+    this.CategoryService = new CategoryService();
+    this.NotificationService = new NotificationService();
+    this.NotificationMixin = new NotificationMixin();
+  }
+
+  async createHelp(data) {
+    const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
+    if (countHelp >= 5) {
+      throw 'Limite máximo de pedidos atingido';
     }
 
-    async createHelp(data) {
-        const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
-        if (countHelp >= 5) {
-            throw "Limite máximo de pedidos atingido";
-        }
-        
-        await this.CategoryService.getCategoryByid(data.categoryId);
+    await this.CategoryService.getCategoryByid(data.categoryId);
 
-        const createdHelp = await this.HelpRepository.create(data);
+    const createdHelp = await this.HelpRepository.create(data);
 
-        const user = await this.UserService.getUser({ id: createdHelp.ownerId });
-        const userCoords = {
-            longitude: user.location.coordinates[0],
-            latitude: user.location.coordinates[1],
-        };
-        const sendSocketMessageTo = findConnections(
-            userCoords,
-            createdHelp.categoryId,
-            JSON.parse(JSON.stringify(user._id))
-        );
-        sendMessage(sendSocketMessageTo, "new-help", createdHelp);
+    const user = await this.UserService.getUser({ id: createdHelp.ownerId });
+    const userCoords = {
+      longitude: user.location.coordinates[0],
+      latitude: user.location.coordinates[1],
+    };
+    const sendSocketMessageTo = findConnections(
+      userCoords,
+      createdHelp.categoryId,
+      JSON.parse(JSON.stringify(user._id)),
+    );
+    sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
 
-        return createdHelp;
+    return createdHelp;
+  }
+
+  async getHelpByid(id) {
+    const Help = await this.HelpRepository.getById(id);
+
+    if (!Help) {
+      throw 'Ajuda não encontrada';
     }
 
-    async getHelpByid(id) {
-        const Help = await this.HelpRepository.getById(id);
+    return Help;
+  }
 
-        if (!Help) {
-            throw "Ajuda não encontrada";
-        }
 
-        return Help;
+  async getHelpList(id, status, category, except, helper) {
+    const Helplist = await this.HelpRepository.list(
+      id,
+      status,
+      category,
+      except,
+      helper,
+    );
+    if (!Helplist) {
+      throw 'Nenhuma Ajuda com esse status foi encontrada';
+    }
+
+    return Helplist;
+  }
+
+  async getNearHelpList(coords, except, id, categoryArray) {
+    const Helplist = await this.HelpRepository.listNear(
+      coords,
+      except,
+      id,
+      categoryArray,
+    );
+    if (!Helplist) {
+      throw 'Pedidos de ajuda não encontrados no seu raio de distância';
+    }
+
+    return Helplist;
+  }
+
+  async deleteHelpLogically(id) {
+    let help = await this.getHelpByid(id);
+
+    help.active = false;
+
+    await this.HelpRepository.update(help);
+
+    const user = await this.UserService.getUser({ id: help.ownerId });
+    const userCoords = {
+      longitude: user.location.coordinates[0],
+      latitude: user.location.coordinates[1],
+    };
+    help = JSON.parse(JSON.stringify(help));
+    const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)));
+    sendMessage(sendSocketMessageTo, 'delete-help', id);
+
+    return { message: `Help ${id} deleted!` };
+  }
+
+  async getHelpListByStatus({ userId, statusList, helper = false }) {
+    const checkHelpStatusExistence = statusList.filter((item) => !Object.values(helpStatusEnum).includes(item));
+
+    if (checkHelpStatusExistence.length > 0) {
+      throw 'Um dos status informados é ínvalido.';
+    }
+
+    const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
+
+    return helpList;
+  }
+
+
+  async chooseHelper(data) {
+    const { idHelper } = data;
+    const help = await this.getHelpByid(data.idHelp);
+    const { ownerId } = help;
+    const helper = await this.UserService.getUser({ id: idHelper });
+    const owner = await this.UserService.getUser({ id: ownerId });
+    if (!help) {
+      throw 'Ajuda não encontrada';
+    }
+    if (help.helperId) {
+      throw 'Ajuda já possui ajudante';
     }
 
 
-    async getHelpList(id, status, category, except, helper) {
-        const Helplist = await this.HelpRepository.list(
-            id,
-            status,
-            category,
-            except,
-            helper
-        );
-        if (!Helplist) {
-            throw "Nenhuma Ajuda com esse status foi encontrada";
-        }
+    const ownerCoords = {
+      longitude: owner.location.coordinates[0],
+      latitude: owner.location.coordinates[1],
+    };
+    const sendSocketMessageTo = findConnections(
+      ownerCoords,
+      help.categoryId,
+      JSON.parse(JSON.stringify(owner._id)),
+    );
+    sendMessage(sendSocketMessageTo, 'delete-help', help._id);
 
-        return Helplist;
+
+    const title = `${owner.name} aceitou sua oferta de ajuda!`;
+    const body = `Sua oferta para ${help.title} foi aceita`;
+
+    const userPosition = help.possibleHelpers.indexOf(data.idHelper);
+    if (userPosition >= 0) {
+      help.helperId = data.idHelper;
+      help.status = 'on_going';
+      help.possibleHelpers = [];
+      const result = await this.HelpRepository.update(help);
+
+      const notificationHistory = {
+        userId: helper._id,
+        helpId: help._id,
+        title,
+        body,
+        notificationType: notificationTypesEnum.ajudaAceita,
+      };
+
+      try {
+        this.NotificationService.createNotification(notificationHistory);
+        this.NotificationMixin.sendNotification(helper.deviceId, title, body);
+      } catch (err) {
+        console.log('Não foi possível enviar a notificação!');
+      }
+      return result;
+    }
+    throw 'Ajudante não encontrado';
+  }
+
+  async helperConfirmation(data) {
+    const help = await this.getHelpByid(data.helpId);
+    const owner = await this.UserService.getUser({ id: help.ownerId });
+    const helper = await this.UserService.getUser({ id: help.helperId });
+
+    if (!help) {
+      throw 'Ajuda não encontrada';
+    } else if (help.helperId != data.helperId) {
+      throw 'Usuário não é o ajudante dessa ajuda';
+    } else if (help.status === 'owner_finished') {
+      const ownerTitle = 'Pedido de ajuda finalizado!';
+      const ownerBody = `Seu pedido ${help.title} foi finalizado`;
+
+      const ownerNotificationHistory = {
+        userId: help.ownerId,
+        helpId: help._id,
+        title: ownerTitle,
+        body: ownerBody,
+        notificationType: notificationTypesEnum.ajudaFinalizada,
+      };
+
+      const helperTitle = 'Oferta de ajuda finalizada!';
+      const helperBody = `Sua oferta da ajuda ${help.title} foi finalizada`;
+      const helperNotificationHistory = {
+        userId: help.helperId,
+        helpId: help._id,
+        title: helperTitle,
+        body: helperBody,
+        notificationType: notificationTypesEnum.ajudaFinalizada,
+      };
+
+      try {
+        this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
+        this.NotificationService.createNotification(ownerNotificationHistory);
+        this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
+        this.NotificationService.createNotification(helperNotificationHistory);
+      } catch (err) {
+        console.log('Não foi possível enviar a notificação!');
+      }
+
+      help.status = 'finished';
+    } else if (help.status === 'helper_finished') {
+      throw 'Usuário já confirmou a finalização da ajuda';
+    } else if (help.status === 'finished') {
+      throw 'Ajuda já foi finalizada';
+    } else {
+      help.status = 'helper_finished';
     }
 
-    async getNearHelpList(coords, except, id, categoryArray) {
-        const Helplist = await this.HelpRepository.listNear(
-            coords,
-            except,
-            id,
-            categoryArray,
-        );
-        if (!Helplist) {
-            throw "Pedidos de ajuda não encontrados no seu raio de distância"
-        }
+    const result = await this.HelpRepository.update(help);
 
-        return Helplist;
+    return result;
+  }
+
+  async ownerConfirmation(data) {
+    const help = await this.getHelpByid(data.helpId);
+    const owner = await this.UserService.getUser({ id: help.ownerId });
+    const helper = await this.UserService.getUser({ id: help.helperId });
+
+    if (!help) {
+      throw 'Ajuda não encontrada';
+    } else if (help.ownerId != data.ownerId) {
+      throw 'Usuário não é o dono da ajuda';
+    } else if (help.status === 'helper_finished') {
+      const ownerTitle = 'Pedido de ajuda finalizado!';
+      const ownerBody = `Seu pedido ${help.title} foi finalizado`;
+
+      const ownerNotificationHistory = {
+        userId: help.ownerId,
+        helpId: help._id,
+        title: ownerTitle,
+        body: ownerBody,
+        notificationType: notificationTypesEnum.ajudaFinalizada,
+      };
+
+      const helperTitle = 'Oferta de ajuda finalizada!';
+      const helperBody = `Sua oferta da ajuda ${help.title} foi finalizada`;
+      const helperNotificationHistory = {
+        userId: help.helperId,
+        helpId: help._id,
+        title: helperTitle,
+        body: helperBody,
+        notificationType: notificationTypesEnum.ajudaFinalizada,
+      };
+
+      try {
+        this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
+        this.NotificationService.createNotification(ownerNotificationHistory);
+        this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
+        this.NotificationService.createNotification(helperNotificationHistory);
+      } catch (err) {
+        console.log('Não foi possível enviar a notificação!');
+      }
+
+      help.status = 'finished';
+    } else if (help.status === 'owner_finished') {
+      throw 'Usuário já confirmou a finalização da ajuda';
+    } else if (help.status === 'finished') {
+      throw 'Essa ajuda já foi finalizada';
+    } else {
+      help.status = 'owner_finished';
     }
 
-    async deleteHelpLogically(id) {
-        let help = await this.getHelpByid(id);
+    const result = await this.HelpRepository.update(help);
+    return result;
+  }
 
-        help.active = false;
-
-        await this.HelpRepository.update(help);
-
-        const user = await this.UserService.getUser({ id: help.ownerId })
-        const userCoords = {
-            longitude: user.location.coordinates[0],
-            latitude: user.location.coordinates[1]
-        }
-        help = JSON.parse(JSON.stringify(help));
-        const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)))
-        sendMessage(sendSocketMessageTo, 'delete-help', id)
-
-        return { message: `Help ${id} deleted!` };
-    }
-    
-    async getHelpListByStatus({userId, statusList, helper = false}) {
-        
-        const checkHelpStatusExistence = statusList.filter(item => !Object.values(helpStatusEnum).includes(item))
-
-        if (checkHelpStatusExistence.length > 0) {
-            throw "Um dos status informados é ínvalido."
-        }
-        
-        const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
-
-        return helpList
+  async addPossibleHelpers(id, idHelper) {
+    const help = await this.getHelpByid(id);
+    const owner = await this.UserService.getUser({ id: help.ownerId });
+    if (!help) {
+      throw 'Ajuda não encontrada';
     }
 
-
-    async chooseHelper(data) {
-        const idHelper = data.idHelper;
-        const help = await this.getHelpByid(data.idHelp);
-        const ownerId = help.ownerId;
-        const helper = await this.UserService.getUser({ id: idHelper });
-        const owner = await this.UserService.getUser({ id: ownerId });
-        if (!help) {
-            throw "Ajuda não encontrada";
-        }
-        if (help.helperId) {
-            throw "Ajuda já possui ajudante";
-        }
-
-        
-        const ownerCoords = {
-            longitude: owner.location.coordinates[0],
-            latitude: owner.location.coordinates[1],
-        };
-        const sendSocketMessageTo = findConnections(
-            ownerCoords,
-            help.categoryId,
-            JSON.parse(JSON.stringify(owner._id))
-        );
-        sendMessage(sendSocketMessageTo, 'delete-help', help._id)
-
-
-
-        const title = owner.name + " aceitou sua oferta de ajuda!";
-        const body = "Sua oferta para " + help.title + " foi aceita";
-
-        const userPosition = help.possibleHelpers.indexOf(data.idHelper);
-        if (userPosition >= 0) {
-        help.helperId = data.idHelper;
-        help.status = "on_going";
-        help.possibleHelpers = [];
-        const result = await this.HelpRepository.update(help);
-        
-        const notificationHistory = {
-            userId: helper._id,
-            helpId: help._id,
-            title: title,
-            body: body,
-            notificationType: notificationTypesEnum.ajudaAceita,
-        };
-        
-        try {
-            this.NotificationService.createNotification(notificationHistory);
-            this.NotificationMixin.sendNotification(helper.deviceId, title, body);
-        } catch (err) {
-            console.log("Não foi possível enviar a notificação!");
-        }
-        return result;
-        }
-        throw "Ajudante não encontrado";
+    if (idHelper == help.ownerId) {
+      throw 'Você não pode ser ajudante de sua própria ajuda';
+    }
+    if (help.helperId) {
+      throw 'Ajuda já possui ajudante';
     }
 
-    async helperConfirmation(data) {
-        const help = await this.getHelpByid(data.helpId);
-        const owner = await this.UserService.getUser({ id: help.ownerId });
-        const helper = await this.UserService.getUser({ id: help.helperId });
+    const helper = await this.UserService.getUser({ id: idHelper });
+    const userPosition = help.possibleHelpers.indexOf(idHelper);
 
-        if (!help) {
-            throw "Ajuda não encontrada";
-        } 
-        else if (help.helperId != data.helperId) {
-            throw "Usuário não é o ajudante dessa ajuda";
-        } 
-        else if (help.status == "owner_finished") {
-            const ownerTitle = "Pedido de ajuda finalizado!";
-            const ownerBody = "Seu pedido " + help.title + " foi finalizado";
-
-            const ownerNotificationHistory = {
-                userId: help.ownerId,
-                helpId: help._id,
-                title: ownerTitle,
-                body: ownerBody,
-                notificationType: notificationTypesEnum.ajudaFinalizada,
-            };
-
-            const helperTitle = "Oferta de ajuda finalizada!";
-            const helperBody = "Sua oferta da ajuda " + help.title + " foi finalizada";
-            const helperNotificationHistory = {
-                userId: help.helperId,
-                helpId: help._id,
-                title: helperTitle,
-                body: helperBody,
-                notificationType: notificationTypesEnum.ajudaFinalizada,
-            };
-
-            try {
-                this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
-                this.NotificationService.createNotification(ownerNotificationHistory);
-                this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
-                this.NotificationService.createNotification(helperNotificationHistory);
-            } catch (err) {
-                console.log("Não foi possível enviar a notificação!");
-            }
-
-            help.status = "finished";
-        } 
-        else if (help.status == "helper_finished") {
-            throw "Usuário já confirmou a finalização da ajuda";
-        } 
-        else if (help.status == "finished") {
-            throw "Ajuda já foi finalizada";
-        } 
-        else {
-            help.status = "helper_finished";
-        }
-
-        const result = await this.HelpRepository.update(help);
-
-        return result;
+    if (userPosition > -1) {
+      throw 'Usuário já é um possível ajudante';
     }
 
-    async ownerConfirmation(data) {
-        const help = await this.getHelpByid(data.helpId);
-        const owner = await this.UserService.getUser({ id: help.ownerId });
-        const helper = await this.UserService.getUser({ id: help.helperId });
+    help.possibleHelpers.push(idHelper);
 
-        if (!help) {
-            throw "Ajuda não encontrada";
-        } else if (help.ownerId != data.ownerId) {
-            throw "Usuário não é o dono da ajuda";
-        } else if (help.status == "helper_finished") {
-            const ownerTitle = "Pedido de ajuda finalizado!";
-            const ownerBody = "Seu pedido " + help.title + " foi finalizado";
+    const result = await this.HelpRepository.update(help);
 
-            const ownerNotificationHistory = {
-                userId: help.ownerId,
-                helpId: help._id,
-                title: ownerTitle,
-                body: ownerBody,
-                notificationType: notificationTypesEnum.ajudaFinalizada,
-            };
+    const title = `${helper.name} quer te ajudar!`;
+    const body = `Seu pedido ${help.title} recebeu uma oferta de ajuda`;
 
-            const helperTitle = "Oferta de ajuda finalizada!";
-            const helperBody = "Sua oferta da ajuda " + help.title + " foi finalizada";
-            const helperNotificationHistory = {
-                userId: help.helperId,
-                helpId: help._id,
-                title: helperTitle,
-                body: helperBody,
-                notificationType: notificationTypesEnum.ajudaFinalizada,
-            };
+    const notificationHistory = {
+      userId: help.ownerId,
+      helpId: help._id,
+      title,
+      body,
+      notificationType: notificationTypesEnum.ajudaRecebida,
+    };
 
-            try {
-                this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
-                this.NotificationService.createNotification(ownerNotificationHistory);
-                this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
-                this.NotificationService.createNotification(helperNotificationHistory);
-            } catch (err) {
-                console.log ("Não foi possível enviar a notificação!");
-            }
-
-            help.status = "finished";
-
-        } else if (help.status == "owner_finished") {
-            throw "Usuário já confirmou a finalização da ajuda";
-        } else if (help.status == "finished") {
-            throw "Essa ajuda já foi finalizada";
-        } else {
-            help.status = "owner_finished";
-        }
-
-        const result = await this.HelpRepository.update(help);
-        return result;
+    try {
+      this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+      this.NotificationService.createNotification(notificationHistory);
+    } catch (err) {
+      console.log('Não foi possível enviar a notificação!');
     }
 
-    async addPossibleHelpers(id, idHelper) {
-        const help = await this.getHelpByid(id);
-        const owner = await this.UserService.getUser({ id: help.ownerId });
-        if (!help) {
-            throw "Ajuda não encontrada";
-        }
+    return result;
+  }
 
-        if (idHelper == help.ownerId) {
-            throw "Você não pode ser ajudante de sua própria ajuda";
-        }
-        if (help.helperId) {
-            throw "Ajuda já possui ajudante";
-        }
-
-        const helper = await this.UserService.getUser({ id: idHelper });
-        const userPosition = help.possibleHelpers.indexOf(idHelper);
-        
-        if (userPosition > -1) {
-            throw "Usuário já é um possível ajudante";
-        }
-
-        help.possibleHelpers.push(idHelper);
-
-        const result = await this.HelpRepository.update(help);
-
-        const title = helper.name + " quer te ajudar!";
-        const body = "Seu pedido " + help.title + " recebeu uma oferta de ajuda";
-
-        const notificationHistory = {
-            userId: help.ownerId,
-            helpId: help._id,
-            title: title,
-            body: body,
-            notificationType: notificationTypesEnum.ajudaRecebida,
-        };
-
-        try {
-            this.NotificationMixin.sendNotification(owner.deviceId, title, body);
-            this.NotificationService.createNotification(notificationHistory);
-        } catch (err) {
-            console.log("Não foi possível enviar a notificação!");
-        }
-
-        return result;
+  async getListToDelete() {
+    const Helplist = await this.HelpRepository.listToExpire();
+    if (!Helplist) {
+      throw new Error('Pedidos de ajuda não encontrados');
     }
 
-    async getListToDelete() {
-        const Helplist = await this.HelpRepository.listToExpire();
-        if (!Helplist) {
-            throw new Error("Pedidos de ajuda não encontrados");
-        }
-
-        return Helplist;
-    }
+    return Helplist;
+  }
 }
 
 module.exports = HelpService;

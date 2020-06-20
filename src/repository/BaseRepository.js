@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 class BaseRepository {
   constructor(modelClass) {
@@ -32,8 +32,10 @@ class BaseRepository {
   }
 
   async $listAggregate(aggregationPipeline) {
-    return await this.modelClass.aggregate(aggregationPipeline).exec();
+    const aggregatedPipeline = await this.modelClass.aggregate(aggregationPipeline).exec();
+    return aggregatedPipeline;
   }
+
   /**
    * @param {string} id Id do objeto
    * @param {Boolean} [active = true] se vou pegar ou não elementos deletados,
@@ -42,11 +44,11 @@ class BaseRepository {
   async $getById(id, active = true) {
     let finalIdFormat = id;
 
-    if (typeof id === "string") {
+    if (typeof id === 'string') {
       try {
         finalIdFormat = mongoose.Types.ObjectId(id);
       } catch (err) {
-        throw "Tamanho ou formato de id inválido";
+        throw 'Tamanho ou formato de id inválido';
       }
     }
 
