@@ -1,18 +1,20 @@
 const admin = require('firebase-admin');
+const firebaseConfigDev = require('./firebaseConfig-dev');
+const firebaseConfigProd = require('./firebaseConfig');
 
 let firebaseConfig;
 const enviroment = process.env.NODE_ENV;
 if (enviroment === 'production') {
-    firebaseConfig = require('./firebaseConfig');
+  firebaseConfig = firebaseConfigProd;
 } else {
-    firebaseConfig = require('./firebaseConfig-dev');
+  firebaseConfig = firebaseConfigDev;
 }
 
 const { databaseURL, config } = firebaseConfig;
 
 admin.initializeApp({
-    credential: admin.credential.cert(config),
-    databaseURL,
+  credential: admin.credential.cert(config),
+  databaseURL,
 });
 
 module.exports = admin;
