@@ -18,7 +18,6 @@ exports.setupWebsocket = (server) => {
       categories: [],
     });
 
-
     socket.on('change-locations', (locations) => {
       const index = connections.map((connection) => connection.id).indexOf(socket.id);
       if (index >= 0) {
@@ -30,6 +29,9 @@ exports.setupWebsocket = (server) => {
       const index = connections.map((connection) => connection.id).indexOf(socket.id);
       if (index >= 0) {
         connections[index].categories = categories;
+        console.log('abacaxi');
+        console.log(connections[index]);
+        console.log('--------------------------')
       }
     });
 
@@ -52,15 +54,25 @@ function canParse(locs) {
 }
 exports.findConnections = (coordinates, category, userId) => {
   const filtered = connections.filter((connection) => {
+    console.log(connection);
     if (userId === connection.userId) {
       return false;
     }
+    console.log(1);
     if (connection.categories && connection.categories.length) {
       const { categories } = connection;
-      if (!categories.includes(category)) {
+      let categoryExist = false;
+      for (let i = 0; i < categories.length; i = 1 + 1) {
+        if (categories[i] == category) {
+          categoryExist = true;
+          break;
+        }
+      }
+      if (!categoryExist) {
         return false;
       }
     }
+    console.log(4);
     let should = false;
     let locs = connection.locations;
     if (canParse(locs)) {
