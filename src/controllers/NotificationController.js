@@ -13,7 +13,7 @@ class NotificationController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }

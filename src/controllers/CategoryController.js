@@ -1,4 +1,5 @@
 const CategoryService = require('../services/CategoryService');
+const ErrorHistoryService = require('../services/ErrorHistoryService');
 
 class CategoryController {
   constructor() {
@@ -13,7 +14,8 @@ class CategoryController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      const savedError = new ErrorHistoryService(err);
+      res.status(400).json({ error: savedError.message });
       next();
     }
   }
@@ -26,7 +28,8 @@ class CategoryController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err.message });
+      const savedError = new ErrorHistoryService(err);
+      res.status(400).json({ error: savedError.message });
       next();
     }
   }

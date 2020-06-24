@@ -1,5 +1,5 @@
 const CategoryRepository = require('../repository/CategoryRepository');
-const ErrorHistoryService = require('./ErrorHistoryService');
+
 
 class CategoryService {
   constructor() {
@@ -11,7 +11,7 @@ class CategoryService {
     const Category = await this.CategoryRepository.getById(id);
 
     if (!Category) {
-      throw new ErrorHistoryService('Categoria não encontrada');
+      throw new Error('Categoria não encontrada');
     }
 
     return Category;
@@ -20,7 +20,7 @@ class CategoryService {
   async getCategoryList(id) {
     const Categorylist = await this.CategoryRepository.list(id);
     if (!Categorylist) {
-      throw new ErrorHistoryService('Categoria não encontrada');
+      throw new Error('Categoria não encontrada');
     }
 
     return Categorylist;

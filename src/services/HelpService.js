@@ -6,7 +6,7 @@ const CategoryService = require('./CategoryService');
 const { findConnections, sendMessage } = require('../../websocket');
 const NotificationMixin = require('../utils/NotificationMixin');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
-const ErrorHistoryService = require('./ErrorHistoryService');
+
 
 class HelpService {
   constructor() {
@@ -20,7 +20,7 @@ class HelpService {
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
     if (countHelp >= 5) {
-      throw new ErrorHistoryService('Limite máximo de pedidos atingido');
+      throw new Error('Limite máximo de pedidos atingido');
     }
 
     await this.CategoryService.getCategoryByid(data.categoryId);
@@ -46,12 +46,11 @@ class HelpService {
     const Help = await this.HelpRepository.getById(id);
 
     if (!Help) {
-      throw new ErrorHistoryService('Ajuda não encontrada');
+      throw new Error('Ajuda não encontrada');
     }
 
     return Help;
   }
-
 
   async getHelpList(id, status, category, except, helper) {
     const Helplist = await this.HelpRepository.list(
@@ -62,7 +61,7 @@ class HelpService {
       helper,
     );
     if (!Helplist) {
-      throw new ErrorHistoryService('Nenhuma Ajuda com esse status foi encontrada');
+      throw new Error('Nenhuma Ajuda com esse status foi encontrada');
     }
 
     return Helplist;
@@ -76,7 +75,7 @@ class HelpService {
       categoryArray,
     );
     if (!Helplist) {
-      throw new ErrorHistoryService('Pedidos de ajuda não encontrados no seu raio de distância');
+      throw new Error('Pedidos de ajuda não encontrados no seu raio de distância');
     }
 
     return Helplist;
@@ -105,14 +104,13 @@ class HelpService {
     const checkHelpStatusExistence = statusList.filter((item) => !Object.values(helpStatusEnum).includes(item));
 
     if (checkHelpStatusExistence.length > 0) {
-      throw new ErrorHistoryService('Um dos status informados é ínvalido.');
+      throw new Error('Um dos status informados é ínvalido.');
     }
 
     const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
 
     return helpList;
   }
-
 
   async chooseHelper(data) {
     const { idHelper } = data;
@@ -121,10 +119,10 @@ class HelpService {
     const helper = await this.UserService.getUser({ id: idHelper });
     const owner = await this.UserService.getUser({ id: ownerId });
     if (!help) {
-      throw new ErrorHistoryService('Ajuda não encontrada');
+      throw new Error('Ajuda não encontrada');
     }
     if (help.helperId) {
-      throw new ErrorHistoryService('Ajuda já possui ajudante');
+      throw new Error('Ajuda já possui ajudante');
     }
 
     const ownerCoords = {
@@ -137,7 +135,6 @@ class HelpService {
       JSON.parse(JSON.stringify(owner._id)),
     );
     sendMessage(sendSocketMessageTo, 'delete-help', help._id);
-
 
     const title = `${owner.name} aceitou sua oferta de ajuda!`;
     const body = `Sua oferta para ${help.title} foi aceita`;
@@ -165,7 +162,7 @@ class HelpService {
       }
       return result;
     }
-    throw new ErrorHistoryService('Ajudante não encontrado');
+    throw new Error('Ajudante não encontrado');
   }
 
   async helperConfirmation(data) {
@@ -174,9 +171,9 @@ class HelpService {
     const helper = await this.UserService.getUser({ id: help.helperId });
 
     if (!help) {
-      throw new ErrorHistoryService('Ajuda não encontrada');
+      throw new Error('Ajuda não encontrada');
     } else if (help.helperId != data.helperId) {
-      throw new ErrorHistoryService('Usuário não é o ajudante dessa ajuda');
+      throw new Error('Usuário não é o ajudante dessa ajuda');
     } else if (help.status === 'owner_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
       const ownerBody = `Seu pedido ${help.title} foi finalizado`;
@@ -210,9 +207,9 @@ class HelpService {
 
       help.status = 'finished';
     } else if (help.status === 'helper_finished') {
-      throw new ErrorHistoryService('Usuário já confirmou a finalização da ajuda');
+      throw new Error('Usuário já confirmou a finalização da ajuda');
     } else if (help.status === 'finished') {
-      throw new ErrorHistoryService('Ajuda já foi finalizada');
+      throw new Error('Ajuda já foi finalizada');
     } else {
       help.status = 'helper_finished';
     }
@@ -228,9 +225,9 @@ class HelpService {
     const helper = await this.UserService.getUser({ id: help.helperId });
 
     if (!help) {
-      throw new ErrorHistoryService('Ajuda não encontrada');
+      throw new Error('Ajuda não encontrada');
     } else if (help.ownerId != data.ownerId) {
-      throw new ErrorHistoryService('Usuário não é o dono da ajuda');
+      throw new Error('Usuário não é o dono da ajuda');
     } else if (help.status === 'helper_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
       const ownerBody = `Seu pedido ${help.title} foi finalizado`;
@@ -264,9 +261,9 @@ class HelpService {
 
       help.status = 'finished';
     } else if (help.status === 'owner_finished') {
-      throw new ErrorHistoryService('Usuário já confirmou a finalização da ajuda');
+      throw new Error('Usuário já confirmou a finalização da ajuda');
     } else if (help.status === 'finished') {
-      throw new ErrorHistoryService('Essa ajuda já foi finalizada');
+      throw new Error('Essa ajuda já foi finalizada');
     } else {
       help.status = 'owner_finished';
     }
@@ -279,21 +276,21 @@ class HelpService {
     const help = await this.getHelpByid(id);
     const owner = await this.UserService.getUser({ id: help.ownerId });
     if (!help) {
-      throw new ErrorHistoryService('Ajuda não encontrada');
+      throw new Error('Ajuda não encontrada');
     }
 
     if (idHelper == help.ownerId) {
-      throw new ErrorHistoryService('Você não pode ser ajudante de sua própria ajuda');
+      throw new Error('Você não pode ser ajudante de sua própria ajuda');
     }
     if (help.helperId) {
-      throw new ErrorHistoryService('Ajuda já possui ajudante');
+      throw new Error('Ajuda já possui ajudante');
     }
 
     const helper = await this.UserService.getUser({ id: idHelper });
     const userPosition = help.possibleHelpers.indexOf(idHelper);
 
     if (userPosition > -1) {
-      throw new ErrorHistoryService('Usuário já é um possível ajudante');
+      throw new Error('Usuário já é um possível ajudante');
     }
 
     help.possibleHelpers.push(idHelper);
@@ -324,7 +321,7 @@ class HelpService {
   async getListToDelete() {
     const Helplist = await this.HelpRepository.listToExpire();
     if (!Helplist) {
-      throw new ErrorHistoryService('Pedidos de ajuda não encontrados');
+      throw new Error('Pedidos de ajuda não encontrados');
     }
 
     return Helplist;
