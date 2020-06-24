@@ -62,7 +62,7 @@ exports.findConnections = (coordinates, category, userId) => {
     if (connection.categories && connection.categories.length) {
       const { categories } = connection;
       let categoryExist = false;
-      for (let i = 0; i < categories.length; i = 1 + 1) {
+      for (let i = 0; i < categories.length; i += 1) {
         if (categories[i] == category) {
           categoryExist = true;
           break;
