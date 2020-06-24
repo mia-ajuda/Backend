@@ -1,15 +1,17 @@
 const CategoryRepository = require('../repository/CategoryRepository');
 const ErrorHistoryService = require('./ErrorHistoryService');
+
 class CategoryService {
   constructor() {
     this.CategoryRepository = new CategoryRepository();
   }
 
+  // TODO: Querys parecem idênticas
   async getCategoryByid(id) {
     const Category = await this.CategoryRepository.getById(id);
 
     if (!Category) {
-      throw 'Categoria não encontrada';
+      throw new ErrorHistoryService('Categoria não encontrada');
     }
 
     return Category;
@@ -18,7 +20,7 @@ class CategoryService {
   async getCategoryList(id) {
     const Categorylist = await this.CategoryRepository.list(id);
     if (!Categorylist) {
-      throw 'Categorias não encontrada';
+      throw new ErrorHistoryService('Categoria não encontrada');
     }
 
     return Categorylist;
