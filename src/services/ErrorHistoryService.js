@@ -1,19 +1,26 @@
-const ErrorHistoryRepository = require('../repository/ErrorHistoryRepository');
+const Sentry = require('@sentry/node');
 
-const ErrorHistoryRepository2 = new ErrorHistoryRepository();
 class ErrorHistoryService extends Error {
-  constructor(message, code) {
+  constructor(message) {
     super(message);
-    this.msg = message;
-    this.code = code;
+    console.log(this);
+    this.jsonError = this.showError();
     this.saveError();
+  }
+
+  showError() {
+    const errorMessage = {
+      message: this.message,
+    };
+
+    return errorMessage;
   }
 
   saveError() {
     try {
-      ErrorHistoryRepository2.create(this.msg, this.code);
+      Sentry.captureException(this);
     } catch (err) {
-      console.log('Não foi possível salvar o erro');
+      console.log('Não foi possível salvar o erro!');
       console.log(err);
     }
   }

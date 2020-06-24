@@ -1,5 +1,5 @@
 const CategoryRepository = require('../repository/CategoryRepository');
-
+const ErrorHistoryService = require('./ErrorHistoryService');
 class CategoryService {
   constructor() {
     this.CategoryRepository = new CategoryRepository();
