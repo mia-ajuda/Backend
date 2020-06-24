@@ -6,7 +6,7 @@ const CategoryService = require('./CategoryService');
 const { findConnections, sendMessage } = require('../../websocket');
 const NotificationMixin = require('../utils/NotificationMixin');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
-
+const ErrorHistoryService = require('./ErrorHistoryService');
 
 class HelpService {
   constructor() {
@@ -20,7 +20,7 @@ class HelpService {
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
     if (countHelp >= 5) {
-      throw 'Limite máximo de pedidos atingido';
+      throw new ErrorHistoryService('Limite máximo de pedidos atingido');
     }
 
     await this.CategoryService.getCategoryByid(data.categoryId);
@@ -46,7 +46,7 @@ class HelpService {
     const Help = await this.HelpRepository.getById(id);
 
     if (!Help) {
-      throw 'Ajuda não encontrada';
+      throw new ErrorHistoryService('Ajuda não encontrada');
     }
 
     return Help;
@@ -62,7 +62,7 @@ class HelpService {
       helper,
     );
     if (!Helplist) {
-      throw 'Nenhuma Ajuda com esse status foi encontrada';
+      throw new ErrorHistoryService('Nenhuma Ajuda com esse status foi encontrada');
     }
 
     return Helplist;
@@ -76,7 +76,7 @@ class HelpService {
       categoryArray,
     );
     if (!Helplist) {
-      throw 'Pedidos de ajuda não encontrados no seu raio de distância';
+      throw new ErrorHistoryService('Pedidos de ajuda não encontrados no seu raio de distância');
     }
 
     return Helplist;
@@ -105,7 +105,7 @@ class HelpService {
     const checkHelpStatusExistence = statusList.filter((item) => !Object.values(helpStatusEnum).includes(item));
 
     if (checkHelpStatusExistence.length > 0) {
-      throw 'Um dos status informados é ínvalido.';
+      throw new ErrorHistoryService('Um dos status informados é ínvalido.');
     }
 
     const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
@@ -121,12 +121,11 @@ class HelpService {
     const helper = await this.UserService.getUser({ id: idHelper });
     const owner = await this.UserService.getUser({ id: ownerId });
     if (!help) {
-      throw 'Ajuda não encontrada';
+      throw new ErrorHistoryService('Ajuda não encontrada');
     }
     if (help.helperId) {
-      throw 'Ajuda já possui ajudante';
+      throw new ErrorHistoryService('Ajuda já possui ajudante');
     }
-
 
     const ownerCoords = {
       longitude: owner.location.coordinates[0],
@@ -166,7 +165,7 @@ class HelpService {
       }
       return result;
     }
-    throw 'Ajudante não encontrado';
+    throw new ErrorHistoryService('Ajudante não encontrado');
   }
 
   async helperConfirmation(data) {
@@ -175,9 +174,9 @@ class HelpService {
     const helper = await this.UserService.getUser({ id: help.helperId });
 
     if (!help) {
-      throw 'Ajuda não encontrada';
+      throw new ErrorHistoryService('Ajuda não encontrada');
     } else if (help.helperId != data.helperId) {
-      throw 'Usuário não é o ajudante dessa ajuda';
+      throw new ErrorHistoryService('Usuário não é o ajudante dessa ajuda');
     } else if (help.status === 'owner_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
       const ownerBody = `Seu pedido ${help.title} foi finalizado`;
@@ -211,9 +210,9 @@ class HelpService {
 
       help.status = 'finished';
     } else if (help.status === 'helper_finished') {
-      throw 'Usuário já confirmou a finalização da ajuda';
+      throw new ErrorHistoryService('Usuário já confirmou a finalização da ajuda');
     } else if (help.status === 'finished') {
-      throw 'Ajuda já foi finalizada';
+      throw new ErrorHistoryService('Ajuda já foi finalizada');
     } else {
       help.status = 'helper_finished';
     }
@@ -229,9 +228,9 @@ class HelpService {
     const helper = await this.UserService.getUser({ id: help.helperId });
 
     if (!help) {
-      throw 'Ajuda não encontrada';
+      throw new ErrorHistoryService('Ajuda não encontrada');
     } else if (help.ownerId != data.ownerId) {
-      throw 'Usuário não é o dono da ajuda';
+      throw new ErrorHistoryService('Usuário não é o dono da ajuda');
     } else if (help.status === 'helper_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
       const ownerBody = `Seu pedido ${help.title} foi finalizado`;
@@ -265,9 +264,9 @@ class HelpService {
 
       help.status = 'finished';
     } else if (help.status === 'owner_finished') {
-      throw 'Usuário já confirmou a finalização da ajuda';
+      throw new ErrorHistoryService('Usuário já confirmou a finalização da ajuda');
     } else if (help.status === 'finished') {
-      throw 'Essa ajuda já foi finalizada';
+      throw new ErrorHistoryService('Essa ajuda já foi finalizada');
     } else {
       help.status = 'owner_finished';
     }
@@ -280,21 +279,21 @@ class HelpService {
     const help = await this.getHelpByid(id);
     const owner = await this.UserService.getUser({ id: help.ownerId });
     if (!help) {
-      throw 'Ajuda não encontrada';
+      throw new ErrorHistoryService('Ajuda não encontrada');
     }
 
     if (idHelper == help.ownerId) {
-      throw 'Você não pode ser ajudante de sua própria ajuda';
+      throw new ErrorHistoryService('Você não pode ser ajudante de sua própria ajuda');
     }
     if (help.helperId) {
-      throw 'Ajuda já possui ajudante';
+      throw new ErrorHistoryService('Ajuda já possui ajudante');
     }
 
     const helper = await this.UserService.getUser({ id: idHelper });
     const userPosition = help.possibleHelpers.indexOf(idHelper);
 
     if (userPosition > -1) {
-      throw 'Usuário já é um possível ajudante';
+      throw new ErrorHistoryService('Usuário já é um possível ajudante');
     }
 
     help.possibleHelpers.push(idHelper);
@@ -325,7 +324,7 @@ class HelpService {
   async getListToDelete() {
     const Helplist = await this.HelpRepository.listToExpire();
     if (!Helplist) {
-      throw new Error('Pedidos de ajuda não encontrados');
+      throw new ErrorHistoryService('Pedidos de ajuda não encontrados');
     }
 
     return Helplist;

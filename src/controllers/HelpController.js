@@ -17,7 +17,7 @@ class HelpController {
       res.status(201).json(result);
       next();
     } catch (err) {
-      res.status(400).send({ error: err });
+      res.status(400).send({ error: err.message });
       next();
     }
   }
@@ -30,7 +30,7 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -70,7 +70,7 @@ class HelpController {
       res.json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -92,7 +92,7 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -105,7 +105,7 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -118,7 +118,7 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -131,7 +131,7 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -144,7 +144,7 @@ class HelpController {
       res.status(204).json();
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
     }
   }
 
@@ -157,7 +157,7 @@ class HelpController {
       res.status(204).json();
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -169,12 +169,10 @@ class HelpController {
       res.json(result);
       next();
     } catch (err) {
-      res.status(400);
-      res.json(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
 }
-
 
 module.exports = HelpController;
