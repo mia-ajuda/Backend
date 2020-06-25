@@ -54,7 +54,6 @@ function canParse(locs) {
 }
 exports.findConnections = (coordinates, category, userId) => {
   const filtered = connections.filter((connection) => {
-    console.log(connection);
     if (userId === connection.userId) {
       return false;
     }
