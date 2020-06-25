@@ -6,7 +6,7 @@ const CategoryService = require('./CategoryService');
 const { findConnections, sendMessage } = require('../../websocket');
 const NotificationMixin = require('../utils/NotificationMixin');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
-
+const saveError = require('../utils/ErrorHistory');
 
 class HelpService {
   constructor() {
@@ -104,7 +104,7 @@ class HelpService {
     const checkHelpStatusExistence = statusList.filter((item) => !Object.values(helpStatusEnum).includes(item));
 
     if (checkHelpStatusExistence.length > 0) {
-      throw new Error('Um dos status informados é ínvalido.');
+      throw new Error('Um dos status informados é ínvalido');
     }
 
     const helpList = await this.HelpRepository.getHelpListByStatus(userId, statusList, helper);
@@ -159,6 +159,7 @@ class HelpService {
         this.NotificationMixin.sendNotification(helper.deviceId, title, body);
       } catch (err) {
         console.log('Não foi possível enviar a notificação!');
+        saveError(err);
       }
       return result;
     }
@@ -203,6 +204,7 @@ class HelpService {
         this.NotificationService.createNotification(helperNotificationHistory);
       } catch (err) {
         console.log('Não foi possível enviar a notificação!');
+        saveError(err);
       }
 
       help.status = 'finished';
@@ -257,6 +259,7 @@ class HelpService {
         this.NotificationService.createNotification(helperNotificationHistory);
       } catch (err) {
         console.log('Não foi possível enviar a notificação!');
+        saveError(err);
       }
 
       help.status = 'finished';
@@ -313,6 +316,7 @@ class HelpService {
       this.NotificationService.createNotification(notificationHistory);
     } catch (err) {
       console.log('Não foi possível enviar a notificação!');
+      saveError(err);
     }
 
     return result;

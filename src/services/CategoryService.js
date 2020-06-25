@@ -1,6 +1,5 @@
 const CategoryRepository = require('../repository/CategoryRepository');
 
-
 class CategoryService {
   constructor() {
     this.CategoryRepository = new CategoryRepository();
