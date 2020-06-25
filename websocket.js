@@ -29,9 +29,6 @@ exports.setupWebsocket = (server) => {
       const index = connections.map((connection) => connection.id).indexOf(socket.id);
       if (index >= 0) {
         connections[index].categories = categories;
-        console.log('abacaxi');
-        console.log(connections[index]);
-        console.log('--------------------------')
       }
     });
 
@@ -57,7 +54,6 @@ exports.findConnections = (coordinates, category, userId) => {
     if (userId === connection.userId) {
       return false;
     }
-    console.log(1);
     if (connection.categories && connection.categories.length) {
       const { categories } = connection;
       let categoryExist = false;
@@ -71,7 +67,6 @@ exports.findConnections = (coordinates, category, userId) => {
         return false;
       }
     }
-    console.log(4);
     let should = false;
     let locs = connection.locations;
     if (canParse(locs)) {
