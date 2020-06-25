@@ -118,9 +118,7 @@ class HelpService {
     const { ownerId } = help;
     const helper = await this.UserService.getUser({ id: idHelper });
     const owner = await this.UserService.getUser({ id: ownerId });
-    if (!help) {
-      throw new Error('Ajuda não encontrada');
-    }
+
     if (help.helperId) {
       throw new Error('Ajuda já possui ajudante');
     }
@@ -161,6 +159,7 @@ class HelpService {
         console.log('Não foi possível enviar a notificação!');
         saveError(err);
       }
+
       return result;
     }
     throw new Error('Ajudante não encontrado');
@@ -171,9 +170,7 @@ class HelpService {
     const owner = await this.UserService.getUser({ id: help.ownerId });
     const helper = await this.UserService.getUser({ id: help.helperId });
 
-    if (!help) {
-      throw new Error('Ajuda não encontrada');
-    } else if (help.helperId != data.helperId) {
+    if (help.helperId != data.helperId) {
       throw new Error('Usuário não é o ajudante dessa ajuda');
     } else if (help.status === 'owner_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
@@ -226,9 +223,7 @@ class HelpService {
     const owner = await this.UserService.getUser({ id: help.ownerId });
     const helper = await this.UserService.getUser({ id: help.helperId });
 
-    if (!help) {
-      throw new Error('Ajuda não encontrada');
-    } else if (help.ownerId != data.ownerId) {
+    if (help.ownerId != data.ownerId) {
       throw new Error('Usuário não é o dono da ajuda');
     } else if (help.status === 'helper_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
@@ -278,9 +273,6 @@ class HelpService {
   async addPossibleHelpers(id, idHelper) {
     const help = await this.getHelpByid(id);
     const owner = await this.UserService.getUser({ id: help.ownerId });
-    if (!help) {
-      throw new Error('Ajuda não encontrada');
-    }
 
     if (idHelper == help.ownerId) {
       throw new Error('Você não pode ser ajudante de sua própria ajuda');
