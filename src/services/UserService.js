@@ -19,6 +19,7 @@ class UserService {
       const createdUser = await this.userRepository.create(data);
 
       if (!data.hasUser) {
+        console.log('Usuario Criado');
         // Cria o usuário no firebase
         await firebase
           .auth()
@@ -26,6 +27,7 @@ class UserService {
             email: data.email,
             password: data.password,
             displayName: data.name,
+            emailVerified: false
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
@@ -53,7 +55,6 @@ class UserService {
     if (!user) {
       throw 'Usuário não encontrado';
     }
-
     return user;
   }
 
