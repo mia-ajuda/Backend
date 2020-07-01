@@ -18,7 +18,6 @@ exports.setupWebsocket = (server) => {
       categories: [],
     });
 
-
     socket.on('change-locations', (locations) => {
       const index = connections.map((connection) => connection.id).indexOf(socket.id);
       if (index >= 0) {
@@ -57,7 +56,14 @@ exports.findConnections = (coordinates, category, userId) => {
     }
     if (connection.categories && connection.categories.length) {
       const { categories } = connection;
-      if (!categories.includes(category)) {
+      let categoryExist = false;
+      for (let i = 0; i < categories.length; i += 1) {
+        if (categories[i] == category) {
+          categoryExist = true;
+          break;
+        }
+      }
+      if (!categoryExist) {
         return false;
       }
     }
