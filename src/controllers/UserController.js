@@ -1,5 +1,6 @@
 const UserService = require('../services/UserService');
 const { riskGroups } = require('../models/RiskGroup');
+const saveError = require('../utils/ErrorHistory');
 
 class UserController {
   constructor() {
@@ -25,7 +26,8 @@ class UserController {
       res.status(201).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -44,7 +46,8 @@ class UserController {
       res.status(200).json(result);
       return next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       return next();
     }
   }
@@ -64,7 +67,8 @@ class UserController {
       res.status(200).json(result);
       return next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       return next();
     }
   }
@@ -77,7 +81,8 @@ class UserController {
       res.status(200).json(result);
       return next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       return next();
     }
   }
@@ -93,7 +98,8 @@ class UserController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(404).json({ error: err });
+      saveError(err);
+      res.status(404).json({ error: err.message });
       next();
     }
   }
@@ -110,7 +116,8 @@ class UserController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -123,7 +130,8 @@ class UserController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(404).json({ error: err });
+      saveError(err);
+      res.status(404).json({ error: err.message });
       next();
     }
   }

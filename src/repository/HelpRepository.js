@@ -276,26 +276,22 @@ class HelpRepository extends BaseRepository {
       },
     ];
 
-    try {
-      const helps = await super.$listAggregate(aggregation);
-      const helpsWithDistance = helps.map((help) => {
-        const coordinates = {
-          latitude: coords[1],
-          longitude: coords[0],
-        };
-        const helpCoords = {
-          latitude: help.user.location.coordinates[1],
-          longitude: help.user.location.coordinates[0],
-        };
-        help.distance = getDistance(coordinates, helpCoords);
+    const helps = await super.$listAggregate(aggregation);
+    const helpsWithDistance = helps.map((help) => {
+      const coordinates = {
+        latitude: coords[1],
+        longitude: coords[0],
+      };
+      const helpCoords = {
+        latitude: help.user.location.coordinates[1],
+        longitude: help.user.location.coordinates[0],
+      };
+      help.distance = getDistance(coordinates, helpCoords);
 
-        return help;
-      });
+      return help;
+    });
 
-      return helpsWithDistance;
-    } catch (error) {
-      throw error;
-    }
+    return helpsWithDistance;
   }
 
   async countDocuments(id) {

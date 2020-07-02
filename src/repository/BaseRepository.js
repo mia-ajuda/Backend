@@ -48,7 +48,7 @@ class BaseRepository {
       try {
         finalIdFormat = mongoose.Types.ObjectId(id);
       } catch (err) {
-        throw 'Tamanho ou formato de id inválido';
+        throw new Error('Tamanho ou formato de id inválido');
       }
     }
 
