@@ -27,15 +27,9 @@ class HelpService {
 
     const createdHelp = await this.HelpRepository.create(data);
 
-    const user = await this.UserService.getUser({ id: createdHelp.ownerId });
-    const userCoords = {
-      longitude: user.location.coordinates[0],
-      latitude: user.location.coordinates[1],
-    };
     const sendSocketMessageTo = findConnections(
-      userCoords,
       createdHelp.categoryId,
-      JSON.parse(JSON.stringify(user._id)),
+      JSON.parse(JSON.stringify(createdHelp.ownerId)),
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
 
@@ -88,13 +82,8 @@ class HelpService {
 
     await this.HelpRepository.update(help);
 
-    const user = await this.UserService.getUser({ id: help.ownerId });
-    const userCoords = {
-      longitude: user.location.coordinates[0],
-      latitude: user.location.coordinates[1],
-    };
     help = JSON.parse(JSON.stringify(help));
-    const sendSocketMessageTo = findConnections(userCoords, help.categoryId, JSON.parse(JSON.stringify(user._id)));
+    const sendSocketMessageTo = findConnections(help.categoryId, JSON.parse(JSON.stringify(help.ownerId)));
     sendMessage(sendSocketMessageTo, 'delete-help', id);
 
     return { message: `Help ${id} deleted!` };
@@ -123,14 +112,9 @@ class HelpService {
       throw new Error('Ajuda já possui ajudante');
     }
 
-    const ownerCoords = {
-      longitude: owner.location.coordinates[0],
-      latitude: owner.location.coordinates[1],
-    };
     const sendSocketMessageTo = findConnections(
-      ownerCoords,
       help.categoryId,
-      JSON.parse(JSON.stringify(owner._id)),
+      JSON.parse(JSON.stringify(ownerId)),
     );
     sendMessage(sendSocketMessageTo, 'delete-help', help._id);
 

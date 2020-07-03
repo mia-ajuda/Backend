@@ -14,15 +14,7 @@ exports.setupWebsocket = (server) => {
       id: socket.id,
       userId,
       currentRegion,
-      locations: [currentRegion],
       categories: [],
-    });
-
-    socket.on('change-locations', (locations) => {
-      const index = connections.map((connection) => connection.id).indexOf(socket.id);
-      if (index >= 0) {
-        connections[index].locations = locations;
-      }
     });
 
     socket.on('change-categories', (categories) => {
@@ -41,20 +33,12 @@ exports.setupWebsocket = (server) => {
   });
 };
 
-function canParse(locs) {
-  try {
-    JSON.parse(locs);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-exports.findConnections = (coordinates, category, userId) => {
+exports.findConnections = (category, userId) => {
   const filtered = connections.filter((connection) => {
     if (userId === connection.userId) {
       return false;
     }
-    if (connection.categories && connection.categories.length) {
+    if (connection.categories.length) {
       const { categories } = connection;
       let categoryExist = false;
       for (let i = 0; i < categories.length; i += 1) {
@@ -67,22 +51,7 @@ exports.findConnections = (coordinates, category, userId) => {
         return false;
       }
     }
-    let should = false;
-    let locs = connection.locations;
-    if (canParse(locs)) {
-      locs = [JSON.parse(locs)];
-    }
-    locs.every((location) => {
-      let distance = calculateDistance(coordinates, location);
-      if (distance < 2) {
-        distance = getDistance(JSON.parse(connection.currentRegion), coordinates);
-        connection.distance = distance;
-        should = true;
-        return false;
-      }
-      return true;
-    });
-    return should;
+    return true;
   });
   return filtered;
 };
