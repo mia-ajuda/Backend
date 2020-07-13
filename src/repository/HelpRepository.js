@@ -2,7 +2,7 @@ const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
 const UserSchema = require('../models/User');
-const { getDistance } = require('../utils/geolocation/calculateDistance');
+const { getDistance, calculateDistance } = require('../utils/geolocation/calculateDistance');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -158,18 +158,8 @@ class HelpRepository extends BaseRepository {
 
   async listNear(coords, except, id, categoryArray) {
     const query = {};
-    const location = {
-      $near: {
-        $geometry: {
-          type: 'Point',
-          coordinates: coords,
-        },
-        $maxDistance: 2000,
-      },
-    };
     const ownerId = except ? { $ne: id } : null;
 
-    query.location = location;
     query._id = ownerId;
 
     const users = await UserSchema.find(query);
@@ -208,57 +198,6 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $addFields: {
-          ageRisk: {
-            $cond: [
-              {
-                $gt: [
-                  {
-                    $subtract: [
-                      {
-                        $year: '$$NOW',
-                      },
-                      {
-                        $year: '$user.birthday',
-                      },
-                    ],
-                  },
-                  60,
-                ],
-              },
-              1,
-              0,
-            ],
-          },
-          cardio: {
-            $cond: [
-              {
-                $in: ['$user.riskGroup', [['doenCardio']]],
-              },
-              1,
-              0,
-            ],
-          },
-          risco: {
-            $size: '$user.riskGroup',
-          },
-        },
-      },
-      {
-        $sort: {
-          ageRisk: -1,
-          cardio: -1,
-          risco: -1,
-        },
-      },
-      {
-        $project: {
-          ageRisk: 0,
-          cardio: 0,
-          risco: 0,
-        },
-      },
-      {
         $lookup: {
           from: 'category',
           localField: 'categoryId',
@@ -276,26 +215,29 @@ class HelpRepository extends BaseRepository {
       },
     ];
 
-    try {
-      const helps = await super.$listAggregate(aggregation);
-      const helpsWithDistance = helps.map((help) => {
-        const coordinates = {
-          latitude: coords[1],
-          longitude: coords[0],
-        };
-        const helpCoords = {
-          latitude: help.user.location.coordinates[1],
-          longitude: help.user.location.coordinates[0],
-        };
-        help.distance = getDistance(coordinates, helpCoords);
-
-        return help;
-      });
-
-      return helpsWithDistance;
-    } catch (error) {
-      throw error;
-    }
+    const helps = await super.$listAggregate(aggregation);
+    const helpsWithDistance = helps.map((help) => {
+      const coordinates = {
+        latitude: coords[1],
+        longitude: coords[0],
+      };
+      const helpCoords = {
+        latitude: help.user.location.coordinates[1],
+        longitude: help.user.location.coordinates[0],
+      };
+      help.distance = getDistance(coordinates, helpCoords);
+      help.distanceValue = calculateDistance(coordinates, helpCoords);
+      return help;
+    });
+    helpsWithDistance.sort((a, b) => {
+      if (a.distanceValue < b.distanceValue) {
+        return -1;
+      } if (a.distanceValue > b.distanceValue) {
+        return 1;
+      }
+      return 0;
+    });
+    return helpsWithDistance;
   }
 
   async countDocuments(id) {

@@ -17,11 +17,7 @@ class NotificationService {
     }
     messages.push(message);
 
-    try {
-      notify(messages);
-    } catch (err) {
-      console.log(err);
-    }
+    notify(messages);
   }
 }
 

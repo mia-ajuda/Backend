@@ -1,5 +1,6 @@
 const HelpService = require('../services/HelpService');
 const UserService = require('../services/UserService');
+const saveError = require('../utils/ErrorHistory');
 
 class HelpController {
   constructor() {
@@ -17,7 +18,8 @@ class HelpController {
       res.status(201).json(result);
       next();
     } catch (err) {
-      res.status(400).send({ error: err });
+      saveError(err);
+      res.status(400).send({ error: err.message });
       next();
     }
   }
@@ -30,7 +32,8 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -70,7 +73,8 @@ class HelpController {
       res.json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -92,7 +96,8 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -105,7 +110,8 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -118,7 +124,8 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -131,7 +138,8 @@ class HelpController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -144,7 +152,8 @@ class HelpController {
       res.status(204).json();
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
     }
   }
 
@@ -157,7 +166,8 @@ class HelpController {
       res.status(204).json();
       next();
     } catch (err) {
-      res.status(400).json({ error: err });
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
@@ -169,12 +179,11 @@ class HelpController {
       res.json(result);
       next();
     } catch (err) {
-      res.status(400);
-      res.json(err);
+      saveError(err);
+      res.status(400).json({ error: err.message });
       next();
     }
   }
 }
-
 
 module.exports = HelpController;
