@@ -58,7 +58,7 @@ exports.findConnections = (category, userId) => {
 
 exports.sendMessage = (to, message, data) => {
   to.forEach((connection) => {
-    if (typeof (data) === 'object') {
+    if (typeof (data) === 'object' && message == 'new-help') {
       const userLocation = JSON.parse(connection.currentRegion);
       const helpLocation = {
         latitude: data.user.location.coordinates[1],
