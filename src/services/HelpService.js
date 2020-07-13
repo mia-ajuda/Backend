@@ -76,14 +76,10 @@ class HelpService {
   }
 
   async deleteHelpLogically(id) {
-    let help = await this.getHelpByid(id);
+    const { categoryId, ownerId } = await this.getHelpByid(id);
 
-    help.active = false;
-
-    await this.HelpRepository.update(help);
-
-    help = JSON.parse(JSON.stringify(help));
-    const sendSocketMessageTo = findConnections(help.categoryId, JSON.parse(JSON.stringify(help.ownerId)));
+    await this.HelpRepository.update(id, { active: false });
+    const sendSocketMessageTo = findConnections(categoryId, JSON.parse(JSON.stringify(ownerId)));
     sendMessage(sendSocketMessageTo, 'delete-help', id);
 
     return { message: `Help ${id} deleted!` };
@@ -255,40 +251,42 @@ class HelpService {
   }
 
   async addPossibleHelpers(id, idHelper) {
-    const help = await this.getHelpByid(id);
-    const owner = await this.UserService.getUser({ id: help.ownerId });
+    const {
+      ownerId, helperId, possibleHelpers, title,
+    } = await this.getHelpByid(id);
+    const { deviceId } = await this.UserService.getUser({ id: ownerId });
 
-    if (idHelper == help.ownerId) {
+    if (idHelper == ownerId) {
       throw new Error('Você não pode ser ajudante de sua própria ajuda');
     }
-    if (help.helperId) {
+    if (helperId) {
       throw new Error('Ajuda já possui ajudante');
     }
 
     const helper = await this.UserService.getUser({ id: idHelper });
-    const userPosition = help.possibleHelpers.indexOf(idHelper);
+    const userPosition = possibleHelpers.indexOf(idHelper);
 
     if (userPosition > -1) {
       throw new Error('Usuário já é um possível ajudante');
     }
 
-    help.possibleHelpers.push(idHelper);
+    possibleHelpers.push(idHelper);
 
-    const result = await this.HelpRepository.update(help);
+    const result = await this.HelpRepository.update(id, { possibleHelpers });
 
-    const title = `${helper.name} quer te ajudar!`;
-    const body = `Seu pedido ${help.title} recebeu uma oferta de ajuda`;
+    const notificationTitle = `${helper.name} quer te ajudar!`;
+    const body = `Seu pedido ${title} recebeu uma oferta de ajuda`;
 
     const notificationHistory = {
-      userId: help.ownerId,
-      helpId: help._id,
-      title,
+      userId: ownerId,
+      helpId: id,
+      title: notificationTitle,
       body,
       notificationType: notificationTypesEnum.ajudaRecebida,
     };
 
     try {
-      this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+      this.NotificationMixin.sendNotification(deviceId, title, body);
       this.NotificationService.createNotification(notificationHistory);
     } catch (err) {
       console.log('Não foi possível enviar a notificação!');

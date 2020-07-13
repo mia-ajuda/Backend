@@ -21,8 +21,8 @@ class UserRepository extends BaseRepository {
     return result[0];
   }
 
-  async update(user) {
-    const result = await super.$update(user);
+  async update(id, newValues) {
+    const result = await super.$update(id, newValues);
     return result;
   }
 

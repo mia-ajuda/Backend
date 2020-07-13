@@ -33,16 +33,10 @@ class UserController {
   }
 
   async editUserById(req, res, next) {
-    const data = {
-      email: req.decodedToken.email,
-      photo: req.body.photo,
-      name: req.body.name,
-      phone: req.body.phone,
-      notificationToken: req.body.notificationToken,
-      deviceId: req.body.deviceId,
-    };
+    const data = req.body;
+    const { email } = req.decodedToken;
     try {
-      const result = await this.userService.editUserById(data);
+      const result = await this.userService.editUserById(email, data);
       res.status(200).json(result);
       return next();
     } catch (err) {
@@ -53,17 +47,11 @@ class UserController {
   }
 
   async editUserAddressById(req, res, next) {
-    const data = {
-      email: req.decodedToken.email,
-      cep: req.body.cep,
-      number: req.body.number,
-      city: req.body.city,
-      state: req.body.state,
-      complement: req.body.complement,
-    };
-
+    const data = req.body;
+    const { email } = req.decodedToken;
     try {
-      const result = await this.userService.editUserAddressById(data);
+      console.log(email);
+      const result = await this.userService.editUserAddressById(email, { address: data });
       res.status(200).json(result);
       return next();
     } catch (err) {

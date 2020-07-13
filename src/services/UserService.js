@@ -53,43 +53,16 @@ class UserService {
     return user;
   }
 
-  async editUserById({
-    email,
-    photo,
-    name,
-    phone,
-    notificationToken,
-    deviceId,
-  }) {
-    const user = await this.getUser({ email });
-
-    user.photo = photo || user.photo;
-    user.name = name || user.name;
-    user.phone = phone || user.phone;
-    user.notificationToken = notificationToken || user.notificationToken;
-    user.deviceId = deviceId || user.deviceId;
-
-    const result = await this.userRepository.update(user);
-
+  async editUserById(email, newValues) {
+    const { _id } = await this.getUser({ email });
+    const result = await this.userRepository.update(_id, newValues);
     return result;
   }
 
-  async editUserAddressById({
-    email, cep, number, city, state, complement,
-  }) {
-    const user = await this.getUser({ email });
+  async editUserAddressById(email, newValues) {
+    const { _id } = await this.getUser({ email });
 
-    const address = {
-      cep: cep || user.address.cep,
-      number: number || user.address.number,
-      city: city || user.address.city,
-      state: state || user.address.state,
-      complement: complement || user.address.complement,
-    };
-
-    user.address = address;
-
-    const result = await this.userRepository.update(user);
+    const result = await this.userRepository.update(_id, newValues);
 
     return result;
   }

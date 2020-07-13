@@ -76,8 +76,8 @@ class HelpRepository extends BaseRepository {
     return help[0];
   }
 
-  async update(help) {
-    const helpUpdated = await super.$update(help);
+  async update(id, newValues) {
+    const helpUpdated = await super.$update(id, newValues);
     return helpUpdated;
   }
 

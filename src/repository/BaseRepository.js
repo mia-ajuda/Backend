@@ -1,33 +1,33 @@
 const mongoose = require('mongoose');
+const { ObjectID } = require('mongodb');
 
 class BaseRepository {
   constructor(modelClass) {
     this.modelClass = modelClass;
   }
 
-  async $save(dataModel, mongoSession = {}) {
+  async $save(dataModel) {
     if (dataModel._id) {
       dataModel.lastUpdateDate = Date.now();
     }
-    const savedModel = await new this.modelClass(dataModel).save({
-      session: mongoSession.session,
-    });
+    const savedModel = await this.modelClass(dataModel).save();
     return savedModel;
   }
 
-  async $saveMany(itemsModel, mongoSession = {}) {
+  async $saveMany(itemsModel) {
     itemsModel.forEach((item) => {
       item.lastUpdateDate = Date.now();
     });
-    const savedModels = await this.modelClass.insertMany(itemsModel, {
-      session: mongoSession.session,
-    });
+    const savedModels = await this.modelClass.insertMany(itemsModel);
     return savedModels;
   }
 
-  async $update(dataModel, mongoSession = {}) {
-    dataModel.lastUpdateDate = Date.now();
-    const savedModel = await dataModel.save({ session: mongoSession.session });
+  async $update(id, newValues) {
+    const savedModel = await this.modelClass.findOneAndUpdate(
+      { _id: ObjectID(id) },
+      { $set: { ...newValues, lastUpdateDate: Date.now() } },
+      { new: true },
+    );
     return savedModel;
   }
 
