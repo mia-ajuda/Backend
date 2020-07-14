@@ -15,21 +15,29 @@ class UserService {
       data.cpf = data.cpf.replace(/[-.]/g, '');
     }
     data.email = data.email.toLowerCase();
-    const createdUser = await this.userRepository.create(data);
+    try {
+      const createdUser = await this.userRepository.create(data);
 
-    if (!data.hasUser) {
-      // Cria o usuário no firebase
-      await firebase
-        .auth()
-        .createUser({
-          email: data.email,
-          password: data.password,
-          displayName: data.name,
-        })
-        .catch(async (err) => {
-          await this.removeUser(data.email);
-          throw err;
-        });
+      if (!data.hasUser) {
+        console.log('Usuario Criado');
+        // Cria o usuário no firebase
+        await firebase
+          .auth()
+          .createUser({
+            email: data.email,
+            password: data.password,
+            displayName: data.name,
+            emailVerified: false
+          })
+          .catch(async (err) => {
+            await this.removeUser(data.email);
+            throw err;
+          });
+      }
+
+      return createdUser;
+    } catch (err) {
+      throw err;
     }
 
     return createdUser;
@@ -49,7 +57,6 @@ class UserService {
     if (!user) {
       throw new Error('Usuário não encontrado');
     }
-
     return user;
   }
 
