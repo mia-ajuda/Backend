@@ -120,3 +120,6 @@ dist
 
 # package-lock (main is yarn.lock)
 package-lock.json
+
+# Arquivo de configuração de backup remoto
+rclone.conf
