@@ -1,0 +1,24 @@
+scheduler:
+  # run every day at 4:00 UTC-3
+  cron: "0 7 */1 * *"
+  # number of backups to keep locally
+  retention: 14
+  # backup operation timeout in minutes
+  timeout: 60
+target:
+  # mongod IP or host name
+  host: "mongo"
+  # mongodb port
+  port: 27017
+  # mongodb database name, leave blank to backup all databases
+  database: "miaAjudaDB"
+  # leave blank if auth is not enabled
+  username: ${MONGODB_USERNAME}
+  password: ${MONGODB_PASSWORD}
+  # add custom params to mongodump (eg. Auth or SSL support), leave blank if not needed
+  params: "--authenticationDatabase admin" # "--ssl"
+rclone:
+  bucket: "MiaAjuda-Rclone"
+  # See https://rclone.org/docs/ for details on how to configure rclone
+  configFilePath: /config/rclone.conf
+  configSection: "MiaAjuda-Rclone"
