@@ -1,5 +1,5 @@
-const UserRepository = require("../repository/UserRepository");
-const firebase = require("../config/authFirebase");
+const UserRepository = require('../repository/UserRepository');
+const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
@@ -8,17 +8,18 @@ class UserService {
 
   async createUser(data) {
     if (data.password.length < 8) {
-      throw "Senha inválida";
+      throw new Error('Senha inválida');
     }
 
     if (data.cpf.length >= 11) {
-      data.cpf = data.cpf.replace(/[-.]/g, "");
+      data.cpf = data.cpf.replace(/[-.]/g, '');
     }
     data.email = data.email.toLowerCase();
     try {
       const createdUser = await this.userRepository.create(data);
 
       if (!data.hasUser) {
+        console.log('Usuario Criado');
         // Cria o usuário no firebase
         await firebase
           .auth()
@@ -26,6 +27,7 @@ class UserService {
             email: data.email,
             password: data.password,
             displayName: data.name,
+            emailVerified: false
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
@@ -37,11 +39,13 @@ class UserService {
     } catch (err) {
       throw err;
     }
+
+    return createdUser;
   }
 
   async getUser({ id = undefined, email = undefined }) {
     if (!id && !email) {
-      throw { id: "Nenhum identificador encontrado" };
+      throw new Error('Nenhum identificador encontrado');
     }
     let user;
 
@@ -51,9 +55,8 @@ class UserService {
       user = await this.userRepository.getUserByEmail(email);
     }
     if (!user) {
-      throw "Usuário não encontrado";
+      throw new Error('Usuário não encontrado');
     }
-
     return user;
   }
 
@@ -67,10 +70,6 @@ class UserService {
   }) {
     const user = await this.getUser({ email });
 
-    if (!user) {
-      throw "Usuário não encontrado";
-    }
-
     user.photo = photo || user.photo;
     user.name = name || user.name;
     user.phone = phone || user.phone;
@@ -82,12 +81,10 @@ class UserService {
     return result;
   }
 
-  async editUserAddressById({ email, cep, number, city, state, complement }) {
+  async editUserAddressById({
+    email, cep, number, city, state, complement,
+  }) {
     const user = await this.getUser({ email });
-
-    if (!user) {
-      throw "Usuário não encontrado";
-    }
 
     const address = {
       cep: cep || user.address.cep,
@@ -107,10 +104,6 @@ class UserService {
   async updateUserLocationById({ email, longitude, latitude }) {
     const user = await this.getUser({ email });
 
-    if (!user) {
-      throw "Usuário não encontrado";
-    }
-
     if (longitude || latitude) {
       user.location.coordinates[0] = longitude || user.location.coordinates[0];
       user.location.coordinates[1] = latitude || user.location.coordinates[1];
@@ -128,16 +121,12 @@ class UserService {
 
     await this.userRepository.update(user);
 
-    return { message: `User ${id} deleted!` };
+    return { message: `User ${user._id} deleted!` };
   }
 
   async removeUser(email) {
-    try {
-      const user = await this.getUser({ email });
-      await this.userRepository.removeUser({ id: user._id, email });
-    } catch {
-      return;
-    }
+    const user = await this.getUser({ email });
+    await this.userRepository.removeUser({ id: user._id, email });
   }
 
   async checkUserExistence(identificator) {

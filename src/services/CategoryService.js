@@ -1,30 +1,29 @@
 const CategoryRepository = require('../repository/CategoryRepository');
 
 class CategoryService {
-    constructor() {
-        this.CategoryRepository = new CategoryRepository();
+  constructor() {
+    this.CategoryRepository = new CategoryRepository();
+  }
+
+  // TODO: Querys parecem idênticas
+  async getCategoryByid(id) {
+    const Category = await this.CategoryRepository.getById(id);
+
+    if (!Category) {
+      throw new Error('Categoria não encontrada');
     }
 
-    async getCategoryByid(id) {
-        
-        const Category = await this.CategoryRepository.getById(id);
-        
-        
-        if (!Category) {
-            throw 'Categoria não encontrada';
-        }
+    return Category;
+  }
 
-        return Category;
+  async getCategoryList(id) {
+    const Categorylist = await this.CategoryRepository.list(id);
+    if (!Categorylist) {
+      throw new Error('Categoria não encontrada');
     }
 
-    async getCategoryList(id) {
-        const Categorylist = await this.CategoryRepository.list(id);
-        if (!Categorylist) {
-            throw 'Categorias não encontrada';
-        }
-
-        return Categorylist;
-    }
+    return Categorylist;
+  }
 }
 
 module.exports = CategoryService;
