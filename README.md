@@ -20,7 +20,7 @@ Inicialmente, instale localmente as seguintes dependências:
 
 ### Arquivos de Configuração
 
-1. A aplicação utiliza-se de autenticação por meio do [firebase](https://firebase.google.com/), logo, insira na pasta `src/config` o arquivo `firebaseConfig-dev.js`. O arquivo de configuração obtido do firebase deve apresentar a seguinte fisionomia:
+1. A aplicação utiliza-se de autenticação por meio do [firebase](https://firebase.google.com/), logo, insira na pasta `src/config` o arquivo do ambiente de desenvolvimento `firebaseAuthConfig.js`. O arquivo de configuração obtido do firebase deve apresentar a seguinte fisionomia:
 
 ```js
 const config = {
