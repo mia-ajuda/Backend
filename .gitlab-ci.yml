@@ -19,8 +19,8 @@ build:
   variables:
     IMAGE_NAME: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   before_script:
-    - cat $FIREBASE_CONFIG_DEV > ./src/config/fibaseConfig-dev.js
-    - cat $FIREBASE_CONFIG > ./src/config/fibaseConfig.js
+    - cat $FIREBASE_CONFIG_DEV > ./src/config/firebaseConfig-dev.js
+    - cat $FIREBASE_CONFIG > ./src/config/firebaseConfig.js
   script:
     - echo "Building image"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
