@@ -19,6 +19,7 @@ build:
   variables:
     IMAGE_NAME: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   before_script:
+    - cat $FIREBASE_CONFIG_DEV > ./src/config/fibaseConfig-dev.js
     - cat $FIREBASE_CONFIG > ./src/config/fibaseConfig.js
   script:
     - echo "Building image"
@@ -48,5 +49,3 @@ build stable:
   only:
     - master
     - configuracao-ci
-
-
