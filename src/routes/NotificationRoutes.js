@@ -5,7 +5,8 @@ const isAuthenticated = require('../validation/middlewares/authFirebase');
 const notificationController = new NotificationController();
 const routes = express.Router();
 
-routes.get('/notification/user/:id', isAuthenticated, async (req, res, next) => {
+routes.use(isAuthenticated);
+routes.get('/notification/user/:id', async (req, res, next) => {
   notificationController.getUserNotificationsById(req, res, next);
 });
 

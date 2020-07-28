@@ -9,22 +9,23 @@ routes.post('/user', async (req, res, next) => {
   userController.createUser(req, res, next);
 });
 
-routes.get('/user/getUser/:id*?/', isAuthenticated, async (req, res, next) => {
+routes.use(isAuthenticated);
+routes.get('/user/getUser/:id*?/', async (req, res, next) => {
   userController.getUserById(req, res, next);
 });
 
-routes.put('/user', isAuthenticated, async (req, res, next) => {
+routes.put('/user', async (req, res, next) => {
   userController.editUserById(req, res, next);
 });
 
-routes.put('/user/address', isAuthenticated, async (req, res, next) => {
+routes.put('/user/address', async (req, res, next) => {
   userController.editUserAddressById(req, res, next);
 });
-routes.put('/user/location', isAuthenticated, async (req, res, next) => {
+routes.put('/user/location', async (req, res, next) => {
   userController.updateUserLocationById(req, res, next);
 });
 
-routes.delete('/user', isAuthenticated, async (req, res, next) => {
+routes.delete('/user', async (req, res, next) => {
   userController.deleteUserLogic(req, res, next);
 });
 
