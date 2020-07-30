@@ -19,6 +19,7 @@ class HelpService {
 
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
+    console.log(countHelp);
     if (countHelp >= 5) {
       throw new Error('Limite máximo de pedidos atingido');
     }
@@ -288,8 +289,8 @@ class HelpService {
     };
 
     try {
-      this.NotificationMixin.sendNotification(owner.deviceId, title, body);
-      this.NotificationService.createNotification(notificationHistory);
+      await this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+      await this.NotificationService.createNotification(notificationHistory);
     } catch (err) {
       console.log('Não foi possível enviar a notificação!');
       saveError(err);

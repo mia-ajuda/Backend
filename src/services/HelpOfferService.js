@@ -26,6 +26,17 @@ class OfferedHelpService {
     const helps = await this.OfferedHelpRepository.listByHelpedUserId(helpedUserId);
     return helps;
   }
+
+  async addPossibleHelpedUsers(helpedId, helpOfferId) {
+    const help = await this.getHelpOfferByid(helpOfferId);
+    help.possibleHelpedUsers.push(helpedId);
+    await this.HelpOfferRepository.update(help);
+  }
+
+  async getHelpOfferById(){
+
+  }
+
 }
 
 module.exports = OfferedHelpService;

@@ -45,7 +45,15 @@ class OfferedHelpController {
     }
   }
 
-  async addPossibleHelpedUsers(req, res) {}
+  async addPossibleHelpedUsers(req, res) {
+    const { helpedId, helpOfferId } = req.params;
+    try {
+      await this.HelpOfferService.addPossibleHelpedHelpers(helpedId, helpOfferId);
+      return res.status(204).json();
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  }
 
   async chooseHelpedUser(req, res) {}
 
