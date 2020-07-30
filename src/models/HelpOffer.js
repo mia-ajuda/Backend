@@ -31,7 +31,7 @@ const offeredHelpSchema = new Schema({
     required: true,
   },
   helpedUserId: {
-    type: Schema.Types.ObjectId,
+    type: [Schema.Types.ObjectId],
     ref: 'User',
     required: false,
   },
@@ -49,13 +49,19 @@ const offeredHelpSchema = new Schema({
   },
 },
 {
-  collection: 'offeredHelp',
+  collection: 'helpOffer',
   toObject: {
     virtuals: true,
   },
   toJSON: {
     virtuals: true,
   },
+});
+
+offeredHelpSchema.virtual('user', {
+  ref: 'User',
+  localField: 'ownerId',
+  foreignField: '_id',
 });
 
 module.exports = model('OfferedHelp', offeredHelpSchema);

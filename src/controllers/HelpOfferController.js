@@ -7,11 +7,50 @@ class OfferedHelpController {
 
   async createHelpOffer(req, res) {
     try {
-      const newHelpOffer = await this.HelpOfferService.createNewHelpOffer(req.body);
+      const newHelpOffer = await this.HelpOfferService.createNewHelpOffer(
+        req.body,
+      );
       return res.json(newHelpOffer);
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
+  }
+
+  async listOffer(req, res) {
+    try {
+      const helps = await this.HelpOfferService.listHelps();
+      return res.json(helps);
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  }
+
+  async listOfferByOwnerId(req, res) {
+    const { ownerId } = req.params;
+    try {
+      const helps = await this.HelpOfferService.listHelpsByOwnerId(ownerId);
+      return res.json(helps);
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  }
+
+  async listOfferByHelpedUserId(req, res) {
+    const { helpedUserId } = req.params;
+    try {
+      const helps = await this.HelpOfferService.listHelpsByHelpedUserId(helpedUserId);
+      return res.json(helps);
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  }
+
+  async addPossibleHelpedUsers(req, res) {}
+
+  async chooseHelpedUser(req, res) {}
+
+  async finishHelpOfferByOwner(req, res) {
+
   }
 }
 
