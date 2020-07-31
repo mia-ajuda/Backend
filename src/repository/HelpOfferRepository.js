@@ -14,20 +14,29 @@ class OfferdHelpRepository extends BaseRepository {
   async list() {
     const query = null;
     const populate = 'user';
-    const helps = await super.$list(query, populate);
-    return helps;
+    const helpOffers = await super.$list(query, populate);
+    return helpOffers;
   }
 
   async listByOwnerId(ownerId) {
     const query = { ownerId };
-    const helps = await super.$list(query);
-    return helps;
+    const helpOffers = await super.$list(query);
+    return helpOffers;
   }
 
   async listByHelpedUserId(helpedUserId) {
     const query = { helpedUserId };
-    const helps = await super.$list(query);
-    return helps;
+    const helpOffers = await super.$list(query);
+    return helpOffers;
+  }
+
+  async getById(id) {
+    const helpOffer = await super.$getById(id);
+    return helpOffer;
+  }
+
+  async update(helpOffer) {
+    await super.$update(helpOffer);
   }
 }
 

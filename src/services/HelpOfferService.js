@@ -12,31 +12,31 @@ class OfferedHelpService {
     return newOfferdHelp;
   }
 
-  async listHelps() {
-    const helps = await this.OfferedHelpRepository.list();
-    return helps;
+  async listHelpsOffers() {
+    const helpOffers = await this.OfferedHelpRepository.list();
+    return helpOffers;
   }
 
-  async listHelpsByOwnerId(ownerId) {
-    const helps = await this.OfferedHelpRepository.listByOwnerId(ownerId);
-    return helps;
+  async listHelpsOffersByOwnerId(ownerId) {
+    const helpOffers = await this.OfferedHelpRepository.listByOwnerId(ownerId);
+    return helpOffers;
   }
 
-  async listHelpsByHelpedUserId(helpedUserId) {
-    const helps = await this.OfferedHelpRepository.listByHelpedUserId(helpedUserId);
-    return helps;
+  async listHelpOffersByHelpedUserId(helpedUserId) {
+    const helpOffers = await this.OfferedHelpRepository.listByHelpedUserId(helpedUserId);
+    return helpOffers;
   }
 
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
-    const help = await this.getHelpOfferByid(helpOfferId);
-    help.possibleHelpedUsers.push(helpedId);
-    await this.HelpOfferRepository.update(help);
+    const helpOffer = await this.getHelpOfferById(helpOfferId);
+    helpOffer.possibleHelpedUsers.push(helpedId);
+    await this.OfferedHelpRepository.update(helpOffer);
   }
 
-  async getHelpOfferById(){
-
+  async getHelpOfferById(helpOfferId) {
+    const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
+    return helpOffer;
   }
-
 }
 
 module.exports = OfferedHelpService;

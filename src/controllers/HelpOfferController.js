@@ -16,30 +16,30 @@ class OfferedHelpController {
     }
   }
 
-  async listOffer(req, res) {
+  async listHelpsOffers(req, res) {
     try {
-      const helps = await this.HelpOfferService.listHelps();
-      return res.json(helps);
+      const helpOffers = await this.HelpOfferService.listHelpsOffers();
+      return res.json(helpOffers);
     } catch (error) {
       return res.status(400).json(error);
     }
   }
 
-  async listOfferByOwnerId(req, res) {
+  async listHelpsOffersByOwnerId(req, res) {
     const { ownerId } = req.params;
     try {
-      const helps = await this.HelpOfferService.listHelpsByOwnerId(ownerId);
-      return res.json(helps);
+      const helpOffers = await this.HelpOfferService.listHelpsOffersByOwnerId(ownerId);
+      return res.json(helpOffers);
     } catch (error) {
       return res.status(400).json(error);
     }
   }
 
-  async listOfferByHelpedUserId(req, res) {
+  async listHelpOffersByHelpedUserId(req, res) {
     const { helpedUserId } = req.params;
     try {
-      const helps = await this.HelpOfferService.listHelpsByHelpedUserId(helpedUserId);
-      return res.json(helps);
+      const helpOffers = await this.HelpOfferService.listHelpOffersByHelpedUserId(helpedUserId);
+      return res.json(helpOffers);
     } catch (error) {
       return res.status(400).json(error);
     }
@@ -48,7 +48,7 @@ class OfferedHelpController {
   async addPossibleHelpedUsers(req, res) {
     const { helpedId, helpOfferId } = req.params;
     try {
-      await this.HelpOfferService.addPossibleHelpedHelpers(helpedId, helpOfferId);
+      await this.HelpOfferService.addPossibleHelpedUsers(helpedId, helpOfferId);
       return res.status(204).json();
     } catch (error) {
       return res.status(400).json(error);
