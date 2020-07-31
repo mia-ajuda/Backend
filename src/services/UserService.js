@@ -1,12 +1,17 @@
 const UserRepository = require('../repository/UserRepository');
+const EntityRepository = require('../repository/EntityRepository');
 const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();
+    this.entityRepository = new EntityRepository();
   }
 
   async createUser(data) {
+    if(await this.entityRepository.getEntityByEmail(data.email)){
+      throw new Error('Email já sendo utilizado');
+    }
     if (data.password.length < 8) {
       throw new Error('Senha inválida');
     }
@@ -40,7 +45,6 @@ class UserService {
       throw err;
     }
 
-    return createdUser;
   }
 
   async getUser({ id = undefined, email = undefined }) {
