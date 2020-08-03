@@ -123,7 +123,11 @@ class UserController {
   }
 
   async checkUserExistence(req, res, next) {
-    const { value } = req.params;
+    let { value } = req.params;
+
+    if(!value) {
+      value = req.decodedToken.email;
+    }
 
     try {
       const result = await this.userService.checkUserExistence(value);
