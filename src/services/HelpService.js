@@ -46,25 +46,9 @@ class HelpService {
     return Help;
   }
 
-  async getHelpList(id, status, category, except, helper) {
-    const Helplist = await this.HelpRepository.list(
-      id,
-      status,
-      category,
-      except,
-      helper,
-    );
-    if (!Helplist) {
-      throw new Error('Nenhuma Ajuda com esse status foi encontrada');
-    }
-
-    return Helplist;
-  }
-
-  async getNearHelpList(coords, except, id, categoryArray) {
+  async getNearHelpList(coords, id, categoryArray) {
     const Helplist = await this.HelpRepository.listNear(
       coords,
-      except,
       id,
       categoryArray,
     );

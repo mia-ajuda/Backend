@@ -39,36 +39,20 @@ class HelpController {
   }
 
   async getHelpList(req, res, next) {
-    const except = !!req.query['id.except'];
-    const helper = !!req.query['id.helper'];
-    const temp = except ? 'except' : helper ? 'helper' : null;
-    const id = temp ? req.query[`id.${temp}`] : req.query.id;
-    const status = req.query.status || null;
+    const { id } = req.query;
+    const coords = req.query.coords.split(',').map((coord) => Number(coord));
     const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
     /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
             sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço */
-
-    const near = !!req.query.near;
-    const coords = near ? req.query.coords.split(',').map((coord) => Number(coord)) : null;
-
+    console.log(coords);
+    console.log(categoryArray);
+    console.log(req.query.categoryId);
     try {
-      let result;
-      if (near) {
-        result = await this.HelpService.getNearHelpList(
-          coords,
-          except,
-          id,
-          categoryArray,
-        );
-      } else {
-        result = await this.HelpService.getHelpList(
-          id,
-          status,
-          except,
-          helper,
-          categoryArray,
-        );
-      }
+      const result = await this.HelpService.getNearHelpList(
+        coords,
+        id,
+        categoryArray,
+      );
       res.status(200);
       res.json(result);
       next();
