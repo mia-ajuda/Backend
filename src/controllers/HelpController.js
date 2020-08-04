@@ -44,9 +44,6 @@ class HelpController {
     const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
     /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
             sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço */
-    console.log(coords);
-    console.log(categoryArray);
-    console.log(req.query.categoryId);
     try {
       const result = await this.HelpService.getNearHelpList(
         coords,

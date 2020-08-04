@@ -121,8 +121,8 @@ class HelpService {
       };
 
       try {
-        this.NotificationService.createNotification(notificationHistory);
-        this.NotificationMixin.sendNotification(helper.deviceId, title, body);
+        await this.NotificationService.createNotification(notificationHistory);
+        await this.NotificationMixin.sendNotification(helper.deviceId, title, body);
       } catch (err) {
         console.log('Não foi possível enviar a notificação!');
         saveError(err);
@@ -163,10 +163,10 @@ class HelpService {
       };
 
       try {
-        this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
-        this.NotificationService.createNotification(ownerNotificationHistory);
-        this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
-        this.NotificationService.createNotification(helperNotificationHistory);
+        await this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
+        await this.NotificationService.createNotification(ownerNotificationHistory);
+        await this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
+        await this.NotificationService.createNotification(helperNotificationHistory);
       } catch (err) {
         console.log('Não foi possível enviar a notificação!');
         saveError(err);
@@ -216,10 +216,10 @@ class HelpService {
       };
 
       try {
-        this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
-        this.NotificationService.createNotification(ownerNotificationHistory);
-        this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
-        this.NotificationService.createNotification(helperNotificationHistory);
+        await this.NotificationMixin.sendNotification(owner.deviceId, ownerTitle, ownerBody);
+        await this.NotificationService.createNotification(ownerNotificationHistory);
+        await this.NotificationMixin.sendNotification(helper.deviceId, helperTitle, helperBody);
+        await this.NotificationService.createNotification(helperNotificationHistory);
       } catch (err) {
         console.log('Não foi possível enviar a notificação!');
         saveError(err);
@@ -272,8 +272,8 @@ class HelpService {
     };
 
     try {
-      this.NotificationMixin.sendNotification(owner.deviceId, title, body);
-      this.NotificationService.createNotification(notificationHistory);
+      await this.NotificationMixin.sendNotification(owner.deviceId, title, body);
+      await this.NotificationService.createNotification(notificationHistory);
     } catch (err) {
       console.log('Não foi possível enviar a notificação!');
       saveError(err);
