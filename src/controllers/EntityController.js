@@ -1,5 +1,4 @@
 const EntityService = require('../services/EntityService');
-const { riskGroups } = require('../models/RiskGroup');
 const saveError = require('../utils/ErrorHistory');
 
 class EntityController {
@@ -123,14 +122,14 @@ class EntityController {
   }
 
   async checkEntityExistence(req, res, next) {
-    let { value } = req.params;
+    let { entityIdentifier } = req.params;
 
-    if(!value) {
-      value = req.decodedToken.email;
+    if (!entityIdentifier) {
+      entityIdentifier = req.decodedToken.email;
     }
 
     try {
-      const result = await this.entityService.checkEntityExistence(value);
+      const result = await this.entityService.checkEntityExistence(entityIdentifier);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -139,11 +138,6 @@ class EntityController {
       next();
     }
   }
-
-//   async getEntityGroupRiskList(req, res, next) {
-//     res.status(200).json(riskGroups);
-//     next();
-//   }
 }
 
 module.exports = EntityController;

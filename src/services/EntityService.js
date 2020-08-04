@@ -6,14 +6,15 @@ class EntityService {
   constructor() {
     this.entityRepository = new EntityRepository();
     this.userRepository = new UserRepository();
-
   }
 
   async createEntity(data) {
-    if(await this.userRepository.getUserByEmail(data.email)){
-      console.log(await this.userRepository.getUserByEmail(data.email));
+    const isUserRegistered = await this.userRepository.getUserByEmail(data.email);
+
+    if (isUserRegistered) {
       throw new Error('Email já sendo utilizado');
     }
+
     if (data.password.length < 8) {
       throw new Error('Senha inválida');
     }
@@ -21,6 +22,7 @@ class EntityService {
     if (data.cnpj.length >= 14) {
       data.cnpj = data.cnpj.replace(/([^0-9])+/g, '');
     }
+
     data.email = data.email.toLowerCase();
     try {
       const createdEntity = await this.entityRepository.create(data);
@@ -34,7 +36,7 @@ class EntityService {
             email: data.email,
             password: data.password,
             displayName: data.name,
-            emailVerified: false
+            emailVerified: false,
           })
           .catch(async (err) => {
             await this.removeEntity(data.email);
@@ -46,7 +48,6 @@ class EntityService {
     } catch (err) {
       throw err;
     }
-
   }
 
   async getEntity({ id = undefined, email = undefined }) {
@@ -135,8 +136,8 @@ class EntityService {
     await this.entityRepository.removeEntity({ id: entity._id, email });
   }
 
-  async checkEntityExistence(identificator) {
-    const result = await this.entityRepository.checkEntityExistence(identificator);
+  async checkEntityExistence(entityIdentifier) {
+    const result = await this.entityRepository.checkEntityExistence(entityIdentifier);
 
     if (result) {
       return true;
