@@ -92,7 +92,6 @@ class UserController {
       id: req.params.id,
       email: req.decodedToken.email,
     };
-
     try {
       const result = await this.userService.getUser(data);
       res.status(200).json(result);
