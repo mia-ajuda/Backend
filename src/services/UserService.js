@@ -27,7 +27,7 @@ class UserService {
             email: data.email,
             password: data.password,
             displayName: data.name,
-            emailVerified: false
+            emailVerified: false,
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
@@ -39,8 +39,6 @@ class UserService {
     } catch (err) {
       throw err;
     }
-
-    return createdUser;
   }
 
   async getUser({ id = undefined, email = undefined }) {

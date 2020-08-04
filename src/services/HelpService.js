@@ -19,6 +19,7 @@ class HelpService {
 
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
+    console.log(countHelp);
     if (countHelp >= 5) {
       throw new Error('Limite máximo de pedidos atingido');
     }
