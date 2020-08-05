@@ -54,10 +54,20 @@ class HelpRepository extends BaseRepository {
     return helpUpdated;
   }
 
+  async shortList(coords, id, categoryArray){
+    const query = {};
+    const ownerId = { $ne: id };
+    query._id = ownerId;
+    console.log('abacaxi');
+    const users = await UserSchema.find(query);
+    console.log(37777777);
+    console.log(users);
+    return users;
+  }
+
   async listNear(coords, id, categoryArray) {
     const query = {};
     const ownerId = { $ne: id };
-
     query._id = ownerId;
 
     const users = await UserSchema.find(query);
