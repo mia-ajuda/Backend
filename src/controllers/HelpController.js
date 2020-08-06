@@ -45,7 +45,7 @@ class HelpController {
     /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
             sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço */
     try {
-      const result = await this.HelpService.getNearHelpList(
+      const result = await this.HelpService.getHelpList(
         coords,
         id,
         categoryArray,

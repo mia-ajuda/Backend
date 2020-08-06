@@ -61,21 +61,9 @@ class HelpRepository extends BaseRepository {
     const selectedFields = {
       _id: 1,
     };
-    console.log('abacaxi');
-    const users = await super.$list(query, selectedFields);
-    console.log(37777777);
-    console.log(users);
-    return users;
-  }
 
-  async listNear(coords, id, categoryArray) {
-    const query = {};
-    const ownerId = { $ne: id };
-    query._id = ownerId;
-
-    const users = await UserSchema.find(query);
+    const users = await UserSchema.find(query, selectedFields);
     const arrayUsersId = users.map((user) => user._id);
-
     const matchQuery = {};
 
     matchQuery.active = true;
@@ -109,23 +97,15 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'possibleHelpers',
-          foreignField: '_id',
-          as: 'possibleHelpers',
+        $project: {
+          _id: 1,
+          title: 1,
+          'user.name': 1,
+          'user.riskGroup': 1,
+          'user.location.coordinates': 1,
         },
       },
     ];
-
     const helps = await super.$listAggregate(aggregation);
     const helpsWithDistance = helps.map((help) => {
       const coordinates = {

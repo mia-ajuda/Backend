@@ -47,7 +47,7 @@ class HelpService {
     return Help;
   }
 
-  async getNearHelpList(coords, id, categoryArray) {
+  async getHelpList(coords, id, categoryArray) {
     const Helplist = await this.HelpRepository.shortList(
       coords,
       id,
