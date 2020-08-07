@@ -31,7 +31,7 @@ class UserService {
 
       if (!data.hasUser) {
         // Cria o usuário no firebase
-        const firebaseResponse = await firebase
+        await firebase
           .auth()
           .createUser({
             email: data.email,
@@ -43,8 +43,6 @@ class UserService {
             await this.removeUser(data.email);
             throw err;
           });
-
-        console.log(firebaseResponse);
       }
 
       return createdUser;
