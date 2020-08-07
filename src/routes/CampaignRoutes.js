@@ -1,0 +1,18 @@
+const express = require('express');
+const CampaignController = require('../controllers/CampaignController');
+const isAuthenticated = require('../validation/middlewares/authFirebase');
+
+const campaignController = new CampaignController();
+const routes = express.Router();
+
+routes.post('/campaign',  (req, res, next) => {
+  campaignController.createCampaign(req, res, next);
+});
+routes.get('/campaign/list', isAuthenticated, (req, res, next) => {
+  campaignController.listCampaign(req, res, next);
+});
+routes.delete('/campaign', isAuthenticated, async (req, res, next) => {
+  campaignController.deleteCampaign(req, res, next);
+});
+  
+module.exports = routes;
