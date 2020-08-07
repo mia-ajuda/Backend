@@ -165,6 +165,20 @@ class HelpController {
       next();
     }
   }
+
+  async getHelpInfoById(req, res, next) {
+    try {
+      const { helpId } = req.params;
+      const result = await this.HelpService.getHelpInfoById(helpId);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
 }
 
 module.exports = HelpController;

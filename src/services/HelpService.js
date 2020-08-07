@@ -291,6 +291,14 @@ class HelpService {
 
     return Helplist;
   }
+
+  async getHelpInfoById(helpId) {
+    const helpInfo = await this.HelpRepository.getHelpInfoById(helpId);
+    if (!helpInfo) {
+      throw new Error('Pedido de ajuda não encontrado');
+    }
+    return helpInfo;
+  }
 }
 
 module.exports = HelpService;

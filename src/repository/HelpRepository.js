@@ -208,6 +208,58 @@ class HelpRepository extends BaseRepository {
     ]);
     return helpList;
   }
+
+  async getHelpInfoById(helpId) {
+    const matchQuery = {};
+    console.log(helpId);
+    matchQuery._id = ObjectID(helpId);
+    const aggregation = [
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          description: 1,
+          'user.address.city': 1,
+          'user.photo': 1,
+          'user.birthday': 1,
+          'category.name': 1,
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $unwind: {
+          path: '$category',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ];
+    const helpInfo = await super.$listAggregate(aggregation);
+    console.log(helpInfo[0].user.address);
+    return helpInfo[0];
+  }
 }
 
 module.exports = HelpRepository;
