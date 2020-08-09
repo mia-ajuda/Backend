@@ -12,12 +12,39 @@ class CampaignService {
     return newOfferdHelp;
   }
 
-  async listHelpsOffers() {
+  async listCampaign() {
     const campaign = await this.CampaignRepository.list();
     return campaign;
   }
+  async getCampaignList(id, status, category, except, helper) {
+    const CampaignList = await this.CampaignRepository.list(
+      id,
+      status,
+      category,
+      except,
+      helper,
+    );
+    if (!CampaignList) {
+      throw new Error('Nenhuma Ajuda com esse status foi encontrada');
+    }
+    return CampaignList;
+  }
+  async getNearCampaignList(coords, except, id, categoryArray) {
+    const CampaignList = await this.CampaignRepository.listNear(
+      coords,
+      except,
+      id,
+      categoryArray,
+    );
+    // console.log('CampaignList ---------------------------> ',CampaignList);
+    if (!CampaignList) {
+      throw new Error('Nenhuma campanha foi encontrada no seu raio de distância');
+    }
 
-  async listHelpsOffersByOwnerId(ownerId) {
+    return CampaignList;
+  }
+
+  async listCampaignByOwnerId(ownerId) {
     const campaign = await this.CampaignRepository.listByOwnerId(ownerId);
     return campaign;
   }
