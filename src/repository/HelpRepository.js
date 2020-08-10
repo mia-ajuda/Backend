@@ -57,7 +57,7 @@ class HelpRepository extends BaseRepository {
   async shortList(coords, id, categoryArray) {
     const query = {};
     const ownerId = { $ne: id };
-    query.ownerId = ownerId;
+    query._id = ownerId;
     const selectedFields = {
       _id: 1,
     };
@@ -91,8 +91,22 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
         $unwind: {
           path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $unwind: {
+          path: '$category',
           preserveNullAndEmptyArrays: false,
         },
       },
@@ -100,6 +114,7 @@ class HelpRepository extends BaseRepository {
         $project: {
           _id: 1,
           title: 1,
+          'category.name': 1,
           'user.name': 1,
           'user.riskGroup': 1,
           'user.location.coordinates': 1,
@@ -192,14 +207,6 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: false,
@@ -226,32 +233,17 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
         $project: {
           _id: 0,
           description: 1,
           'user.address.city': 1,
           'user.photo': 1,
           'user.birthday': 1,
-          'category.name': 1,
         },
       },
       {
         $unwind: {
           path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $unwind: {
-          path: '$category',
           preserveNullAndEmptyArrays: false,
         },
       },
