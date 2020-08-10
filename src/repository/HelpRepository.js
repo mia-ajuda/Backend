@@ -35,7 +35,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
     ];
@@ -141,7 +141,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
       {
@@ -202,7 +202,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
       {
@@ -305,7 +305,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
       {
