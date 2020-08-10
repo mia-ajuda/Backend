@@ -37,6 +37,15 @@ class OfferedHelpService {
     const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
     return helpOffer;
   }
+
+  async deleteHelpOffer(helpOfferId) {
+    const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
+
+    if (!helpOffer) throw new Error('help not found');
+
+    helpOffer.active = false;
+    await this.OfferedHelpRepository.update(helpOffer);
+  }
 }
 
 module.exports = OfferedHelpService;

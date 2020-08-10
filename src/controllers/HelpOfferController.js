@@ -60,6 +60,16 @@ class OfferedHelpController {
   async finishHelpOfferByOwner(req, res) {
 
   }
+
+  async deleteHelpOffer(req, res) {
+    try {
+      const { helpId } = req.params;
+      await this.HelpOfferService.deleteHelpOffer(helpId);
+      return res.status(201).send();
+    } catch (err) {
+      return res.status(400).json({ message: err.message || err });
+    }
+  }
 }
 
 module.exports = OfferedHelpController;

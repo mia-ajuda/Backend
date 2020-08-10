@@ -8,7 +8,7 @@ const routes = express.Router();
 routes.post('/helpOffer', isAuthenticated, (req, res, next) => {
   helpOfferController.createHelpOffer(req, res, next);
 });
-routes.get('/helpOffer/list', isAuthenticated, (req, res, next) => {
+routes.get('/helpOffer/list', (req, res, next) => {
   helpOfferController.listHelpsOffers(req, res, next);
 });
 
@@ -21,6 +21,12 @@ routes.get(
   isAuthenticated,
   (req, res, next) => {
     helpOfferController.listHelpOffersByHelpedUserId(req, res, next);
+  },
+);
+routes.delete(
+  '/helpOffer/:helpId',
+  (req, res, next) => {
+    helpOfferController.deleteHelpOffer(req, res, next);
   },
 );
 
