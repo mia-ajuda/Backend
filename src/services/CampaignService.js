@@ -1,4 +1,5 @@
 const CampaignRepository = require('../repository/CampaignRepository');
+const { findConnections, sendMessage } = require('../../websocket');
 
 class CampaignService {
   constructor() {
@@ -16,6 +17,7 @@ class CampaignService {
     const campaign = await this.CampaignRepository.list();
     return campaign;
   }
+
   async getCampaignList(id, status, category, except, helper) {
     const CampaignList = await this.CampaignRepository.list(
       id,
@@ -25,10 +27,11 @@ class CampaignService {
       helper,
     );
     if (!CampaignList) {
-      throw new Error('Nenhuma Ajuda com esse status foi encontrada');
+      throw new Error('Nenhuma campanha com esse status foi encontrada');
     }
     return CampaignList;
   }
+
   async getNearCampaignList(coords, except, id, categoryArray) {
     const CampaignList = await this.CampaignRepository.listNear(
       coords,
@@ -36,7 +39,6 @@ class CampaignService {
       id,
       categoryArray,
     );
-    // console.log('CampaignList ---------------------------> ',CampaignList);
     if (!CampaignList) {
       throw new Error('Nenhuma campanha foi encontrada no seu raio de distância');
     }
@@ -44,24 +46,22 @@ class CampaignService {
     return CampaignList;
   }
 
+  async deleteCampaignLogically(id) {
+    let campaign = await this.getCampaignById(id);
+
+    campaign.active = false;
+
+    await this.CampaignRepository.update(campaign);
+
+    campaign = JSON.parse(JSON.stringify(campaign));
+    const sendSocketMessageTo = findConnections(campaign.categoryId, JSON.parse(JSON.stringify(campaign.ownerId)));
+    sendMessage(sendSocketMessageTo, 'delete-campaign', id);
+
+    return { message: `Campaign ${id} deleted!` };
+  }
+  
   async listCampaignByOwnerId(ownerId) {
     const campaign = await this.CampaignRepository.listByOwnerId(ownerId);
-    return campaign;
-  }
-
-  async listCampaignsByHelpedUserId(helpedUserId) {
-    const campaign = await this.CampaignRepository.listByHelpedUserId(helpedUserId);
-    return campaign;
-  }
-
-//   async addPossibleHelpedUsers(helpedId, campaignId) {
-//     const campaign = await this.getCampaignById(campaignId);
-//     campaign.possibleHelpedUsers.push(helpedId);
-//     await this.CampaignRepository.update(campaign);
-//   }
-
-  async getCampaignById(campaignId) {
-    const campaign = await this.CampaignRepository.getById(campaignId);
     return campaign;
   }
 }

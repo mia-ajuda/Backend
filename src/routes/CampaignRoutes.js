@@ -11,9 +11,9 @@ routes.post('/campaign', isAuthenticated, (req, res, next) => {
 routes.get('/campaign', isAuthenticated, (req, res, next) => {
   campaignController.listCampaignNear(req, res, next);
 });
-// routes.get('/campaign', isAuthenticated, (req, res, next) => {
-//   campaignController.listCampaign(req, res, next);
-// });
+routes.get('/campaign', isAuthenticated, (req, res, next) => {
+  campaignController.listCampaignByOwnerId(req, res, next);
+})
 routes.delete('/campaign', isAuthenticated, async (req, res, next) => {
     campaignController.deleteCampaign(req, res, next);
 });
