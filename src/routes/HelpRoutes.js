@@ -13,6 +13,10 @@ routes.get('/help/:id', isAuthenticated, async (req, res, next) => {
   helpController.getHelpById(req, res, next);
 });
 
+routes.get('/help/aggregation/:id', isAuthenticated, async (req, res, next) => {
+  helpController.getHelpWithAggregationByid(req, res, next);
+});
+
 routes.get('/help', isAuthenticated, async (req, res, next) => {
   helpController.getHelpList(req, res, next);
 });
