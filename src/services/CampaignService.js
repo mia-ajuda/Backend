@@ -1,5 +1,6 @@
-const CampaignRepository = require('../repository/CampaignRepository');
-const { findConnections, sendMessage } = require('../../websocket');
+const CampaignRepository = require("../repository/CampaignRepository");
+const { findConnections, sendMessage } = require("../../websocket");
+const helpStatusEnum = require("../utils/enums/helpStatusEnum");
 
 class CampaignService {
   constructor() {
@@ -7,9 +8,7 @@ class CampaignService {
   }
 
   async createNewCampaign(campaignInfo) {
-    const newOfferdHelp = await this.CampaignRepository.create(
-      campaignInfo,
-    );
+    const newOfferdHelp = await this.CampaignRepository.create(campaignInfo);
     return newOfferdHelp;
   }
 
@@ -18,18 +17,21 @@ class CampaignService {
     return campaign;
   }
 
-  async getCampaignList(id, status, category, except, helper) {
-    const CampaignList = await this.CampaignRepository.list(
-      id,
-      status,
-      category,
-      except,
-      helper,
+  async getCampaignListByStatus({ userId, statusList }) {
+    const checkHelpStatusExistence = statusList.filter(
+      (item) => !Object.values(helpStatusEnum).includes(item)
     );
-    if (!CampaignList) {
-      throw new Error('Nenhuma campanha com esse status foi encontrada');
+
+    if (checkHelpStatusExistence.length > 0) {
+      throw new Error("Um dos status informados é ínvalido");
     }
-    return CampaignList;
+
+    const helpList = await this.CampaignRepository.getCampaignListByStatus(
+      userId,
+      statusList
+    );
+
+    return helpList;
   }
 
   async getNearCampaignList(coords, except, id, categoryArray) {
@@ -37,10 +39,12 @@ class CampaignService {
       coords,
       except,
       id,
-      categoryArray,
+      categoryArray
     );
     if (!CampaignList) {
-      throw new Error('Nenhuma campanha foi encontrada no seu raio de distância');
+      throw new Error(
+        "Nenhuma campanha foi encontrada no seu raio de distância"
+      );
     }
 
     return CampaignList;
@@ -54,12 +58,15 @@ class CampaignService {
     await this.CampaignRepository.update(campaign);
 
     campaign = JSON.parse(JSON.stringify(campaign));
-    const sendSocketMessageTo = findConnections(campaign.categoryId, JSON.parse(JSON.stringify(campaign.ownerId)));
-    sendMessage(sendSocketMessageTo, 'delete-campaign', id);
+    const sendSocketMessageTo = findConnections(
+      campaign.categoryId,
+      JSON.parse(JSON.stringify(campaign.ownerId))
+    );
+    sendMessage(sendSocketMessageTo, "delete-campaign", id);
 
     return { message: `Campaign ${id} deleted!` };
   }
-  
+
   async listCampaignByOwnerId(ownerId) {
     const campaign = await this.CampaignRepository.listByOwnerId(ownerId);
     return campaign;

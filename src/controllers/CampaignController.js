@@ -1,4 +1,5 @@
-const CampaignService = require('../services/CampaignService');
+const CampaignService = require("../services/CampaignService");
+const saveError = require("../utils/ErrorHistory");
 
 class CampaignController {
   constructor() {
@@ -8,7 +9,7 @@ class CampaignController {
   async createCampaign(req, res) {
     try {
       const newCampaign = await this.CampaignService.createNewCampaign(
-        req.body,
+        req.body
       );
       console.log(newCampaign);
       return res.json(newCampaign);
@@ -26,10 +27,31 @@ class CampaignController {
     }
   }
 
+  async getCampaignListByStatus(req, res, next) {
+    const { userId } = req.params;
+
+    const statusList = req.query.statusList.split(",");
+
+    try {
+      const result = await this.CampaignService.getCampaignListByStatus({
+        userId,
+        statusList,
+      });
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
   async listCampaignByOwnerId(req, res) {
     const { ownerId } = req.params;
     try {
-      const campaign = await this.CampaignService.listCampaignByOwnerId(ownerId);
+      const campaign = await this.CampaignService.listCampaignByOwnerId(
+        ownerId
+      );
       return res.json(campaign);
     } catch (error) {
       return res.status(400).json(error);
@@ -51,14 +73,18 @@ class CampaignController {
   }
 
   async listCampaignNear(req, res, next) {
-    const except = !!req.query['id.except'];
-    const helper = !!req.query['id.helper'];
-    const temp = except ? 'except' : helper ? 'helper' : null;
+    const except = !!req.query["id.except"];
+    const helper = !!req.query["id.helper"];
+    const temp = except ? "except" : helper ? "helper" : null;
     const id = temp ? req.query[`id.${temp}`] : req.query.id;
-    const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
+    const categoryArray = req.query.categoryId
+      ? req.query.categoryId.split(",")
+      : null;
 
     const near = !!req.query.near;
-    const coords = near ? req.query.coords.split(',').map((coord) => Number(coord)) : null;
+    const coords = near
+      ? req.query.coords.split(",").map((coord) => Number(coord))
+      : null;
 
     try {
       let result;
@@ -67,7 +93,7 @@ class CampaignController {
           coords,
           except,
           id,
-          categoryArray,
+          categoryArray
         );
       }
       res.status(200);

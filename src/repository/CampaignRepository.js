@@ -1,10 +1,12 @@
-const BaseRepository = require('./BaseRepository');
-const Campaign = require('../models/Campaign');
-const CampaignSchema = require('../models/Campaign');
-const EntitySchema = require('../models/Entity');
-const { getDistance, calculateDistance } = require('../utils/geolocation/calculateDistance');
-
-
+const { ObjectID } = require("mongodb");
+const BaseRepository = require("./BaseRepository");
+const Campaign = require("../models/Campaign");
+const CampaignSchema = require("../models/Campaign");
+const EntitySchema = require("../models/Entity");
+const {
+  getDistance,
+  calculateDistance,
+} = require("../utils/geolocation/calculateDistance");
 
 class CampaignRepository extends BaseRepository {
   constructor() {
@@ -18,7 +20,7 @@ class CampaignRepository extends BaseRepository {
 
   async list() {
     const query = null;
-    const populate = 'campaign';
+    const populate = "campaign";
     const campaigns = await super.$list(query, populate);
     return campaigns;
   }
@@ -52,7 +54,7 @@ class CampaignRepository extends BaseRepository {
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
-    matchQuery.status = 'waiting';
+    matchQuery.status = "waiting";
 
     if (categoryArray) {
       matchQuery.categoryId = {
@@ -66,24 +68,24 @@ class CampaignRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: 'entity',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'entity',
+          from: "entity",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "entity",
         },
       },
       {
         $unwind: {
-          path: '$entity',
+          path: "$entity",
           preserveNullAndEmptyArrays: false,
         },
       },
       {
         $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
         },
       },
     ];
@@ -107,12 +109,53 @@ class CampaignRepository extends BaseRepository {
     campaignsWithDistance.sort((a, b) => {
       if (a.distanceValue < b.distanceValue) {
         return -1;
-      } if (a.distanceValue > b.distanceValue) {
+      }
+      if (a.distanceValue > b.distanceValue) {
         return 1;
       }
       return 0;
     });
     return campaignsWithDistance;
+  }
+
+  async getCampaignListByStatus(userId, statusList) {
+    const matchQuery = {
+      status: {
+        $in: [...statusList],
+      },
+      active: true,
+    };
+    console.log(statusList);
+    matchQuery.ownerId = ObjectID(userId);
+
+    const campaign = await super.$listAggregate([
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: "entity",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "entity",
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: {
+          path: "$entity",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ]);
+    return campaign;
   }
 }
 

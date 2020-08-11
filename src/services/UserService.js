@@ -1,6 +1,6 @@
-const UserRepository = require('../repository/UserRepository');
-const EntityRepository = require('../repository/EntityRepository');
-const firebase = require('../config/authFirebase');
+const UserRepository = require("../repository/UserRepository");
+const EntityRepository = require("../repository/EntityRepository");
+const firebase = require("../config/authFirebase");
 
 class UserService {
   constructor() {
@@ -9,18 +9,20 @@ class UserService {
   }
 
   async createUser(data) {
-    const isEntityRegistered = await this.entityRepository.checkEntityExistence(data.email);
+    const isEntityRegistered = await this.entityRepository.checkEntityExistence(
+      data.email
+    );
 
     if (isEntityRegistered) {
-      throw new Error('Email já sendo utilizado');
+      throw new Error("Email já sendo utilizado");
     }
 
     if (data.password.length < 8) {
-      throw new Error('Senha inválida');
+      throw new Error("Senha inválida");
     }
 
     if (data.cpf.length >= 11) {
-      data.cpf = data.cpf.replace(/[-.]/g, '');
+      data.cpf = data.cpf.replace(/[-.]/g, "");
     }
 
     data.email = data.email.toLowerCase();
@@ -28,7 +30,7 @@ class UserService {
       const createdUser = await this.userRepository.create(data);
 
       if (!data.hasUser) {
-        console.log('Usuario Criado');
+        console.log("Usuario Criado");
         // Cria o usuário no firebase
         await firebase
           .auth()
@@ -52,7 +54,7 @@ class UserService {
 
   async getUser({ id = undefined, email = undefined }) {
     if (!id && !email) {
-      throw new Error('Nenhum identificador encontrado');
+      throw new Error("Nenhum identificador encontrado");
     }
     let user;
 
@@ -62,7 +64,7 @@ class UserService {
       user = await this.userRepository.getUserByEmail(email);
     }
     if (!user) {
-      throw new Error('Usuário não encontrado');
+      throw new Error("Usuário não encontrado");
     }
     return user;
   }
@@ -88,9 +90,7 @@ class UserService {
     return result;
   }
 
-  async editUserAddressById({
-    email, cep, number, city, state, complement,
-  }) {
+  async editUserAddressById({ email, cep, number, city, state, complement }) {
     const user = await this.getUser({ email });
 
     const address = {
