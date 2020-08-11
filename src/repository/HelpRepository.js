@@ -207,9 +207,36 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category',
+        },
+      },
+      {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $unwind: {
+          path: '$category',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          'user.location.coordinates': 1,
+          'user.photo': 1,
+          'user.phone': 1,
+          'user.name': 1,
+          'user.birthday': 1,
+          'user.address.city': 1,
+          description: 1,
+          title: 1,
+          'category.name': 1,
         },
       },
     ]);
