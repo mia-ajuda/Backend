@@ -50,6 +50,16 @@ class CampaignService {
     return CampaignList;
   }
 
+  async getCampaignById(id) {
+    const Campaign = await this.CampaignRepository.getById(id);
+
+    if (!Campaign) {
+      throw new Error("Ajuda não encontrada");
+    }
+
+    return Campaign;
+  }
+
   async deleteCampaignLogically(id) {
     let campaign = await this.getCampaignById(id);
 

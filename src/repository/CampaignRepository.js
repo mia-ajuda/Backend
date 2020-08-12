@@ -1,7 +1,6 @@
 const { ObjectID } = require("mongodb");
 const BaseRepository = require("./BaseRepository");
 const Campaign = require("../models/Campaign");
-const CampaignSchema = require("../models/Campaign");
 const EntitySchema = require("../models/Entity");
 const {
   getDistance,
@@ -125,7 +124,6 @@ class CampaignRepository extends BaseRepository {
       },
       active: true,
     };
-    console.log(statusList);
     matchQuery.ownerId = ObjectID(userId);
 
     const campaign = await super.$listAggregate([

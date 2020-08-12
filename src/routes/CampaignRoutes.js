@@ -18,8 +18,8 @@ routes.get(
     campaignController.getCampaignListByStatus(req, res, next);
   }
 );
-routes.delete("/campaign", isAuthenticated, async (req, res, next) => {
-  campaignController.deleteCampaign(req, res, next);
+routes.delete("/campaign/:id", isAuthenticated, async (req, res, next) => {
+  campaignController.deleteCampaignLogic(req, res, next);
 });
 
 module.exports = routes;
