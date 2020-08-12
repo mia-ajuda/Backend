@@ -21,7 +21,6 @@ class HelpService {
 
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
-    console.log(countHelp);
     if (countHelp >= 5) {
       throw new Error("Limite máximo de pedidos atingido");
     }
@@ -124,11 +123,12 @@ class HelpService {
     const title = `${owner.name} aceitou sua oferta de ajuda!`;
     const body = `Sua oferta para ${help.title} foi aceita`;
 
-    const userPosition = help.possibleHelpers.indexOf(data.idHelper);
+    const userPosition = help.possibleHelpers.indexOf(data.idHelper) || help.possibleEntities.indexOf(data.idHelper);
     if (userPosition >= 0) {
       help.helperId = data.idHelper;
       help.status = "on_going";
       help.possibleHelpers = [];
+      help.possibleEntities = [];
       const result = await this.HelpRepository.update(help);
 
       const notificationHistory = {
@@ -304,19 +304,32 @@ class HelpService {
       throw new Error("Ajuda já possui ajudante");
     }
     let helper;
+    let isUser = false;
     try {
       helper = await this.UserService.getUser({ id: idHelper });
+      isUser = true;
     } catch {
       helper = await this.EntityService.getEntity({ id: idHelper });
     }
 
-    const userPosition = help.possibleHelpers.indexOf(idHelper);
-
-    if (userPosition > -1) {
-      throw new Error("Usuário já é um possível ajudante");
+    if (isUser) {
+      const userPosition = help.possibleHelpers.indexOf(idHelper);
+  
+      if (userPosition > -1) {
+        throw new Error("Usuário já é um possível ajudante");
+      }
+  
+      help.possibleHelpers.push(idHelper);
+    } else {
+      const userPosition = help.possibleEntities.indexOf(idHelper);
+  
+      if (userPosition > -1) {
+        throw new Error("Usuário já é um possível ajudante");
+      }
+  
+      help.possibleEntities.push(idHelper);
     }
 
-    help.possibleHelpers.push(idHelper);
 
     const result = await this.HelpRepository.update(help);
 

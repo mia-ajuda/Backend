@@ -30,14 +30,13 @@ class UserService {
       const createdUser = await this.userRepository.create(data);
 
       if (!data.hasUser) {
-        console.log("Usuario Criado");
         // Cria o usuário no firebase
         await firebase
           .auth()
           .createUser({
             email: data.email,
             password: data.password,
-            displayName: data.name,
+            displayName: `${data.name} | PF`,
             emailVerified: false,
           })
           .catch(async (err) => {
