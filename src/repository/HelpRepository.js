@@ -1,8 +1,11 @@
-const { ObjectID } = require('mongodb');
-const BaseRepository = require('./BaseRepository');
-const HelpSchema = require('../models/Help');
-const UserSchema = require('../models/User');
-const { getDistance, calculateDistance } = require('../utils/geolocation/calculateDistance');
+const { ObjectID } = require("mongodb");
+const BaseRepository = require("./BaseRepository");
+const HelpSchema = require("../models/Help");
+const UserSchema = require("../models/User");
+const {
+  getDistance,
+  calculateDistance,
+} = require("../utils/geolocation/calculateDistance");
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -18,24 +21,24 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
       },
       {
         $unwind: {
-          path: '$user',
+          path: "$user",
           preserveNullAndEmptyArrays: false,
         },
       },
       {
         $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
         },
       },
     ];
@@ -70,7 +73,7 @@ class HelpRepository extends BaseRepository {
     matchQuery.ownerId = {
       $in: arrayUsersId,
     };
-    matchQuery.status = 'waiting';
+    matchQuery.status = "waiting";
 
     if (categoryArray) {
       matchQuery.categoryId = {
@@ -83,40 +86,40 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
       },
       {
         $unwind: {
-          path: '$user',
+          path: "$user",
           preserveNullAndEmptyArrays: false,
         },
       },
       {
         $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
         },
       },
       {
         $lookup: {
-          from: 'user',
-          localField: 'possibleHelpers',
-          foreignField: '_id',
-          as: 'possibleHelpers',
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
         },
       },
       {
         $lookup: {
-          from: 'entity',
-          localField: 'possibleEntities',
-          foreignField: '_id',
-          as: 'possibleEntities',
+          from: "entity",
+          localField: "possibleEntities",
+          foreignField: "_id",
+          as: "possibleEntities",
         },
       },
     ];
@@ -138,7 +141,8 @@ class HelpRepository extends BaseRepository {
     helpsWithDistance.sort((a, b) => {
       if (a.distanceValue < b.distanceValue) {
         return -1;
-      } if (a.distanceValue > b.distanceValue) {
+      }
+      if (a.distanceValue > b.distanceValue) {
         return 1;
       }
       return 0;
@@ -150,7 +154,7 @@ class HelpRepository extends BaseRepository {
     const query = {};
     query.ownerId = id;
     query.active = true;
-    query.status = { $ne: 'finished' };
+    query.status = { $ne: "finished" };
     const result = await super.$countDocuments(query);
 
     return result;
@@ -192,39 +196,39 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: 'user',
-          localField: 'possibleHelpers',
-          foreignField: '_id',
-          as: 'possibleHelpers',
+          from: "user",
+          localField: "possibleHelpers",
+          foreignField: "_id",
+          as: "possibleHelpers",
         },
       },
       {
         $lookup: {
-          from: 'entity',
-          localField: 'possibleEntities',
-          foreignField: '_id',
-          as: 'possibleEntities',
+          from: "entity",
+          localField: "possibleEntities",
+          foreignField: "_id",
+          as: "possibleEntities",
         },
       },
       {
         $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
         },
       },
       {
         $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
         },
       },
       {
         $unwind: {
-          path: '$user',
+          path: "$user",
           preserveNullAndEmptyArrays: false,
         },
       },

@@ -53,6 +53,7 @@ class EntityService {
   }
 
   async getEntity({ id = undefined, email = undefined }) {
+    console.log(id, "<------------- IdValue");
     if (!id && !email) {
       throw new Error("Nenhum identificador encontrado");
     }

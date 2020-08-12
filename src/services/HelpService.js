@@ -108,6 +108,7 @@ class HelpService {
     } catch {
       helper = await this.EntityService.getEntity({ id: idHelper });
     }
+
     const owner = await this.UserService.getUser({ id: ownerId });
 
     if (help.helperId) {
@@ -123,14 +124,15 @@ class HelpService {
     const title = `${owner.name} aceitou sua oferta de ajuda!`;
     const body = `Sua oferta para ${help.title} foi aceita`;
 
-    const userPosition = help.possibleHelpers.indexOf(data.idHelper) || help.possibleEntities.indexOf(data.idHelper);
-    if (userPosition >= 0) {
+    const userPosition = help.possibleHelpers.indexOf(data.idHelper) >= 0;
+    const entityPosition = help.possibleEntities.indexOf(data.idHelper) >= 0;
+
+    if (userPosition || entityPosition) {
       help.helperId = data.idHelper;
       help.status = "on_going";
       help.possibleHelpers = [];
       help.possibleEntities = [];
       const result = await this.HelpRepository.update(help);
-
       const notificationHistory = {
         userId: helper._id,
         helpId: help._id,
@@ -230,9 +232,9 @@ class HelpService {
     const owner = await this.UserService.getUser({ id: help.ownerId });
     let helper;
     try {
-      helper = await this.UserService.getUser({ id: idHelper });
+      helper = await this.UserService.getUser({ id: help.helperId });
     } catch {
-      helper = await this.EntityService.getEntity({ id: idHelper });
+      helper = await this.EntityService.getEntity({ id: help.helperId });
     }
 
     if (help.ownerId != data.ownerId) {
@@ -314,22 +316,21 @@ class HelpService {
 
     if (isUser) {
       const userPosition = help.possibleHelpers.indexOf(idHelper);
-  
+
       if (userPosition > -1) {
         throw new Error("Usuário já é um possível ajudante");
       }
-  
+
       help.possibleHelpers.push(idHelper);
     } else {
       const userPosition = help.possibleEntities.indexOf(idHelper);
-  
+
       if (userPosition > -1) {
         throw new Error("Usuário já é um possível ajudante");
       }
-  
+
       help.possibleEntities.push(idHelper);
     }
-
 
     const result = await this.HelpRepository.update(help);
 
