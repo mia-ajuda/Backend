@@ -12,9 +12,23 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async list() {
-    const query = null;
-    const populate = 'user';
-    const helpOffers = await super.$list(query, populate);
+    const aggregate = [
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ];
+    const helpOffers = await super.$listAggregate(aggregate);
     return helpOffers;
   }
 
