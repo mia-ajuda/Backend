@@ -173,8 +173,9 @@ class HelpRepository extends BaseRepository {
       },
       active: true,
     };
-
+    let showPossibleHelpers;
     if (helper) {
+      showPossibleHelpers = 0;
       matchQuery.$or = [
         {
           possibleHelpers: { $in: [ObjectID(userId)] },
@@ -184,9 +185,11 @@ class HelpRepository extends BaseRepository {
         },
       ];
     } else {
+      showPossibleHelpers = 1;
+      helper = 0;
       matchQuery.ownerId = ObjectID(userId);
     }
-    const helpList = await super.$listAggregate([
+    const aggregation = [
       {
         $match: matchQuery,
       },
@@ -235,11 +238,23 @@ class HelpRepository extends BaseRepository {
           'user.birthday': 1,
           'user.address.city': 1,
           description: 1,
+          status: 1,
           title: 1,
           'category.name': 1,
         },
       },
-    ]);
+    ];
+    //caso seja os meus pedidos você quer ver os possíveis ajudantes
+    if (showPossibleHelpers) {
+      aggregation[aggregation.length - 1].$project.possibleHelpers = {
+        _id: 1,
+        photo: 1,
+        name: 1,
+        birthday: 1,
+        'address.city': 1,
+      };
+    }
+    const helpList = await super.$listAggregate(aggregation);
     return helpList;
   }
 
