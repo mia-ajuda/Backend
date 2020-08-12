@@ -27,6 +27,14 @@ class OfferdHelpRepository extends BaseRepository {
           preserveNullAndEmptyArrays: false,
         },
       },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
     ];
     const helpOffers = await super.$listAggregate(aggregate);
     return helpOffers;
