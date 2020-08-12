@@ -37,7 +37,7 @@ class EntityService {
           .createUser({
             email: data.email,
             password: data.password,
-            displayName: data.name,
+            displayName: `${data.name} | PJ`,
             emailVerified: false,
           })
           .catch(async (err) => {
