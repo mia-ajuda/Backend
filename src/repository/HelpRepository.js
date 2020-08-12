@@ -111,6 +111,14 @@ class HelpRepository extends BaseRepository {
           as: 'possibleHelpers',
         },
       },
+      {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
+        },
+      },
     ];
 
     const helps = await super.$listAggregate(aggregation);
@@ -188,6 +196,14 @@ class HelpRepository extends BaseRepository {
           localField: 'possibleHelpers',
           foreignField: '_id',
           as: 'possibleHelpers',
+        },
+      },
+      {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
         },
       },
       {
