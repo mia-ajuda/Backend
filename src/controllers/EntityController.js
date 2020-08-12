@@ -1,13 +1,12 @@
-const UserService = require('../services/UserService');
-const { riskGroups } = require('../models/RiskGroup');
+const EntityService = require('../services/EntityService');
 const saveError = require('../utils/ErrorHistory');
 
-class UserController {
+class EntityController {
   constructor() {
-    this.userService = new UserService();
+    this.entityService = new EntityService();
   }
 
-  async createUser(req, res, next) {
+  async createEntity(req, res, next) {
     const { latitude, longitude } = req.body;
 
     const location = {
@@ -18,11 +17,11 @@ class UserController {
     const data = {
       location,
       ...req.body,
-      hasUser: req.query.hasUser === 'true',
+      hasEntity: req.query.hasEntity === 'true',
     };
 
     try {
-      const result = await this.userService.createUser(data);
+      const result = await this.entityService.createEntity(data);
       res.status(201).json(result);
       next();
     } catch (err) {
@@ -32,7 +31,7 @@ class UserController {
     }
   }
 
-  async editUserById(req, res, next) {
+  async editEntityById(req, res, next) {
     const data = {
       email: req.decodedToken.email,
       photo: req.body.photo,
@@ -42,7 +41,7 @@ class UserController {
       deviceId: req.body.deviceId,
     };
     try {
-      const result = await this.userService.editUserById(data);
+      const result = await this.entityService.editEntityById(data);
       res.status(200).json(result);
       return next();
     } catch (err) {
@@ -52,7 +51,7 @@ class UserController {
     }
   }
 
-  async editUserAddressById(req, res, next) {
+  async editEntityAddressById(req, res, next) {
     const data = {
       email: req.decodedToken.email,
       cep: req.body.cep,
@@ -63,7 +62,7 @@ class UserController {
     };
 
     try {
-      const result = await this.userService.editUserAddressById(data);
+      const result = await this.entityService.editEntityAddressById(data);
       res.status(200).json(result);
       return next();
     } catch (err) {
@@ -73,11 +72,11 @@ class UserController {
     }
   }
 
-  async deleteUserLogic(req, res, next) {
+  async deleteEntityLogic(req, res, next) {
     const { email } = req.decodedToken;
 
     try {
-      const result = await this.userService.deleteUserLogically(email);
+      const result = await this.entityService.deleteEntityLogically(email);
       res.status(200).json(result);
       return next();
     } catch (err) {
@@ -87,13 +86,14 @@ class UserController {
     }
   }
 
-  async getUserById(req, res, next) {
+  async getEntityById(req, res, next) {
     const data = {
       id: req.params.id,
       email: req.decodedToken.email,
     };
+
     try {
-      const result = await this.userService.getUser(data);
+      const result = await this.entityService.getEntity(data);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -103,7 +103,7 @@ class UserController {
     }
   }
 
-  async updateUserLocationById(req, res, next) {
+  async updateEntityLocationById(req, res, next) {
     const data = {
       email: req.decodedToken.email,
       latitude: req.body.latitude,
@@ -111,7 +111,7 @@ class UserController {
     };
 
     try {
-      const result = await this.userService.updateUserLocationById(data);
+      const result = await this.entityService.updateEntityLocationById(data);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -121,15 +121,15 @@ class UserController {
     }
   }
 
-  async checkUserExistence(req, res, next) {
-    let { userIdentifier } = req.params;
+  async checkEntityExistence(req, res, next) {
+    let { entityIdentifier } = req.params;
 
-    if (!userIdentifier) {
-      userIdentifier = req.decodedToken.email;
+    if (!entityIdentifier) {
+      entityIdentifier = req.decodedToken.email;
     }
 
     try {
-      const result = await this.userService.checkUserExistence(userIdentifier);
+      const result = await this.entityService.checkEntityExistence(entityIdentifier);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -138,11 +138,6 @@ class UserController {
       next();
     }
   }
-
-  async getUserGroupRiskList(req, res, next) {
-    res.status(200).json(riskGroups);
-    next();
-  }
 }
 
-module.exports = UserController;
+module.exports = EntityController;

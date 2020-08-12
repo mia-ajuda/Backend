@@ -20,6 +20,7 @@ build:
     IMAGE_NAME: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   before_script:
     - cat $FIREBASE_CONFIG > ./src/config/firebaseAuthConfig.js
+    - cat $RCLONE_CONFIG > ./config/rclone.conf
   script:
     - echo "Building image"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -40,6 +41,7 @@ build stable:
     IMAGE_NAME: "$CI_REGISTRY_IMAGE:stable"
   before_script:
     - cat $FIREBASE_CONFIG > ./src/config/firebaseAuthConfig.js
+    - cat $RCLONE_CONFIG > ./config/rclone.conf
   script:
     - echo "Building image"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY

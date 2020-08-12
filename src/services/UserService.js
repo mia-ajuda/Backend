@@ -1,12 +1,22 @@
 const UserRepository = require('../repository/UserRepository');
+const EntityRepository = require('../repository/EntityRepository');
 const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();
+    this.entityRepository = new EntityRepository();
   }
 
   async createUser(data) {
+    const isEntityRegistered = await this.entityRepository.checkEntityExistence(
+      data.email,
+    );
+
+    if (isEntityRegistered) {
+      throw new Error('Email já sendo utilizado');
+    }
+
     if (data.password.length < 8) {
       throw new Error('Senha inválida');
     }
@@ -14,19 +24,19 @@ class UserService {
     if (data.cpf.length >= 11) {
       data.cpf = data.cpf.replace(/[-.]/g, '');
     }
+
     data.email = data.email.toLowerCase();
     try {
       const createdUser = await this.userRepository.create(data);
 
       if (!data.hasUser) {
-        console.log('Usuario Criado');
         // Cria o usuário no firebase
         await firebase
           .auth()
           .createUser({
             email: data.email,
             password: data.password,
-            displayName: data.name,
+            displayName: `${data.name} | PF`,
             emailVerified: false,
           })
           .catch(async (err) => {
@@ -127,8 +137,8 @@ class UserService {
     await this.userRepository.removeUser({ id: user._id, email });
   }
 
-  async checkUserExistence(identificator) {
-    const result = await this.userRepository.checkUserExistence(identificator);
+  async checkUserExistence(userIdentifier) {
+    const result = await this.userRepository.checkUserExistence(userIdentifier);
 
     if (result) {
       return true;

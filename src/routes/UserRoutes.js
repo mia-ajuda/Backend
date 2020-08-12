@@ -32,7 +32,8 @@ routes.get('/groupRisk', async (req, res, next) => {
   userController.getUserGroupRiskList(req, res, next);
 });
 
-routes.get('/checkUserExistence/:value', async (req, res, next) => {
+// Verifica a existência de um usuário baseado no email ou CPF
+routes.get('/checkUserExistence/:userIdentifier', async (req, res, next) => {
   userController.checkUserExistence(req, res, next);
 });
 
