@@ -315,8 +315,8 @@ class HelpService {
       isUser = true;
     } catch {
       helper = await this.EntityService.getEntity({ id: idHelper });
+      isUser = true;
     }
-
     if (isUser) {
       const userPosition = help.possibleHelpers.indexOf(idHelper);
 
