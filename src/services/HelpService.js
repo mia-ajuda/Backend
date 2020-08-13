@@ -88,6 +88,9 @@ class HelpService {
     if (checkHelpStatusExistence.length > 0) {
       throw new Error("Um dos status informados é ínvalido");
     }
+    console.log(userId);
+    console.log(statusList);
+    console.log(helper);
 
     const helpList = await this.HelpRepository.getHelpListByStatus(
       userId,
@@ -163,9 +166,9 @@ class HelpService {
     const owner = await this.UserService.getUser({ id: help.ownerId });
     let helper;
     try {
-      helper = await this.UserService.getUser({ id: idHelper });
+      helper = await this.UserService.getUser({ id: help.helperId });
     } catch {
-      helper = await this.EntityService.getEntity({ id: idHelper });
+      helper = await this.EntityService.getEntity({ id: help.helperId });
     }
     if (help.helperId != data.helperId) {
       throw new Error("Usuário não é o ajudante dessa ajuda");

@@ -68,6 +68,22 @@ class UserService {
     return user;
   }
 
+  async getAnyUser({ id = undefined, email = undefined }) {
+    if (!id && !email) {
+      throw new Error("Nenhum identificador encontrado");
+    }
+    let user;
+
+    if (id) {
+      user = await this.userRepository.getById(id);
+      if (!user) user = await this.entityRepository.getById(id);
+    }
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+    return user;
+  }
+
   async editUserById({
     email,
     photo,
