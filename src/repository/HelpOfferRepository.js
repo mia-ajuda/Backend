@@ -1,3 +1,4 @@
+const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
 
@@ -11,8 +12,13 @@ class OfferdHelpRepository extends BaseRepository {
     return newOfferdHelp;
   }
 
-  async list() {
+  async list(userId) {
     const aggregate = [
+      {
+        $match: {
+          ownerId: { $ne: ObjectID(userId) },
+        },
+      },
       {
         $lookup: {
           from: 'user',
