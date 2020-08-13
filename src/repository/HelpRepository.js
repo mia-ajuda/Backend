@@ -231,7 +231,6 @@ class HelpRepository extends BaseRepository {
       },
       {
         $project: {
-          'user.location.coordinates': 1,
           'user.photo': 1,
           'user.phone': 1,
           'user.name': 1,
@@ -244,7 +243,7 @@ class HelpRepository extends BaseRepository {
         },
       },
     ];
-    //caso seja os meus pedidos você quer ver os possíveis ajudantes
+    //Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
     if (showPossibleHelpers) {
       aggregation[aggregation.length - 1].$project.possibleHelpers = {
         _id: 1,
@@ -252,6 +251,12 @@ class HelpRepository extends BaseRepository {
         name: 1,
         birthday: 1,
         'address.city': 1,
+      };
+      aggregation[aggregation.length - 1].$project.helperId = 1;
+    } else {
+      //É necessário as coordenadas para as minhas ofertas de ajuda.
+      aggregation[aggregation.length - 1].$project.user = {
+        'location.coordinates': 1,
       };
     }
     const helpList = await super.$listAggregate(aggregation);
