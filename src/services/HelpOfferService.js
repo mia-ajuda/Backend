@@ -1,4 +1,4 @@
-const OfferedHelpRepository = require("../repository/HelpOfferRepository");
+const OfferedHelpRepository = require('../repository/HelpOfferRepository');
 
 class OfferedHelpService {
   constructor() {
@@ -7,7 +7,7 @@ class OfferedHelpService {
 
   async createNewHelpOffer(offeredHelpInfo) {
     const newOfferdHelp = await this.OfferedHelpRepository.create(
-      offeredHelpInfo
+      offeredHelpInfo,
     );
     return newOfferdHelp;
   }
@@ -24,7 +24,7 @@ class OfferedHelpService {
 
   async listHelpOffersByHelpedUserId(helpedUserId) {
     const helpOffers = await this.OfferedHelpRepository.listByHelpedUserId(
-      helpedUserId
+      helpedUserId,
     );
     return helpOffers;
   }
