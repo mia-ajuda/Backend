@@ -65,8 +65,8 @@ class BaseRepository {
     return recordModel;
   }
 
-  async $list(query, populate = null) {
-    const recordModel = await this.modelClass.find(query).populate(populate);
+  async $list(query, selectedField, populate = null) {
+    const recordModel = await this.modelClass.find(query, selectedField).populate(populate);
     return recordModel;
   }
 
