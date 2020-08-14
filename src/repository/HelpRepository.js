@@ -205,12 +205,7 @@ class HelpRepository extends BaseRepository {
           preserveNullAndEmptyArrays: false,
         },
       },
-      {
-        $unwind: {
-          path: '$category',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
+
     ]);
     return helpList;
   }
