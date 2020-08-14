@@ -32,8 +32,6 @@ class HelpService {
       JSON.parse(JSON.stringify(createdHelp.ownerId)),
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
-
-    return createdHelp;
   }
 
   async getHelpByid(id) {

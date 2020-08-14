@@ -14,10 +14,11 @@ class HelpController {
     };
 
     try {
-      const result = await this.HelpService.createHelp(data);
-      res.status(201).json(result);
+      await this.HelpService.createHelp(data);
+      res.status(201).send();
       next();
     } catch (err) {
+      console.log(err);
       saveError(err);
       res.status(400).send({ error: err.message });
       next();
