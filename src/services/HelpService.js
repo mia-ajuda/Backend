@@ -46,8 +46,8 @@ class HelpService {
     return Help;
   }
 
-  async getNearHelpList(coords, id, categoryArray) {
-    const Helplist = await this.HelpRepository.listNear(
+  async getHelpList(coords, id, categoryArray) {
+    const Helplist = await this.HelpRepository.shortList(
       coords,
       id,
       categoryArray,
@@ -289,6 +289,14 @@ class HelpService {
     }
 
     return Helplist;
+  }
+
+  async getHelpInfoById(helpId) {
+    const helpInfo = await this.HelpRepository.getHelpInfoById(helpId);
+    if (!helpInfo) {
+      throw new Error('Pedido de ajuda não encontrado');
+    }
+    return helpInfo;
   }
 }
 

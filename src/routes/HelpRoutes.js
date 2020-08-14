@@ -13,11 +13,16 @@ routes.get('/help/:id', isAuthenticated, async (req, res, next) => {
   helpController.getHelpById(req, res, next);
 });
 
+routes.get('/help/helpInfo/:helpId', isAuthenticated, async (req, res, next) => {
+  helpController.getHelpInfoById(req, res, next);
+});
+
+//botar o authenticated de volta
 routes.get('/help', isAuthenticated, async (req, res, next) => {
   helpController.getHelpList(req, res, next);
 });
 
-routes.get('/help/listbyStatus/:userId', async (req, res, next) => {
+routes.get('/help/listbyStatus/:userId', isAuthenticated, async (req, res, next) => {
   helpController.getHelpListByStatus(req, res, next);
 });
 
