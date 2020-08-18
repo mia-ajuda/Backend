@@ -67,8 +67,6 @@ class HelpService {
     help = JSON.parse(JSON.stringify(help));
     const sendSocketMessageTo = findConnections(help.categoryId, JSON.parse(JSON.stringify(help.ownerId)));
     sendMessage(sendSocketMessageTo, 'delete-help', id);
-
-    return { message: `Help ${id} deleted!` };
   }
 
   async getHelpListByStatus({ userId, statusList, helper = false }) {
@@ -104,11 +102,13 @@ class HelpService {
     const body = `Sua oferta para ${help.title} foi aceita`;
 
     const userPosition = help.possibleHelpers.indexOf(data.idHelper);
-    if (userPosition >= 0) {
+    if (userPosition < 0) {
+      throw new Error('Ajudante não encontrado');
+    } else {
       help.helperId = data.idHelper;
       help.status = 'on_going';
       help.possibleHelpers = [];
-      const result = await this.HelpRepository.update(help);
+      await this.HelpRepository.update(help);
 
       const notificationHistory = {
         userId: helper._id,
@@ -125,10 +125,7 @@ class HelpService {
         console.log('Não foi possível enviar a notificação!');
         saveError(err);
       }
-
-      return result;
     }
-    throw new Error('Ajudante não encontrado');
   }
 
   async helperConfirmation(data) {
@@ -179,9 +176,7 @@ class HelpService {
       help.status = 'helper_finished';
     }
 
-    const result = await this.HelpRepository.update(help);
-
-    return result;
+    await this.HelpRepository.update(help);
   }
 
   async ownerConfirmation(data) {
@@ -232,8 +227,7 @@ class HelpService {
       help.status = 'owner_finished';
     }
 
-    const result = await this.HelpRepository.update(help);
-    return result;
+    await this.HelpRepository.update(help);
   }
 
   async addPossibleHelpers(id, idHelper) {
@@ -256,7 +250,7 @@ class HelpService {
 
     help.possibleHelpers.push(idHelper);
 
-    const result = await this.HelpRepository.update(help);
+    await this.HelpRepository.update(help);
 
     const title = `${helper.name} quer te ajudar!`;
     const body = `Seu pedido ${help.title} recebeu uma oferta de ajuda`;
@@ -276,8 +270,6 @@ class HelpService {
       console.log('Não foi possível enviar a notificação!');
       saveError(err);
     }
-
-    return result;
   }
 
   async getListToDelete() {

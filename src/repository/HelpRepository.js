@@ -50,8 +50,7 @@ class HelpRepository extends BaseRepository {
   }
 
   async update(help) {
-    const helpUpdated = await super.$update(help);
-    return helpUpdated;
+    await super.$update(help);
   }
 
   async shortList(coords, id, categoryArray) {
