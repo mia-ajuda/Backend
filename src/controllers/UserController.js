@@ -143,6 +143,16 @@ class UserController {
     res.status(200).json(riskGroups);
     next();
   }
+
+  async getUserPhotoByUserId(req, res) {
+    try {
+      const { userId } = req.params;
+      const photo = await this.userService.getUserPhotoByUserId(userId);
+      return res.json({ photo });
+    } catch (err) {
+      return res.json({ message: err.message || err });
+    }
+  }
 }
 
 module.exports = UserController;

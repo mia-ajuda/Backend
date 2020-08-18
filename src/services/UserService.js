@@ -146,6 +146,11 @@ class UserService {
 
     return false;
   }
+
+  async getUserPhotoByUserId(userId) {
+    const { photo } = await this.userRepository.getById(userId);
+    return photo;
+  }
 }
 
 module.exports = UserService;

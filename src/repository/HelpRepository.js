@@ -2,7 +2,10 @@ const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
 const UserSchema = require('../models/User');
-const { getDistance, calculateDistance } = require('../utils/geolocation/calculateDistance');
+const {
+  getDistance,
+  calculateDistance,
+} = require('../utils/geolocation/calculateDistance');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -56,108 +59,7 @@ class HelpRepository extends BaseRepository {
 
   async shortList(coords, id, categoryArray) {
     const query = {};
-<<<<<<< HEAD
-    if (status) query.status = status;
-    if (categoryArray) query.categoryId = { $in: categoryArray };
-    if (helper) query.helperId = helperId;
-    else query.ownerId = ownerId;
-
-    const result = await super.$listAggregate([
-      {
-        $match: query,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $addFields: {
-          ageRisk: {
-            $cond: [
-              {
-                $gt: [
-                  {
-                    $subtract: [
-                      {
-                        $year: '$$NOW',
-                      },
-                      {
-                        $year: '$user.birthday',
-                      },
-                    ],
-                  },
-                  60,
-                ],
-              },
-              1,
-              0,
-            ],
-          },
-          cardio: {
-            $cond: [
-              {
-                $in: ['$user.riskGroup', [['doenCardio']]],
-              },
-              1,
-              0,
-            ],
-          },
-          risco: {
-            $size: '$user.riskGroup',
-          },
-        },
-      },
-      {
-        $sort: {
-          ageRisk: -1,
-          cardio: -1,
-          risco: -1,
-        },
-      },
-      {
-        $project: {
-          ageRisk: 0,
-          cardio: 0,
-          risco: 0,
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'possibleHelpers',
-          foreignField: '_id',
-          as: 'possibleHelpers',
-        },
-      },
-    ]);
-    return result;
-  }
-
-  async listNear(coords, except, id, categoryArray) {
-    const query = {};
-    const ownerId = except ? { $ne: id } : null;
-
-=======
     const ownerId = { $ne: id };
->>>>>>> d2e31f33b6e81ae2437e03aa7df9ca3d308c4f02
     query._id = ownerId;
     const selectedFields = {
       _id: 1,
@@ -192,14 +94,6 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: false,
@@ -217,9 +111,11 @@ class HelpRepository extends BaseRepository {
         $project: {
           _id: 1,
           title: 1,
-          'category.name': 1,
+          categories: 1,
+          ownerId: 1,
           'user.name': 1,
           'user.riskGroup': 1,
+          'user.address': 1,
           'user.location.coordinates': 1,
         },
       },
@@ -241,7 +137,8 @@ class HelpRepository extends BaseRepository {
     helpsWithDistance.sort((a, b) => {
       if (a.distanceValue < b.distanceValue) {
         return -1;
-      } if (a.distanceValue > b.distanceValue) {
+      }
+      if (a.distanceValue > b.distanceValue) {
         return 1;
       }
       return 0;

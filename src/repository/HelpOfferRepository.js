@@ -13,7 +13,6 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async list(userId) {
-    console.log(userId);
     const aggregate = [
       {
         $match: {
@@ -45,6 +44,17 @@ class OfferdHelpRepository extends BaseRepository {
       {
         $sort: {
           creationDate: -1,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          categories: 1,
+          ownerId: 1,
+          'user.name': 1,
+          'user.address': 1,
+          'user.location.coordinates': 1,
         },
       },
     ];
