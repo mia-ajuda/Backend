@@ -9,74 +9,7 @@ class HelpRepository extends BaseRepository {
     super(HelpSchema);
   }
 
-  async create(help) {
-    const result = await super.$save(help);
-
-    const aggregation = [
-      {
-        $match: { _id: result._id },
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-    ];
-
-    const helps = await super.$listAggregate(aggregation);
-    return helps[0];
-  }
-
-  async getById(id) {
-    const help = await super.$getById(id);
-    return help;
-  }
-
-  async update(help) {
-    await super.$update(help);
-  }
-
-  async shortList(coords, id, categoryArray) {
-    const query = {};
-    const ownerId = { $ne: id };
-    query._id = ownerId;
-    const selectedFields = {
-      _id: 1,
-    };
-
-    const users = await UserSchema.find(query, selectedFields);
-    const arrayUsersId = users.map((user) => user._id);
-    const matchQuery = {};
-
-    matchQuery.active = true;
-    matchQuery.possibleHelpers = { $not: { $in: [ObjectID(id)] } };
-    matchQuery.ownerId = {
-      $in: arrayUsersId,
-    };
-    matchQuery.status = 'waiting';
-
-    if (categoryArray) {
-      matchQuery.categoryId = {
-        $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
-      };
-    }
+  projectHelp(matchQuery) {
     const aggregation = [
       {
         $match: matchQuery,
@@ -120,6 +53,61 @@ class HelpRepository extends BaseRepository {
         },
       },
     ];
+    return aggregation;
+  }
+
+  async create(help) {
+    const result = await super.$save(help);
+    const matchQuery = {
+      _id: result._id,
+    };
+
+    const aggregation = this.projectHelp(matchQuery);
+    aggregation[aggregation.length - 1].$project.ownerId = 1;
+    aggregation[aggregation.length - 1].$project.category = {
+      _id: 1,
+    };
+
+    const createdHelp = await super.$listAggregate(aggregation);
+    return createdHelp[0];
+  }
+
+  async getById(id) {
+    const help = await super.$getById(id);
+    return help;
+  }
+
+  async update(help) {
+    await super.$update(help);
+  }
+
+  async shortList(coords, id, categoryArray) {
+    const query = {};
+    const ownerId = { $ne: id };
+    query._id = ownerId;
+    const selectedFields = {
+      _id: 1,
+    };
+
+    const users = await UserSchema.find(query, selectedFields);
+    const arrayUsersId = users.map((user) => user._id);
+    const matchQuery = {};
+
+    matchQuery.active = true;
+    matchQuery.possibleHelpers = { $not: { $in: [ObjectID(id)] } };
+    matchQuery.ownerId = {
+      $in: arrayUsersId,
+    };
+    matchQuery.status = 'waiting';
+
+    if (categoryArray) {
+      matchQuery.categoryId = {
+        $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
+      };
+    }
+
+    const aggregation = this.projectHelp(matchQuery);
+
     const helps = await super.$listAggregate(aggregation);
     const helpsWithDistance = helps.map((help) => {
       const coordinates = {
