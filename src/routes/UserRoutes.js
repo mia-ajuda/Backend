@@ -37,4 +37,8 @@ routes.get('/checkUserExistence/:userIdentifier', isAuthenticated, async (req, r
   userController.checkUserExistence(req, res, next);
 });
 
+routes.get('/getUserPhoto/:userId', isAuthenticated, async (req, res, next) => {
+  userController.getUserPhotoByUserId(req, res, next);
+});
+
 module.exports = routes;

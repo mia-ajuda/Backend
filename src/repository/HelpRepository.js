@@ -113,9 +113,9 @@ class HelpRepository extends BaseRepository {
           title: 1,
           categories: 1,
           ownerId: 1,
-          description: 1,
           'user.name': 1,
           'user.riskGroup': 1,
+          'user.address': 1,
           'user.location.coordinates': 1,
         },
       },
@@ -232,6 +232,7 @@ class HelpRepository extends BaseRepository {
 
   async getHelpInfoById(helpId) {
     const matchQuery = {};
+    console.log(helpId);
     matchQuery._id = ObjectID(helpId);
     const aggregation = [
       {
@@ -262,6 +263,7 @@ class HelpRepository extends BaseRepository {
       },
     ];
     const helpInfo = await super.$listAggregate(aggregation);
+    console.log(helpInfo[0].user.address);
     return helpInfo[0];
   }
 }
