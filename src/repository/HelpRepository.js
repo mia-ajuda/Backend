@@ -1,8 +1,10 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
-const UserSchema = require('../models/User');
-const { getDistance, calculateDistance } = require('../utils/geolocation/calculateDistance');
+const {
+  getDistance,
+  calculateDistance,
+} = require('../utils/geolocation/calculateDistance');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -82,22 +84,10 @@ class HelpRepository extends BaseRepository {
   }
 
   async shortList(coords, id, categoryArray) {
-    const query = {};
-    const ownerId = { $ne: id };
-    query._id = ownerId;
-    const selectedFields = {
-      _id: 1,
-    };
-
-    const users = await UserSchema.find(query, selectedFields);
-    const arrayUsersId = users.map((user) => user._id);
     const matchQuery = {};
-
     matchQuery.active = true;
     matchQuery.possibleHelpers = { $not: { $in: [ObjectID(id)] } };
-    matchQuery.ownerId = {
-      $in: arrayUsersId,
-    };
+    matchQuery.ownerId = { $not: { $in: [ObjectID(id)] } };
     matchQuery.status = 'waiting';
 
     if (categoryArray) {
@@ -125,7 +115,8 @@ class HelpRepository extends BaseRepository {
     helpsWithDistance.sort((a, b) => {
       if (a.distanceValue < b.distanceValue) {
         return -1;
-      } if (a.distanceValue > b.distanceValue) {
+      }
+      if (a.distanceValue > b.distanceValue) {
         return 1;
       }
       return 0;
@@ -201,7 +192,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
       {
