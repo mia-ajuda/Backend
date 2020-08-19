@@ -1,5 +1,5 @@
-const { Schema, model } = require("mongoose");
-const helpStatusEnum = require("../utils/enums/helpStatusEnum");
+const { Schema, model } = require('mongoose');
+const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 
 const offeredHelpSchema = new Schema(
   {
@@ -19,21 +19,21 @@ const offeredHelpSchema = new Schema(
     },
     possibleHelpedUsers: {
       type: [Schema.Types.ObjectId],
-      ref: "User",
+      ref: 'User',
       required: false,
     },
     categoryId: {
       type: [Schema.Types.ObjectId],
-      ref: "Category",
+      ref: 'Category',
     },
     ownerId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     helpedUserId: {
       type: [Schema.Types.ObjectId],
-      ref: "User",
+      ref: 'User',
       required: false,
     },
     creationDate: {
@@ -50,20 +50,14 @@ const offeredHelpSchema = new Schema(
     },
   },
   {
-    collection: "helpOffer",
+    collection: 'helpOffer',
     toObject: {
       virtuals: true,
     },
     toJSON: {
       virtuals: true,
     },
-  }
+  },
 );
 
-offeredHelpSchema.virtual("user", {
-  ref: "User",
-  localField: "ownerId",
-  foreignField: "_id",
-});
-
-module.exports = model("OfferedHelp", offeredHelpSchema);
+module.exports = model('OfferedHelp', offeredHelpSchema);

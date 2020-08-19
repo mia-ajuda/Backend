@@ -2,7 +2,10 @@ const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
 const UserSchema = require('../models/User');
-const { getDistance, calculateDistance } = require('../utils/geolocation/calculateDistance');
+const {
+  getDistance,
+  calculateDistance,
+} = require('../utils/geolocation/calculateDistance');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -35,7 +38,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
     ];
@@ -91,30 +94,26 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category',
-        },
-      },
-      {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: false,
         },
       },
       {
-        $unwind: {
-          path: '$category',
-          preserveNullAndEmptyArrays: false,
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
         },
       },
       {
         $project: {
           _id: 1,
           title: 1,
-          'category.name': 1,
+          categories: 1,
+          ownerId: 1,
+          description: 1,
           'user.name': 1,
           'user.riskGroup': 1,
           'user.location.coordinates': 1,
@@ -138,7 +137,8 @@ class HelpRepository extends BaseRepository {
     helpsWithDistance.sort((a, b) => {
       if (a.distanceValue < b.distanceValue) {
         return -1;
-      } if (a.distanceValue > b.distanceValue) {
+      }
+      if (a.distanceValue > b.distanceValue) {
         return 1;
       }
       return 0;
@@ -211,7 +211,7 @@ class HelpRepository extends BaseRepository {
           from: 'category',
           localField: 'categoryId',
           foreignField: '_id',
-          as: 'category',
+          as: 'categories',
         },
       },
       {
@@ -232,7 +232,6 @@ class HelpRepository extends BaseRepository {
 
   async getHelpInfoById(helpId) {
     const matchQuery = {};
-    console.log(helpId);
     matchQuery._id = ObjectID(helpId);
     const aggregation = [
       {
@@ -263,7 +262,6 @@ class HelpRepository extends BaseRepository {
       },
     ];
     const helpInfo = await super.$listAggregate(aggregation);
-    console.log(helpInfo[0].user.address);
     return helpInfo[0];
   }
 }

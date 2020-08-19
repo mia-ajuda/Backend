@@ -8,7 +8,7 @@ const routes = express.Router();
 routes.post('/helpOffer', isAuthenticated, (req, res, next) => {
   helpOfferController.createHelpOffer(req, res, next);
 });
-routes.get('/helpOffer/list', isAuthenticated, (req, res, next) => {
+routes.get('/helpOffer/list', (req, res, next) => {
   helpOfferController.listHelpsOffers(req, res, next);
 });
 

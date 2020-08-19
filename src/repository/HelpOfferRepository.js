@@ -1,3 +1,4 @@
+const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
 
@@ -11,10 +12,53 @@ class OfferdHelpRepository extends BaseRepository {
     return newOfferdHelp;
   }
 
-  async list() {
-    const query = null;
-    const populate = 'user';
-    const helpOffers = await super.$list(query, populate);
+  async list(userId) {
+    const aggregate = [
+      {
+        $match: {
+          ownerId: { $ne: ObjectID(userId) },
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
+      {
+        $sort: {
+          creationDate: -1,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          categories: 1,
+          ownerId: 1,
+          'user.name': 1,
+          'user.address': 1,
+          'user.location.coordinates': 1,
+        },
+      },
+    ];
+    const helpOffers = await super.$listAggregate(aggregate);
     return helpOffers;
   }
 
