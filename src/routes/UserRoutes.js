@@ -28,17 +28,13 @@ routes.delete('/user', isAuthenticated, async (req, res, next) => {
   userController.deleteUserLogic(req, res, next);
 });
 
-routes.get('/groupRisk', isAuthenticated, async (req, res, next) => {
+routes.get('/groupRisk', async (req, res, next) => {
   userController.getUserGroupRiskList(req, res, next);
 });
 
 // Verifica a existência de um usuário baseado no email ou CPF
-routes.get('/checkUserExistence/:userIdentifier', isAuthenticated, async (req, res, next) => {
+routes.get('/checkUserExistence/:userIdentifier', async (req, res, next) => {
   userController.checkUserExistence(req, res, next);
-});
-
-routes.get('/getUserPhoto/:userId', isAuthenticated, async (req, res, next) => {
-  userController.getUserPhotoByUserId(req, res, next);
 });
 
 module.exports = routes;
