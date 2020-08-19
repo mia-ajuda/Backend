@@ -57,15 +57,16 @@ class HelpRepository extends BaseRepository {
     return helpUpdated;
   }
 
-  async listNear(coords, id, categoryArray) {
+  async shortList(coords, id, categoryArray) {
     const query = {};
     const ownerId = { $ne: id };
-
     query._id = ownerId;
+    const selectedFields = {
+      _id: 1,
+    };
 
-    const users = await UserSchema.find(query);
+    const users = await UserSchema.find(query, selectedFields);
     const arrayUsersId = users.map((user) => user._id);
-
     const matchQuery = {};
 
     matchQuery.active = true;
@@ -90,6 +91,14 @@ class HelpRepository extends BaseRepository {
           localField: "ownerId",
           foreignField: "_id",
           as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
         },
       },
       {
@@ -122,8 +131,23 @@ class HelpRepository extends BaseRepository {
           as: "possibleEntities",
         },
       },
+      {
+        $unwind: {
+          path: "$category",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          "category.name": 1,
+          "user.name": 1,
+          "user.riskGroup": 1,
+          "user.location.coordinates": 1,
+        },
+      },
     ];
-
     const helps = await super.$listAggregate(aggregation);
     const helpsWithDistance = helps.map((help) => {
       const coordinates = {
@@ -232,8 +256,51 @@ class HelpRepository extends BaseRepository {
           preserveNullAndEmptyArrays: false,
         },
       },
+      {
+        $unwind: {
+          path: "$category",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
     ]);
     return helpList;
+  }
+
+  async getHelpInfoById(helpId) {
+    const matchQuery = {};
+    console.log(helpId);
+    matchQuery._id = ObjectID(helpId);
+    const aggregation = [
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          description: 1,
+          "user.address.city": 1,
+          "user.photo": 1,
+          "user.birthday": 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ];
+    const helpInfo = await super.$listAggregate(aggregation);
+    console.log(helpInfo[0].user.address);
+    return helpInfo[0];
   }
 }
 
