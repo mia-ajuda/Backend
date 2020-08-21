@@ -48,6 +48,17 @@ class HelpService {
     return Help;
   }
 
+
+  async getHelpWithAggregationByid(id) {
+    const Help = await this.HelpRepository.getByIdWithAggregation(id);
+
+    if (!Help) {
+      throw new Error('Ajuda não encontrada');
+    }
+
+    return Help;
+  }
+
   async getHelpList(coords, id, categoryArray) {
     const Helplist = await this.HelpRepository.shortList(
       coords,
