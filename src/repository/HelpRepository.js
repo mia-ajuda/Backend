@@ -51,6 +51,48 @@ class HelpRepository extends BaseRepository {
     return help;
   }
 
+  async getByIdWithAggregation(id) {
+    const help = await super.$getById(id);
+    const aggregation = [
+      {
+        $match: help,
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'possibleHelpers',
+          foreignField: '_id',
+          as: 'possibleHelpers',
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+
+    ];
+    const helpWithAggregation = await super.$listAggregate(aggregation);
+    return helpWithAggregation[0];
+  }
+
   async update(help) {
     const helpUpdated = await super.$update(help);
     return helpUpdated;
