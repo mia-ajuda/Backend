@@ -1,15 +1,17 @@
-const CampaignRepository = require("../repository/CampaignRepository");
-const { findConnections, sendMessage } = require("../../websocket");
-const helpStatusEnum = require("../utils/enums/helpStatusEnum");
+const CampaignRepository = require('../repository/CampaignRepository');
+const CategoryService = require('./CategoryService');
+const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 
 class CampaignService {
   constructor() {
     this.CampaignRepository = new CampaignRepository();
+    this.CategoryService = new CategoryService();
   }
 
   async createNewCampaign(campaignInfo) {
-    const newOfferdHelp = await this.CampaignRepository.create(campaignInfo);
-    return newOfferdHelp;
+    await this.CategoryService.getCategoryByid(campaignInfo.categoryId);
+    const newCampaign = await this.CampaignRepository.create(campaignInfo);
+    return newCampaign;
   }
 
   async listCampaign() {
@@ -19,16 +21,16 @@ class CampaignService {
 
   async getCampaignListByStatus({ userId, statusList }) {
     const checkHelpStatusExistence = statusList.filter(
-      (item) => !Object.values(helpStatusEnum).includes(item)
+      (item) => !Object.values(helpStatusEnum).includes(item),
     );
 
     if (checkHelpStatusExistence.length > 0) {
-      throw new Error("Um dos status informados é ínvalido");
+      throw new Error('Um dos status informados é ínvalido');
     }
 
     const helpList = await this.CampaignRepository.getCampaignListByStatus(
       userId,
-      statusList
+      statusList,
     );
 
     return helpList;
@@ -39,11 +41,11 @@ class CampaignService {
       coords,
       except,
       id,
-      categoryArray
+      categoryArray,
     );
     if (!CampaignList) {
       throw new Error(
-        "Nenhuma campanha foi encontrada no seu raio de distância"
+        'Nenhuma campanha foi encontrada no seu raio de distância',
       );
     }
 
@@ -54,13 +56,13 @@ class CampaignService {
     const Campaign = await this.CampaignRepository.getById(id);
 
     if (!Campaign) {
-      throw new Error("Ajuda não encontrada");
+      throw new Error('Ajuda não encontrada');
     }
 
     return Campaign;
   }
 
-  async deleteCampaignLogically(id) {
+  async deleteCampaign(id) {
     let campaign = await this.getCampaignById(id);
 
     campaign.active = false;
@@ -68,18 +70,21 @@ class CampaignService {
     await this.CampaignRepository.update(campaign);
 
     campaign = JSON.parse(JSON.stringify(campaign));
-    const sendSocketMessageTo = findConnections(
-      campaign.categoryId,
-      JSON.parse(JSON.stringify(campaign.ownerId))
-    );
-    sendMessage(sendSocketMessageTo, "delete-campaign", id);
-
     return { message: `Campaign ${id} deleted!` };
   }
 
   async listCampaignByOwnerId(ownerId) {
     const campaign = await this.CampaignRepository.listByOwnerId(ownerId);
     return campaign;
+  }
+
+  async finishCampaign(id) {
+    const campaign = await this.getHelpByid(id);
+
+    campaign.status = 'finished';
+
+    const result = await this.CampaignRepository.update(campaign);
+    return result;
   }
 }
 

@@ -16,13 +16,8 @@ const campaignSchema = new mongoose.Schema({
     enum: Object.values(helpStatusEnum),
     default: helpStatusEnum.WAITING,
   },
-  // possibleHelpers: {
-  //   type: [mongoose.Schema.Types.ObjectId],
-  //   ref: 'User',
-  //   required: false,
-  // },
   categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: 'Category',
   },
   ownerId: {
