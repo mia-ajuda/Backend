@@ -1,6 +1,6 @@
-const EntityRepository = require('../repository/EntityRepository');
-const UserRepository = require('../repository/UserRepository');
-const firebase = require('../config/authFirebase');
+const EntityRepository = require("../repository/EntityRepository");
+const UserRepository = require("../repository/UserRepository");
+const firebase = require("../config/authFirebase");
 
 class EntityService {
   constructor() {
@@ -9,18 +9,20 @@ class EntityService {
   }
 
   async createEntity(data) {
-    const isUserRegistered = await this.userRepository.getUserByEmail(data.email);
+    const isUserRegistered = await this.userRepository.getUserByEmail(
+      data.email
+    );
 
     if (isUserRegistered) {
-      throw new Error('Email já sendo utilizado');
+      throw new Error("Email já sendo utilizado");
     }
 
     if (data.password.length < 8) {
-      throw new Error('Senha inválida');
+      throw new Error("Senha inválida");
     }
 
     if (data.cnpj.length >= 14) {
-      data.cnpj = data.cnpj.replace(/([^0-9])+/g, '');
+      data.cnpj = data.cnpj.replace(/([^0-9])+/g, "");
     }
 
     data.email = data.email.toLowerCase();
@@ -28,7 +30,7 @@ class EntityService {
       const createdEntity = await this.entityRepository.create(data);
 
       if (!data.hasUser) {
-        console.log('Usuario Criado');
+        console.log("Usuario Criado");
         // Cria o usuário no firebase
         await firebase
           .auth()
@@ -52,7 +54,7 @@ class EntityService {
 
   async getEntity({ id = undefined, email = undefined }) {
     if (!id && !email) {
-      throw new Error('Nenhum identificador encontrado');
+      throw new Error("Nenhum identificador encontrado");
     }
     let entity;
 
@@ -62,7 +64,7 @@ class EntityService {
       entity = await this.entityRepository.getEntityByEmail(email);
     }
     if (!entity) {
-      throw new Error('Usuário não encontrado');
+      throw new Error("Usuário não encontrado");
     }
     return entity;
   }
@@ -88,9 +90,7 @@ class EntityService {
     return result;
   }
 
-  async editEntityAddressById({
-    email, cep, number, city, state, complement,
-  }) {
+  async editEntityAddressById({ email, cep, number, city, state, complement }) {
     const entity = await this.getEntity({ email });
 
     const address = {
@@ -112,8 +112,10 @@ class EntityService {
     const entity = await this.getEntity({ email });
 
     if (longitude || latitude) {
-      entity.location.coordinates[0] = longitude || entity.location.coordinates[0];
-      entity.location.coordinates[1] = latitude || entity.location.coordinates[1];
+      entity.location.coordinates[0] =
+        longitude || entity.location.coordinates[0];
+      entity.location.coordinates[1] =
+        latitude || entity.location.coordinates[1];
     }
 
     const result = await this.entityRepository.update(entity);
@@ -137,7 +139,9 @@ class EntityService {
   }
 
   async checkEntityExistence(entityIdentifier) {
-    const result = await this.entityRepository.checkEntityExistence(entityIdentifier);
+    const result = await this.entityRepository.checkEntityExistence(
+      entityIdentifier
+    );
 
     if (result) {
       return true;

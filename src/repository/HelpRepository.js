@@ -1,10 +1,12 @@
-const { ObjectID } = require("mongodb");
-const BaseRepository = require("./BaseRepository");
-const HelpSchema = require("../models/Help");
+
+// eslint-disable-next-line import/no-unresolved
+const { ObjectID } = require('mongodb');
+const BaseRepository = require('./BaseRepository');
+const HelpSchema = require('../models/Help');
 const {
   getDistance,
   calculateDistance,
-} = require("../utils/geolocation/calculateDistance");
+} = require('../utils/geolocation/calculateDistance');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -34,10 +36,10 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: "category",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "categories",
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
         },
       },
     ];
@@ -103,7 +105,8 @@ class HelpRepository extends BaseRepository {
     matchQuery.active = true;
     matchQuery.possibleHelpers = { $not: { $in: [ObjectID(id)] } };
     matchQuery.ownerId = { $not: { $in: [ObjectID(id)] } };
-    matchQuery.status = "waiting";
+    matchQuery.status = 'waiting';
+
 
     if (categoryArray) {
       matchQuery.categoryId = {
@@ -130,10 +133,18 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: "category",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "categories",
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
+      {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
         },
       },
       {
@@ -143,9 +154,9 @@ class HelpRepository extends BaseRepository {
           categories: 1,
           ownerId: 1,
           description: 1,
-          "user.name": 1,
-          "user.riskGroup": 1,
-          "user.location.coordinates": 1,
+          'user.name': 1,
+          'user.riskGroup': 1,
+          'user.location.coordinates': 1,
         },
       },
     ];
@@ -231,18 +242,26 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: "user",
-          localField: "ownerId",
-          foreignField: "_id",
-          as: "user",
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
         },
       },
       {
         $lookup: {
-          from: "category",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "categories",
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
         },
       },
       {
@@ -264,24 +283,24 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: "user",
-          localField: "ownerId",
-          foreignField: "_id",
-          as: "user",
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
         },
       },
       {
         $project: {
           _id: 0,
           description: 1,
-          "user.address.city": 1,
-          "user.photo": 1,
-          "user.birthday": 1,
+          'user.address.city': 1,
+          'user.photo': 1,
+          'user.birthday': 1,
         },
       },
       {
         $unwind: {
-          path: "$user",
+          path: '$user',
           preserveNullAndEmptyArrays: false,
         },
       },
