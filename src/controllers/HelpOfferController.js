@@ -18,7 +18,6 @@ class OfferedHelpController {
 
   async listHelpsOffers(req, res) {
     const { userId } = req.query;
-    console.log(userId);
     try {
       const helpOffers = await this.HelpOfferService.listHelpsOffers(userId);
       return res.json(helpOffers);
