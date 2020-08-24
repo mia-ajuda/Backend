@@ -39,6 +39,20 @@ class HelpController {
     }
   }
 
+  async getHelpWithAggregationByid(req, res, next) {
+    const { id } = req.params;
+
+    try {
+      const result = await this.HelpService.getHelpWithAggregationByid(id);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
   async getHelpList(req, res, next) {
     const { id } = req.query;
     const coords = req.query.coords.split(',').map((coord) => Number(coord));

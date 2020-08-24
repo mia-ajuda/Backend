@@ -22,6 +22,11 @@ const helpSchema = new mongoose.Schema(
       ref: 'User',
       required: false,
     },
+    possibleEntities: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'Entity',
+      required: false,
+    },
     categoryId: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'Category',
