@@ -18,8 +18,9 @@ class OfferedHelpController {
 
   async listHelpsOffers(req, res) {
     const { userId } = req.query;
+    const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
     try {
-      const helpOffers = await this.HelpOfferService.listHelpsOffers(userId);
+      const helpOffers = await this.HelpOfferService.listHelpsOffers(userId, categoryArray);
       return res.json(helpOffers);
     } catch (error) {
       return res.status(400).json(error);

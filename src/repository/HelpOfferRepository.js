@@ -12,12 +12,18 @@ class OfferdHelpRepository extends BaseRepository {
     return newOfferdHelp;
   }
 
-  async list(userId) {
+  async list(userId, categoryArray) {
+    const matchQuery = {};
+    matchQuery.userId = userId;
+
+    if(categoryArray) {
+      matchQuery.categoryId = {
+        $in: categoryArray.map((category) => ObjectID(category)),
+      };
+    }
     const aggregate = [
       {
-        $match: {
-          ownerId: { $ne: ObjectID(userId) },
-        },
+        $match: matchQuery,
       },
       {
         $lookup: {
