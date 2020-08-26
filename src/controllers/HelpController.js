@@ -25,20 +25,6 @@ class HelpController {
     }
   }
 
-  async getHelpById(req, res, next) {
-    const { id } = req.params;
-
-    try {
-      const result = await this.HelpService.getHelpByid(id);
-      res.status(200).json(result);
-      next();
-    } catch (err) {
-      saveError(err);
-      res.status(400).json({ error: err.message });
-      next();
-    }
-  }
-
   async getHelpWithAggregationByid(req, res, next) {
     const { id } = req.params;
 

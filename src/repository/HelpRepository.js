@@ -143,16 +143,17 @@ class HelpRepository extends BaseRepository {
     matchQuery.ownerId = { $not: { $in: [ObjectID(id)] } };
     matchQuery.status = 'waiting';
 
-
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
+
     const aggregation = this.projectHelp(matchQuery);
     aggregation[aggregation.length - 1].$project.ownerId = 1;
     aggregation[aggregation.length - 1].$project.description = 1;
     const helps = await super.$listAggregate(aggregation);
+
     const helpsWithDistance = helps.map((help) => {
       const coordinates = {
         latitude: coords[1],
@@ -166,6 +167,7 @@ class HelpRepository extends BaseRepository {
       help.distanceValue = calculateDistance(coordinates, helpCoords);
       return help;
     });
+
     helpsWithDistance.sort((a, b) => {
       if (a.distanceValue < b.distanceValue) {
         return -1;
