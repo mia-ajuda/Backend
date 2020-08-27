@@ -1,6 +1,17 @@
 const { Schema, model } = require("mongoose");
 const helpStatusEnum = require("../utils/enums/helpStatusEnum");
 
+const userRequestSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: false,
+  },
+  description: {
+    type: String,
+    required: false,
+  },
+});
 const offeredHelpSchema = new Schema(
   {
     title: {
@@ -18,7 +29,7 @@ const offeredHelpSchema = new Schema(
       default: helpStatusEnum.WAITING,
     },
     possibleHelpedUsers: {
-      type: [Schema.Types.ObjectId],
+      type: [userRequestSchema],
       ref: "User",
       required: false,
     },
