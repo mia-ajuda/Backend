@@ -13,12 +13,10 @@ class HelpRepository extends BaseRepository {
     super(HelpSchema);
   }
 
-  async create(help) {
-    const result = await super.$save(help);
-
+  projectHelp(matchQuery) {
     const aggregation = [
       {
-        $match: { _id: result._id },
+        $match: matchQuery,
       },
       {
         $lookup: {
@@ -29,12 +27,6 @@ class HelpRepository extends BaseRepository {
         },
       },
       {
-        $unwind: {
-          path: "$user",
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
         $lookup: {
           from: 'category',
           localField: 'categoryId',
@@ -42,10 +34,55 @@ class HelpRepository extends BaseRepository {
           as: 'categories',
         },
       },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          categories: {
+            _id: 1,
+            name: 1,
+          },
+          user: {
+            name: 1,
+            riskGroup: 1,
+            location: {
+              coordinates: 1,
+            },
+          },
+        },
+      },
     ];
+    return aggregation;
+  }
 
-    const helps = await super.$listAggregate(aggregation);
-    return helps[0];
+  async create(help) {
+    const result = await super.$save(help);
+    const matchQuery = {
+      _id: result._id,
+    };
+
+    const aggregation = this.projectHelp(matchQuery);
+    aggregation[aggregation.length - 1].$project.ownerId = 1;
+    aggregation[aggregation.length - 1].$project.category = {
+      _id: 1,
+    };
+
+    const createdHelp = await super.$listAggregate(aggregation);
+    return createdHelp[0];
   }
 
   async getById(id) {
@@ -96,8 +133,7 @@ class HelpRepository extends BaseRepository {
   }
 
   async update(help) {
-    const helpUpdated = await super.$update(help);
-    return helpUpdated;
+    await super.$update(help);
   }
 
   async shortList(coords, id, categoryArray) {
@@ -113,53 +149,9 @@ class HelpRepository extends BaseRepository {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
-    const aggregation = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: "user",
-          localField: "ownerId",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $unwind: {
-          path: "$user",
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $lookup: {
-          from: 'entity',
-          localField: 'possibleEntities',
-          foreignField: '_id',
-          as: 'possibleEntities',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          categories: 1,
-          ownerId: 1,
-          description: 1,
-          'user.name': 1,
-          'user.riskGroup': 1,
-          'user.location.coordinates': 1,
-        },
-      },
-    ];
+    const aggregation = this.projectHelp(matchQuery);
+    aggregation[aggregation.length - 1].$project.ownerId = 1;
+    aggregation[aggregation.length - 1].$project.description = 1;
     const helps = await super.$listAggregate(aggregation);
     const helpsWithDistance = helps.map((help) => {
       const coordinates = {
@@ -208,15 +200,15 @@ class HelpRepository extends BaseRepository {
   }
 
   async getHelpListByStatus(userId, statusList, helper) {
-    console.log(userId);
     const matchQuery = {
       status: {
         $in: [...statusList],
       },
       active: true,
     };
-
+    let showPossibleHelpers;
     if (helper) {
+      showPossibleHelpers = 0;
       matchQuery.$or = [
         {
           possibleHelpers: { $in: [ObjectID(userId)] },
@@ -226,9 +218,11 @@ class HelpRepository extends BaseRepository {
         },
       ];
     } else {
+      showPossibleHelpers = 1;
+      helper = 0;
       matchQuery.ownerId = ObjectID(userId);
     }
-    const helpList = await super.$listAggregate([
+    const aggregation = [
       {
         $match: matchQuery,
       },
@@ -270,7 +264,44 @@ class HelpRepository extends BaseRepository {
           preserveNullAndEmptyArrays: false,
         },
       },
-    ]);
+      {
+        $project: {
+          description: 1,
+          status: 1,
+          title: 1,
+          user: {
+            photo: 1,
+            phone: 1,
+            name: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+          },
+          categories: {
+            name: 1,
+            _id: 1,
+          },
+        },
+      },
+    ];
+    //Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
+    if (showPossibleHelpers) {
+      aggregation[aggregation.length - 1].$project.possibleHelpers = {
+        _id: 1,
+        photo: 1,
+        name: 1,
+        birthday: 1,
+        'address.city': 1,
+      };
+      aggregation[aggregation.length - 1].$project.helperId = 1;
+    } else {
+      //É necessário as coordenadas para as minhas ofertas de ajuda.
+      aggregation[aggregation.length - 1].$project.user.location = {
+        coordinates: 1,
+      };
+    }
+    const helpList = await super.$listAggregate(aggregation);
     return helpList;
   }
 
@@ -293,9 +324,13 @@ class HelpRepository extends BaseRepository {
         $project: {
           _id: 0,
           description: 1,
-          'user.address.city': 1,
-          'user.photo': 1,
-          'user.birthday': 1,
+          user: {
+            photo: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+          },
         },
       },
       {
