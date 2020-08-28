@@ -1,4 +1,3 @@
-
 // eslint-disable-next-line import/no-unresolved
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
@@ -20,10 +19,10 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: "user",
-          localField: "ownerId",
-          foreignField: "_id",
-          as: "user",
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
         },
       },
       {
@@ -36,7 +35,7 @@ class HelpRepository extends BaseRepository {
       },
       {
         $unwind: {
-          path: "$user",
+          path: '$user',
           preserveNullAndEmptyArrays: false,
         },
       },
@@ -91,10 +90,11 @@ class HelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
-    const help = await super.$getById(id);
     const aggregation = [
       {
-        $match: help,
+        $match: {
+          _id: ObjectID(id),
+        },
       },
       {
         $lookup: {
@@ -126,7 +126,6 @@ class HelpRepository extends BaseRepository {
           preserveNullAndEmptyArrays: false,
         },
       },
-
     ];
     const helpWithAggregation = await super.$listAggregate(aggregation);
     return helpWithAggregation[0];
@@ -184,7 +183,7 @@ class HelpRepository extends BaseRepository {
     const query = {};
     query.ownerId = id;
     query.active = true;
-    query.status = { $ne: "finished" };
+    query.status = { $ne: 'finished' };
     const result = await super.$countDocuments(query);
 
     return result;
@@ -209,6 +208,7 @@ class HelpRepository extends BaseRepository {
       active: true,
     };
     let showPossibleHelpers;
+    let possibleHelpersEntityArray = [];
     if (helper) {
       showPossibleHelpers = 0;
       matchQuery.$or = [
@@ -221,6 +221,24 @@ class HelpRepository extends BaseRepository {
       ];
     } else {
       showPossibleHelpers = 1;
+      possibleHelpersEntityArray = [
+        {
+          $lookup: {
+            from: 'user',
+            localField: 'possibleHelpers',
+            foreignField: '_id',
+            as: 'possibleHelpers',
+          },
+        },
+        {
+          $lookup: {
+            from: 'entity',
+            localField: 'possibleEntities',
+            foreignField: '_id',
+            as: 'possibleEntities',
+          },
+        },
+      ];
       helper = 0;
       matchQuery.ownerId = ObjectID(userId);
     }
@@ -228,22 +246,7 @@ class HelpRepository extends BaseRepository {
       {
         $match: matchQuery,
       },
-      {
-        $lookup: {
-          from: "user",
-          localField: "possibleHelpers",
-          foreignField: "_id",
-          as: "possibleHelpers",
-        },
-      },
-      {
-        $lookup: {
-          from: 'entity',
-          localField: 'possibleEntities',
-          foreignField: '_id',
-          as: 'possibleEntities',
-        },
-      },
+      ...possibleHelpersEntityArray,
       {
         $lookup: {
           from: 'user',
@@ -262,7 +265,7 @@ class HelpRepository extends BaseRepository {
       },
       {
         $unwind: {
-          path: "$user",
+          path: '$user',
           preserveNullAndEmptyArrays: false,
         },
       },
@@ -287,7 +290,7 @@ class HelpRepository extends BaseRepository {
         },
       },
     ];
-    //Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
+    // Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
     if (showPossibleHelpers) {
       aggregation[aggregation.length - 1].$project.possibleHelpers = {
         _id: 1,
@@ -296,9 +299,17 @@ class HelpRepository extends BaseRepository {
         birthday: 1,
         'address.city': 1,
       };
+      aggregation[aggregation.length - 1].$project.possibleEntities = {
+        _id: 1,
+        photo: 1,
+        name: 1,
+        birthday: 1,
+        'address.city': 1,
+      };
+
       aggregation[aggregation.length - 1].$project.helperId = 1;
     } else {
-      //É necessário as coordenadas para as minhas ofertas de ajuda.
+      // É necessário as coordenadas para as minhas ofertas de ajuda.
       aggregation[aggregation.length - 1].$project.user.location = {
         coordinates: 1,
       };
