@@ -24,6 +24,10 @@ routes.get(
   }
 );
 
+routes.get("/helpOffer/possibleHelpers/:helpOfferId", (req, res, next) => {
+  helpOfferController.listPossibleHelpedUsers(req, res, next);
+});
+
 routes.put(
   "/helpOffer/possibleHelpedUsers/:helpedId/:helpOfferId",
 

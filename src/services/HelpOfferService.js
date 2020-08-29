@@ -41,6 +41,13 @@ class OfferedHelpService {
     const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
     return helpOffer;
   }
+
+  async getOfferByIdWithUsers(helpOfferId) {
+    const helpOffer = await this.OfferedHelpRepository.getOfferByIdWithUsers(
+      helpOfferId
+    );
+    return helpOffer;
+  }
 }
 
 module.exports = OfferedHelpService;

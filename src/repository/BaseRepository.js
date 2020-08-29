@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 class BaseRepository {
   constructor(modelClass) {
@@ -32,7 +32,9 @@ class BaseRepository {
   }
 
   async $listAggregate(aggregationPipeline) {
-    const aggregatedPipeline = await this.modelClass.aggregate(aggregationPipeline).exec();
+    const aggregatedPipeline = await this.modelClass
+      .aggregate(aggregationPipeline)
+      .exec();
     return aggregatedPipeline;
   }
 
@@ -44,11 +46,11 @@ class BaseRepository {
   async $getById(id, active = true) {
     let finalIdFormat = id;
 
-    if (typeof id === 'string') {
+    if (typeof id === "string") {
       try {
         finalIdFormat = mongoose.Types.ObjectId(id);
       } catch (err) {
-        throw new Error('Tamanho ou formato de id inválido');
+        throw new Error("Tamanho ou formato de id inválido");
       }
     }
 
@@ -66,7 +68,9 @@ class BaseRepository {
   }
 
   async $list(query, selectedField, populate = null) {
-    const recordModel = await this.modelClass.find(query, selectedField).populate(populate);
+    const recordModel = await this.modelClass
+      .find(query, selectedField)
+      .populate(populate);
     return recordModel;
   }
 
@@ -75,17 +79,8 @@ class BaseRepository {
     return numberDocuments;
   }
 
-  async findOne(query, mongoSession = {}) {
-    let result;
-
-    if (mongoSession !== undefined || mongoSession.session !== undefined) {
-      result = await this.modelClass
-        .findOne(query)
-        .session(mongoSession.session);
-      return result;
-    }
-    result = await this.modelClass.findOne(query);
-
+  async findOne(query, populate = {}) {
+    const result = await this.modelClass.findOne(query).populate(populate);
     return result;
   }
 

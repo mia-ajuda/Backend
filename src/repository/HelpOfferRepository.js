@@ -82,6 +82,51 @@ class OfferdHelpRepository extends BaseRepository {
   async update(helpOffer) {
     await super.$update(helpOffer);
   }
+
+  async getOfferByIdWithUsers(helpOfferId) {
+    console.log(helpOfferId);
+    const aggregation = [
+      {
+        $match: {
+          _id: ObjectID(helpOfferId),
+        },
+      },
+      {
+        $unwind: {
+          path: "$possibleHelpedUsers",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "possibleHelpedUsers.userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          possibleHelpedUsers: { $push: "$user" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          possibleHelpedUsers: 1,
+        },
+      },
+    ];
+    const [helpOffer] = await super.$listAggregate(aggregation);
+    return helpOffer;
+  }
 }
 
 module.exports = OfferdHelpRepository;
