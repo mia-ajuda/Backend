@@ -29,9 +29,11 @@ class OfferedHelpService {
     return helpOffers;
   }
 
-  async addPossibleHelpedUsers(helpedId, helpOfferId) {
+  async addPossibleHelpedUsers(helpedId, helpOfferId, description) {
     const helpOffer = await this.getHelpOfferById(helpOfferId);
-    helpOffer.possibleHelpedUsers.push(helpedId);
+    console.log("addPossibleHelpedUsers");
+    console.log(helpOffer);
+    helpOffer.possibleHelpedUsers.push({ userId: helpedId, description });
     await this.OfferedHelpRepository.update(helpOffer);
   }
 
