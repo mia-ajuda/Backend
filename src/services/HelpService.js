@@ -33,9 +33,7 @@ class HelpService {
       createdHelp.categoryId,
       JSON.parse(JSON.stringify(createdHelp.ownerId))
     );
-    sendMessage(sendSocketMessageTo, "new-help", createdHelp);
-
-    return createdHelp;
+    sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
   }
 
   async getHelpByid(id) {
@@ -82,13 +80,8 @@ class HelpService {
     await this.HelpRepository.update(help);
 
     help = JSON.parse(JSON.stringify(help));
-    const sendSocketMessageTo = findConnections(
-      help.categoryId,
-      JSON.parse(JSON.stringify(help.ownerId))
-    );
-    sendMessage(sendSocketMessageTo, "delete-help", id);
-
-    return { message: `Help ${id} deleted!` };
+    const sendSocketMessageTo = findConnections(help.categoryId, JSON.parse(JSON.stringify(help.ownerId)));
+    sendMessage(sendSocketMessageTo, 'delete-help', id);
   }
 
   async getHelpListByStatus({ userId, statusList, helper = false }) {
@@ -99,9 +92,6 @@ class HelpService {
     if (checkHelpStatusExistence.length > 0) {
       throw new Error("Um dos status informados é ínvalido");
     }
-    console.log(userId);
-    console.log(statusList);
-    console.log(helper);
 
     const helpList = await this.HelpRepository.getHelpListByStatus(
       userId,
@@ -138,15 +128,17 @@ class HelpService {
     const title = `${owner.name} aceitou sua oferta de ajuda!`;
     const body = `Sua oferta para ${help.title} foi aceita`;
 
-    const userPosition = help.possibleHelpers.indexOf(data.idHelper) >= 0;
-    const entityPosition = help.possibleEntities.indexOf(data.idHelper) >= 0;
-
-    if (userPosition || entityPosition) {
+    const userPosition = help.possibleHelpers.indexOf(data.idHelper);
+    const entityPosition = help.possibleEntities.indexOf(data.idHelper);
+    if (userPosition < 0 && entityPosition < 0) {
+      throw new Error('Ajudante não encontrado');
+    } else {
       help.helperId = data.idHelper;
       help.status = "on_going";
       help.possibleHelpers = [];
       help.possibleEntities = [];
-      const result = await this.HelpRepository.update(help);
+      await this.HelpRepository.update(help);
+
       const notificationHistory = {
         userId: helper._id,
         helpId: help._id,
@@ -166,10 +158,7 @@ class HelpService {
         console.log("Não foi possível enviar a notificação!");
         saveError(err);
       }
-
-      return result;
     }
-    throw new Error("Ajudante não encontrado");
   }
 
   async helperConfirmation(data) {
@@ -236,9 +225,7 @@ class HelpService {
       help.status = "helper_finished";
     }
 
-    const result = await this.HelpRepository.update(help);
-
-    return result;
+    await this.HelpRepository.update(help);
   }
 
   async ownerConfirmation(data) {
@@ -306,8 +293,7 @@ class HelpService {
       help.status = "owner_finished";
     }
 
-    const result = await this.HelpRepository.update(help);
-    return result;
+    await this.HelpRepository.update(help);
   }
 
   async addPossibleHelpers(id, idHelper) {
@@ -346,7 +332,7 @@ class HelpService {
       help.possibleEntities.push(idHelper);
     }
 
-    const result = await this.HelpRepository.update(help);
+    await this.HelpRepository.update(help);
 
     const title = `${helper.name} quer te ajudar!`;
     const body = `Seu pedido ${help.title} recebeu uma oferta de ajuda`;
@@ -370,8 +356,6 @@ class HelpService {
       console.log("Não foi possível enviar a notificação!");
       saveError(err);
     }
-
-    return result;
   }
 
   async getListToDelete() {

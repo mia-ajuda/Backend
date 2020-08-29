@@ -14,10 +14,11 @@ class HelpController {
     };
 
     try {
-      const result = await this.HelpService.createHelp(data);
-      res.status(201).json(result);
+      await this.HelpService.createHelp(data);
+      res.status(201).send();
       next();
     } catch (err) {
+      console.log(err);
       saveError(err);
       res.status(400).send({ error: err.message });
       next();
@@ -101,8 +102,8 @@ class HelpController {
     const { id } = req.params;
 
     try {
-      const result = await this.HelpService.deleteHelpLogically(id);
-      res.status(200).json(result);
+      await this.HelpService.deleteHelpLogically(id);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -115,8 +116,8 @@ class HelpController {
     const data = { ...req.params };
 
     try {
-      const result = await this.HelpService.helperConfirmation(data);
-      res.status(200).json(result);
+      await this.HelpService.helperConfirmation(data);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -129,8 +130,8 @@ class HelpController {
     const data = { ...req.params };
 
     try {
-      const result = await this.HelpService.ownerConfirmation(data);
-      res.status(200).json(result);
+      await this.HelpService.ownerConfirmation(data);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -158,7 +159,7 @@ class HelpController {
 
     try {
       await this.HelpService.addPossibleHelpers(id, idHelper);
-      res.status(204).json();
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
