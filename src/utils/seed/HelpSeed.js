@@ -44,7 +44,7 @@ const seedHelp = async () => {
           description: faker.lorem.lines(1),
           status: sampleStatus,
           possibleHelpers: samplePossibleHelpsID,
-          categoryId: sampleCategory._id,
+          categoryId: [sampleCategory._id],
           ownerId: sampleUsers[0]._id,
           finishedDate: faker.date.future(),
         }),
