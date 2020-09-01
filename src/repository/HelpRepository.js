@@ -126,6 +126,51 @@ class HelpRepository extends BaseRepository {
           preserveNullAndEmptyArrays: false,
         },
       },
+      {
+        $project: {
+          _id: 1,
+          ownerId: 1,
+          description: 1,
+          helperId: 1,
+          status: 1,
+          title: 1,
+          user: {
+            photo: 1,
+            name: 1,
+            phone: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+            location: {
+              coordinates: 1,
+            },
+          },
+          categories: {
+            name: 1,
+            _id: 1,
+          },
+          possibleHelpers: {
+            _id: 1,
+            photo: 1,
+            name: 1,
+            birthday: 1,
+            phone: 1,
+            address: {
+              city: 1,
+            },
+          },
+          possibleEntities: {
+            _id: 1,
+            photo: 1,
+            name: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+          },
+        },
+      },
     ];
     const helpWithAggregation = await super.$listAggregate(aggregation);
     return helpWithAggregation[0];
