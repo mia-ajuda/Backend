@@ -12,8 +12,8 @@ class OfferedHelpService {
     return newOfferdHelp;
   }
 
-  async listHelpsOffers(userId) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId);
+  async listHelpsOffers(userId, categoryArray) {
+    const helpOffers = await this.OfferedHelpRepository.list(userId, categoryArray);
     return helpOffers;
   }
 
