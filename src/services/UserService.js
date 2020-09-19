@@ -27,8 +27,7 @@ class UserService {
 
     data.email = data.email.toLowerCase();
     try {
-      const createdUser = await this.userRepository.create(data);
-
+      await this.userRepository.create(data);
       if (!data.hasUser) {
         // Cria o usuário no firebase
         await firebase
@@ -44,8 +43,6 @@ class UserService {
             throw err;
           });
       }
-
-      return createdUser;
     } catch (err) {
       throw err;
     }

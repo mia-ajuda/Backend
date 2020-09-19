@@ -22,8 +22,8 @@ class UserController {
     };
 
     try {
-      const result = await this.userService.createUser(data);
-      res.status(201).json(result);
+      await this.userService.createUser(data);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);

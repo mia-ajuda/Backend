@@ -7,8 +7,7 @@ class UserRepository extends BaseRepository {
   }
 
   async create(user) {
-    const result = await super.$save(user);
-    return result;
+    await super.$save(user);
   }
 
   async getById(id) {
