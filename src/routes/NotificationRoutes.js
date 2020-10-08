@@ -9,4 +9,8 @@ routes.get('/notification/user/:id', isAuthenticated, async (req, res, next) => 
   notificationController.getUserNotificationsById(req, res, next);
 });
 
+routes.post('/notifications/send', isAuthenticated, async (req, res, next) => {
+  notificationController.sendNotifications(req, res, next);
+});
+
 module.exports = routes;

@@ -56,6 +56,12 @@ class UserRepository extends BaseRepository {
 
     await super.$destroy(query);
   }
+
+  async getUsersWithDevice() {
+    const users = await super.$list({ deviceId: { $ne: null } });
+
+    return users;
+  }
 }
 
 module.exports = UserRepository;

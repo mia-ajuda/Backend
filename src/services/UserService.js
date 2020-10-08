@@ -43,6 +43,15 @@ class UserService {
     return createdUser;
   }
 
+  async getUsersWithDevice() {
+    try {
+      const users = await this.userRepository.getUsersWithDevice();
+      return users;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async getUser({ id = undefined, email = undefined }) {
     if (!id && !email) {
       throw new Error('Nenhum identificador encontrado');
