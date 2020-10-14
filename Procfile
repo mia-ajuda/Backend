@@ -1,0 +1,1 @@
+web: echo $FIREBASE_CONFIG > ./src/config/firebaseAuthConfig.js && npm run dev

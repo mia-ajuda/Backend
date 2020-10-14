@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon index.js",
-    "dev": "node server.js"
+    "dev": "node index.js"
   },
   "dependencies": {
     "@sentry/node": "5.18.0",
