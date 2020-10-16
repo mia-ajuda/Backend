@@ -1,4 +1,5 @@
 const HelpOfferService = require("../services/HelpOfferService");
+const saveError = require("../utils/ErrorHistory");
 
 class OfferedHelpController {
   constructor() {
@@ -63,7 +64,16 @@ class OfferedHelpController {
 
   async chooseHelpedUser(req, res) {}
 
-  async finishHelpOfferByOwner(req, res) {}
+  async finishHelpOfferByOwner(req, res) {
+    const { helpOfferId } = req.params;
+    try {
+      await this.HelpOfferService.finishHelpOfferByOwner(helpOfferId);
+      return res.status(204).json();
+    } catch (error) {
+      saveError(error);
+      return res.status(400).send({ error: error.message });
+    }
+  }
 }
 
 module.exports = OfferedHelpController;

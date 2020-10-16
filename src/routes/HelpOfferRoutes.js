@@ -32,4 +32,8 @@ routes.put(
   },
 );
 
+routes.delete('/helpOffer/:helpOfferId', isAuthenticated, async (req, res, next) => {
+  helpOfferController.finishHelpOfferByOwner(req, res, next);
+});
+
 module.exports = routes;

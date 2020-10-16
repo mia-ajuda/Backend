@@ -39,6 +39,10 @@ class OfferedHelpService {
     const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
     return helpOffer;
   }
+
+  async finishHelpOfferByOwner(helpOfferId) {
+    this.OfferedHelpRepository.finishHelpOfferByOwner(helpOfferId);
+  }
 }
 
 module.exports = OfferedHelpService;

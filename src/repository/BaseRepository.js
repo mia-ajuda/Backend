@@ -93,6 +93,10 @@ class BaseRepository {
     const result = await this.modelClass.deleteOne(query);
     return result;
   }
+
+  async $findOneAndUpdate(filter, update) {
+    await this.modelClass.findOneAndUpdate(filter, update);
+  }
 }
 
 module.exports = BaseRepository;
