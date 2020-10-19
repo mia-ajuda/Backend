@@ -66,8 +66,10 @@ class OfferedHelpController {
 
   async finishHelpOfferByOwner(req, res) {
     const { helpOfferId } = req.params;
+    const { email } = req.decodedToken;
+
     try {
-      await this.HelpOfferService.finishHelpOfferByOwner(helpOfferId);
+      await this.HelpOfferService.finishHelpOfferByOwner(helpOfferId, email);
       return res.status(204).json();
     } catch (error) {
       saveError(error);

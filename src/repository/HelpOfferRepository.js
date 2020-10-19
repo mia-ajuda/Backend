@@ -91,6 +91,41 @@ class OfferdHelpRepository extends BaseRepository {
 
     await super.$findOneAndUpdate(filter, update);
   }
+
+  async getEmailByHelpOfferId(helpOfferId) {
+    const matchQuery = {};
+    matchQuery._id = ObjectID(helpOfferId);
+
+    const aggregation = [
+      {
+        $match: matchQuery,
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          user: {
+            email: 1,
+          },
+        },
+      },
+    ];
+    const helpOffer = await super.$listAggregate(aggregation);
+    return helpOffer[0].user.email;
+  }
 }
 
 module.exports = OfferdHelpRepository;
