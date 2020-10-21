@@ -1,4 +1,5 @@
-const HelpOfferService = require("../services/HelpOfferService");
+const HelpOfferService = require('../services/HelpOfferService');
+const saveError = require('../utils/ErrorHistory');
 
 class OfferedHelpController {
   constructor() {
@@ -8,7 +9,7 @@ class OfferedHelpController {
   async createHelpOffer(req, res) {
     try {
       const newHelpOffer = await this.HelpOfferService.createNewHelpOffer(
-        req.body
+        req.body,
       );
       return res.json(newHelpOffer);
     } catch (error) {
@@ -31,7 +32,7 @@ class OfferedHelpController {
     const { ownerId } = req.params;
     try {
       const helpOffers = await this.HelpOfferService.listHelpsOffersByOwnerId(
-        ownerId
+        ownerId,
       );
       return res.json(helpOffers);
     } catch (error) {
@@ -43,7 +44,7 @@ class OfferedHelpController {
     const { helpedUserId } = req.params;
     try {
       const helpOffers = await this.HelpOfferService.listHelpOffersByHelpedUserId(
-        helpedUserId
+        helpedUserId,
       );
       return res.json(helpOffers);
     } catch (error) {
@@ -61,7 +62,24 @@ class OfferedHelpController {
     }
   }
 
-  async chooseHelpedUser(req, res) {}
+  async chooseHelpedUser(req, res) {
+    const { helpOfferId } = req.params;
+
+    /* A lista de ids de usuários  deve vir numa query  separada por vírgulas
+     * Ex.: (...)?helpedUserList=123123123,123123123123
+     */
+    const helpedUserList = req.query.helpedUserList.split(',');
+    try {
+      const result = await this.HelpOfferService.chooseHelpedUser(
+        helpOfferId,
+        helpedUserList,
+      );
+      return res.status(200).json(result);
+    } catch (err) {
+      saveError(err);
+      return res.status(400).json({ error: err.message });
+    }
+  }
 
   async finishHelpOfferByOwner(req, res) {}
 }

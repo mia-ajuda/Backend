@@ -31,7 +31,7 @@ const offeredHelpSchema = new Schema(
       ref: "User",
       required: true,
     },
-    helpedUserId: {
+    helpedUsersId: {
       type: [Schema.Types.ObjectId],
       ref: "User",
       required: false,

@@ -32,4 +32,11 @@ routes.put(
   },
 );
 
+routes.put(
+  '/helpOffer/chooseHelpers/:helpOfferId',
+  (req, res, next) => {
+    helpOfferController.chooseHelpedUser(req, res, next);
+  },
+);
+
 module.exports = routes;

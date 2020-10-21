@@ -22,11 +22,11 @@ const campaignSchema = new mongoose.Schema({
   },
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Entity',
     required: true,
   },
-  helperId: {
-    type: mongoose.Schema.Types.ObjectId,
+  helpersId: {
+    type: [mongoose.Schema.Types.ObjectId],
     ref: 'User',
     required: false,
   },

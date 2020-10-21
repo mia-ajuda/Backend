@@ -7,7 +7,7 @@ class OfferedHelpService {
 
   async createNewHelpOffer(offeredHelpInfo) {
     const newOfferdHelp = await this.OfferedHelpRepository.create(
-      offeredHelpInfo
+      offeredHelpInfo,
     );
     return newOfferdHelp;
   }
@@ -24,7 +24,7 @@ class OfferedHelpService {
 
   async listHelpOffersByHelpedUserId(helpedUserId) {
     const helpOffers = await this.OfferedHelpRepository.listByHelpedUserId(
-      helpedUserId
+      helpedUserId,
     );
     return helpOffers;
   }
@@ -38,6 +38,11 @@ class OfferedHelpService {
   async getHelpOfferById(helpOfferId) {
     const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
     return helpOffer;
+  }
+
+  async chooseHelpedUser(helpOfferId, helpedUserList) {
+    console.log(helpOfferId);
+    console.log(helpedUserList);
   }
 }
 
