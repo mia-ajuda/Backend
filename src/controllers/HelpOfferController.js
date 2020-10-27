@@ -28,10 +28,10 @@ class OfferedHelpController {
   }
 
   async listHelpsOffersByOwnerId(req, res) {
-    const { ownerId } = req.params;
+    const { id } = req.params;
     try {
       const helpOffers = await this.HelpOfferService.listHelpsOffersByOwnerId(
-        ownerId
+        id
       );
       return res.json(helpOffers);
     } catch (error) {
