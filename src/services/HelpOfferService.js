@@ -39,6 +39,23 @@ class OfferedHelpService {
     const helpOffer = await this.OfferedHelpRepository.getById(helpOfferId);
     return helpOffer;
   }
+
+  async finishHelpOfferByOwner(helpOfferId, email) {
+    const ownerEmail = await this.getEmailByHelpOfferId(
+      helpOfferId,
+    );
+
+    if (ownerEmail !== email) {
+      throw new Error('Usuário não autorizado');
+    }
+
+    this.OfferedHelpRepository.finishHelpOfferByOwner(helpOfferId);
+  }
+
+  async getEmailByHelpOfferId(helpOfferId) {
+    const ownerEmail = await this.OfferedHelpRepository.getEmailByHelpOfferId(helpOfferId);
+    return ownerEmail;
+  }
 }
 
 module.exports = OfferedHelpService;
