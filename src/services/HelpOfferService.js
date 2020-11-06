@@ -13,7 +13,10 @@ class OfferedHelpService {
   }
 
   async listHelpsOffers(userId, categoryArray) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId, categoryArray);
+    const helpOffers = await this.OfferedHelpRepository.list(
+      userId,
+      categoryArray
+    );
     return helpOffers;
   }
 

@@ -14,9 +14,13 @@ class OfferdHelpRepository extends BaseRepository {
 
   async list(userId, categoryArray) {
     const matchQuery = {};
-    matchQuery.userId = userId;
+    matchQuery.ownerId = { $ne: ObjectID(userId) };
 
-    if(categoryArray) {
+    // matchQuery.possibleHelpedUsers.userId = {
+    //   $not: { $in: [ObjectID(userId)] },
+    // };
+
+    if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),
       };
@@ -90,7 +94,6 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getOfferByIdWithUsers(helpOfferId) {
-    console.log(helpOfferId);
     const aggregation = [
       {
         $match: {
@@ -120,7 +123,7 @@ class OfferdHelpRepository extends BaseRepository {
       {
         $group: {
           _id: "$_id",
-          possibleHelpedUsers: { $push: "$user" },
+          possibleHelpedUsers: { $push: "$possibleHelpedUsers" },
         },
       },
       {
