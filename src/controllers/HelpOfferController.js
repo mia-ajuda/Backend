@@ -19,24 +19,23 @@ class OfferedHelpController {
 
   async listHelpsOffers(req, res) {
     const userId = req.query.userId;
-    const getOtherUsers = req.query.getOtherUsers ? true : false;
+    const getOtherUsers = req.query.getOtherUsers == 'true' ? true : false;
     try {
       const helpOffers = await this.HelpOfferService.listHelpsOffers(null, null);
-      console.log(helpOffers);
       let helpOffersFiltered;
       if(getOtherUsers) {
-        helpOffersFiltered = helpOffers.filter(offer => {
-          if(offer.ownerId != userId){
-            return offer;
-          }
-        })
-      }
-      else {
         helpOffersFiltered = helpOffers.filter(offer => {
           if(offer.ownerId == userId){
             return offer;
           }
-        })
+        });
+      }
+      else {
+        helpOffersFiltered = helpOffers.filter(offer => {
+          if(offer.ownerId != userId){
+            return offer;
+          }
+        });
       }
       return res.json(helpOffersFiltered);
     } catch (error) {

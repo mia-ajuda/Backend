@@ -61,6 +61,7 @@ class OfferdHelpRepository extends BaseRepository {
           'user.name': 1,
           'user.address': 1,
           'user.location.coordinates': 1,
+          'user.birthday': 1
         },
       },
     ];
