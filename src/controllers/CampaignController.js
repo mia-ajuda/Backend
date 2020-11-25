@@ -11,7 +11,6 @@ class CampaignController {
       const newCampaign = await this.CampaignService.createNewCampaign(
         req.body,
       );
-      console.log(newCampaign);
       return res.json(newCampaign);
     } catch (error) {
       return res.status(400).json({ error: error.message });

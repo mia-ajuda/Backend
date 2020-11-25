@@ -18,23 +18,26 @@ class OfferedHelpController {
   }
 
   async listHelpsOffers(req, res) {
-    const { userId } = req.query;
-    const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
+    const userId = req.query.userId;
+    const getOtherUsers = req.query.getOtherUsers == 'true' ? true : false;
     try {
-      const helpOffers = await this.HelpOfferService.listHelpsOffers(userId, categoryArray);
-      return res.json(helpOffers);
-    } catch (error) {
-      return res.status(400).json(error);
-    }
-  }
-
-  async listHelpsOffersByOwnerId(req, res) {
-    const { id } = req.params;
-    try {
-      const helpOffers = await this.HelpOfferService.listHelpsOffersByOwnerId(
-        id
-      );
-      return res.json(helpOffers);
+      const helpOffers = await this.HelpOfferService.listHelpsOffers(null, null);
+      let helpOffersFiltered;
+      if(getOtherUsers) {
+        helpOffersFiltered = helpOffers.filter(offer => {
+          if(offer.ownerId == userId){
+            return offer;
+          }
+        });
+      }
+      else {
+        helpOffersFiltered = helpOffers.filter(offer => {
+          if(offer.ownerId != userId){
+            return offer;
+          }
+        });
+      }
+      return res.json(helpOffersFiltered);
     } catch (error) {
       return res.status(400).json(error);
     }
