@@ -32,6 +32,7 @@ class OfferedHelpService {
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
     const helpOffer = await this.getHelpOfferById(helpOfferId);
     helpOffer.possibleHelpedUsers.push(helpedId);
+    // o problema está aqui ^^^
     await this.OfferedHelpRepository.update(helpOffer);
   }
 
