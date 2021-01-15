@@ -14,21 +14,22 @@ class HelpController {
     };
 
     try {
-      const result = await this.HelpService.createHelp(data);
-      res.status(201).json(result);
+      await this.HelpService.createHelp(data);
+      res.status(201).send();
       next();
     } catch (err) {
+      console.log(err);
       saveError(err);
       res.status(400).send({ error: err.message });
       next();
     }
   }
 
-  async getHelpById(req, res, next) {
+  async getHelpWithAggregationByid(req, res, next) {
     const { id } = req.params;
 
     try {
-      const result = await this.HelpService.getHelpByid(id);
+      const result = await this.HelpService.getHelpWithAggregationByid(id);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -39,36 +40,17 @@ class HelpController {
   }
 
   async getHelpList(req, res, next) {
-    const except = !!req.query['id.except'];
-    const helper = !!req.query['id.helper'];
-    const temp = except ? 'except' : helper ? 'helper' : null;
-    const id = temp ? req.query[`id.${temp}`] : req.query.id;
-    const status = req.query.status || null;
+    const { id } = req.query;
+    const coords = req.query.coords.split(',').map((coord) => Number(coord));
     const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
     /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
             sendo que não é aceito o formato "34312ID12312, 12312ID13213" com espaço */
-
-    const near = !!req.query.near;
-    const coords = near ? req.query.coords.split(',').map((coord) => Number(coord)) : null;
-
     try {
-      let result;
-      if (near) {
-        result = await this.HelpService.getNearHelpList(
-          coords,
-          except,
-          id,
-          categoryArray,
-        );
-      } else {
-        result = await this.HelpService.getHelpList(
-          id,
-          status,
-          except,
-          helper,
-          categoryArray,
-        );
-      }
+      const result = await this.HelpService.getHelpList(
+        coords,
+        id,
+        categoryArray,
+      );
       res.status(200);
       res.json(result);
       next();
@@ -106,8 +88,8 @@ class HelpController {
     const { id } = req.params;
 
     try {
-      const result = await this.HelpService.deleteHelpLogically(id);
-      res.status(200).json(result);
+      await this.HelpService.deleteHelpLogically(id);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -120,8 +102,8 @@ class HelpController {
     const data = { ...req.params };
 
     try {
-      const result = await this.HelpService.helperConfirmation(data);
-      res.status(200).json(result);
+      await this.HelpService.helperConfirmation(data);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -134,8 +116,8 @@ class HelpController {
     const data = { ...req.params };
 
     try {
-      const result = await this.HelpService.ownerConfirmation(data);
-      res.status(200).json(result);
+      await this.HelpService.ownerConfirmation(data);
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -163,7 +145,7 @@ class HelpController {
 
     try {
       await this.HelpService.addPossibleHelpers(id, idHelper);
-      res.status(204).json();
+      res.status(204).send();
       next();
     } catch (err) {
       saveError(err);
@@ -184,6 +166,20 @@ class HelpController {
       next();
     }
   }
+
+  async getHelpInfoById(req, res, next) {
+    try {
+      const { helpId } = req.params;
+      const result = await this.HelpService.getHelpInfoById(helpId);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
 }
 
 module.exports = HelpController;
