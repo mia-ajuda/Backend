@@ -13,6 +13,7 @@ const notificationTypesEnum = {
   ajudaAceita: 'ajudaAceita',
   ajudaFinalizada: 'ajudaFinalizada',
   ajudaExpirada: 'ajudaExpirada',
+  notificacaoManual: 'notificacaoManual',
   outros: 'outros',
 };
 
