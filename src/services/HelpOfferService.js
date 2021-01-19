@@ -13,7 +13,10 @@ class OfferedHelpService {
   }
 
   async listHelpsOffers(userId, categoryArray) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId, categoryArray);
+    const helpOffers = await this.OfferedHelpRepository.list(
+      userId,
+      categoryArray
+    );
     return helpOffers;
   }
 
@@ -30,10 +33,14 @@ class OfferedHelpService {
   }
 
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
-    const helpOffer = await this.getHelpOfferById(helpOfferId);
-    helpOffer.possibleHelpedUsers.push(helpedId);
-    // o problema está aqui ^^^
-    await this.OfferedHelpRepository.update(helpOffer);
+    let helpOffer = await this.getHelpOfferById(helpOfferId);
+    if (helpOffer.possibleHelpedUsers.find((value) => value == helpedId)) {
+      throw new Error("Usuário já se candidadtou para essa oferta");
+    }
+    else {
+      helpOffer.possibleHelpedUsers.push(helpedId);
+      await this.OfferedHelpRepository.update(helpOffer);
+    }
   }
 
   async getHelpOfferById(helpOfferId) {
@@ -42,19 +49,19 @@ class OfferedHelpService {
   }
 
   async finishHelpOfferByOwner(helpOfferId, email) {
-    const ownerEmail = await this.getEmailByHelpOfferId(
-      helpOfferId,
-    );
+    const ownerEmail = await this.getEmailByHelpOfferId(helpOfferId);
 
     if (ownerEmail !== email) {
-      throw new Error('Usuário não autorizado');
+      throw new Error("Usuário não autorizado");
     }
 
     this.OfferedHelpRepository.finishHelpOfferByOwner(helpOfferId);
   }
 
   async getEmailByHelpOfferId(helpOfferId) {
-    const ownerEmail = await this.OfferedHelpRepository.getEmailByHelpOfferId(helpOfferId);
+    const ownerEmail = await this.OfferedHelpRepository.getEmailByHelpOfferId(
+      helpOfferId
+    );
     return ownerEmail;
   }
 }

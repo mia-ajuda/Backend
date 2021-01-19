@@ -45,8 +45,7 @@ class HelpService {
 
     return Help;
   }
-
-
+  
   async getHelpWithAggregationByid(id) {
     const Help = await this.HelpRepository.getByIdWithAggregation(id);
 

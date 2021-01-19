@@ -140,11 +140,9 @@ class HelpController {
   }
 
   async addPossibleHelpers(req, res, next) {
-    const id = req.params.idHelp;
-    const { idHelper } = req.params;
-
+    const {idHelp, idHelper} = req.params;
     try {
-      await this.HelpService.addPossibleHelpers(id, idHelper);
+      await this.HelpService.addPossibleHelpers(idHelp, idHelper);
       res.status(204).send();
       next();
     } catch (err) {

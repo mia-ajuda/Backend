@@ -34,6 +34,22 @@ class OfferdHelpRepository extends BaseRepository {
         },
       },
       {
+        $lookup: {
+          from: 'user',
+          localField: 'possibleHelpers',
+          foreignField: '_id',
+          as: 'possibleHelpers',
+        },
+      },
+      {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
+        },
+      },
+      {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: false,
@@ -61,12 +77,35 @@ class OfferdHelpRepository extends BaseRepository {
           'user.name': 1,
           'user.address': 1,
           'user.location.coordinates': 1,
-          'user.birthday': 1
+          'user.birthday': 1,
+          possibleHelpers: {
+            _id: 1,
+            photo: 1,
+            name: 1,
+            birthday: 1,
+            phone: 1,
+            address: {
+              city: 1,
+            },
+          },
+          possibleEntities: {
+            _id: 1,
+            photo: 1,
+            name: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+          },
         },
       },
     ];
     const helpOffers = await super.$listAggregate(aggregate);
     return helpOffers;
+  }
+
+  async update(help) {
+    await super.$update(help);
   }
 
   async listByOwnerId(ownerId) {
