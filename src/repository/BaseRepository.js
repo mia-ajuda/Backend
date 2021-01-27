@@ -75,17 +75,8 @@ class BaseRepository {
     return numberDocuments;
   }
 
-  async findOne(query, mongoSession = {}) {
-    let result;
-
-    if (mongoSession !== undefined || mongoSession.session !== undefined) {
-      result = await this.modelClass
-        .findOne(query)
-        .session(mongoSession.session);
-      return result;
-    }
-    result = await this.modelClass.findOne(query);
-
+  async $findOne(query,projection) {
+    const result = await this.modelClass.findOne(query,projection);
     return result;
   }
 

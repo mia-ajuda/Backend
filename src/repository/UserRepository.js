@@ -62,6 +62,11 @@ class UserRepository extends BaseRepository {
 
     return users;
   }
+
+  async findOneUserWithProjection(query,projection){
+    const user = await super.$findOne(query,projection);
+    return user;
+  }
 }
 
 module.exports = UserRepository;

@@ -11,6 +11,10 @@ class OfferdHelpRepository extends BaseRepository {
     const newOfferdHelp = await super.$save(offeredHelp);
     return newOfferdHelp;
   }
+  
+  async update(helpOffer) {
+    await super.$update(helpOffer);
+  }
 
   async list(userId, categoryArray) {
     const matchQuery = {};

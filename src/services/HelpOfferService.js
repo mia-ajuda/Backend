@@ -1,8 +1,16 @@
 const OfferedHelpRepository = require("../repository/HelpOfferRepository");
+const UserService = require("./UserService");
+const NotificationService = require("./NotificationService");
+const NotificationMixin = require("../utils/NotificationMixin");
+const { notificationTypesEnum } = require("../models/Notification");
+const saveError = require('../utils/ErrorHistory');
 
 class OfferedHelpService {
   constructor() {
     this.OfferedHelpRepository = new OfferedHelpRepository();
+    this.UserService = new UserService();
+    this.NotificationService = new NotificationService();
+    this.NotificationMixin = new NotificationMixin();
   }
 
   async createNewHelpOffer(offeredHelpInfo) {
@@ -30,9 +38,47 @@ class OfferedHelpService {
   }
 
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
+    
     const helpOffer = await this.getHelpOfferById(helpOfferId);
     helpOffer.possibleHelpedUsers.push(helpedId);
     await this.OfferedHelpRepository.update(helpOffer);
+    
+    const helpedUserProjection = {
+      name: 1, 
+      _id: 0
+    }
+   
+    const { name: helpedUserName } = await this.UserService.findOneUserWithProjection(helpedId,helpedUserProjection);
+  
+    const ownerProjection = {
+      deviceId: 1,
+      _id: 0,
+    }
+    
+    const { deviceId:ownerDeviceId } = await this.UserService.findOneUserWithProjection(helpOffer.ownerId,ownerProjection);  
+    const title = `${helpedUserName} quer sua ajuda!`;
+    const body = `Sua oferta ${helpOffer.title} recebeu um interessado`;
+
+    const notificationHistory = {
+      userId: helpOffer.ownerId,
+      helpId: helpOffer._id,
+      isOffer: true,
+      title,
+      body,
+      notificationType: notificationTypesEnum.ofertaRequerida,
+    };
+
+    try {
+      await this.NotificationMixin.sendNotification(
+        ownerDeviceId,
+        title,
+        body
+      );
+      await this.NotificationService.createNotification(notificationHistory);
+    } catch (err) {
+      console.log("Não foi possível enviar a notificação!");
+      saveError(err);
+    }
   }
 
   async getHelpOfferById(helpOfferId) {
