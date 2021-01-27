@@ -38,8 +38,13 @@ class OfferedHelpService {
   }
 
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
-    
     const helpOffer = await this.getHelpOfferById(helpOfferId);
+    
+    const userPosition = helpOffer.possibleHelpedUsers.indexOf(helpedId);
+    if (userPosition > -1) {
+      throw new Error("Usuário já é um possível ajudante");
+    }
+
     helpOffer.possibleHelpedUsers.push(helpedId);
     await this.OfferedHelpRepository.update(helpOffer);
     
