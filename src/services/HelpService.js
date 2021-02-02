@@ -106,59 +106,37 @@ class HelpService {
     const { idHelper } = data;
     const help = await this.getHelpByid(data.idHelp);
     const { ownerId } = help;
-    let helper;
-    try {
-      helper = await this.UserService.getUser({ id: idHelper });
-    } catch {
-      helper = await this.EntityService.getEntity({ id: idHelper });
-    }
-
-    const owner = await this.UserService.getUser({ id: ownerId });
 
     if (help.helperId) {
       throw new Error("Ajuda já possui ajudante");
     }
+    //notification begin
+    const information = await this.NotificationService.chooseAccountToSendNotification(idHelper,ownerId,false);
+    const account = information[0];
+    const ownerName = information[1];
+    const notificationHistory = {
+      helpId: help._id,
+      title: `${ownerName} aceitou sua oferta de ajuda!`,
+      body: `Sua oferta para ${help.title} foi aceita`,
+      notificationType: notificationTypesEnum.ajudaAceita,
+    };
+    account.id = idHelper;
+    await this.NotificationService.formatNotification(notificationHistory, account, help);
+    //notification end
+    
+    help.helperId = data.idHelper;
+    help.status = "on_going";
+    help.possibleHelpers = [];
+    help.possibleEntities = [];
+    /*await this.HelpRepository.update(help);
 
+    // erase help from map, sending socket message
     const sendSocketMessageTo = findConnections(
       help.categoryId,
       JSON.parse(JSON.stringify(ownerId))
     );
     sendMessage(sendSocketMessageTo, "delete-help", help._id);
-
-    const title = `${owner.name} aceitou sua oferta de ajuda!`;
-    const body = `Sua oferta para ${help.title} foi aceita`;
-
-    const userPosition = help.possibleHelpers.indexOf(data.idHelper);
-    const entityPosition = help.possibleEntities.indexOf(data.idHelper);
-    if (userPosition < 0 && entityPosition < 0) {
-      throw new Error('Ajudante não encontrado');
-    } else {
-      help.helperId = data.idHelper;
-      help.status = "on_going";
-      help.possibleHelpers = [];
-      help.possibleEntities = [];
-      await this.HelpRepository.update(help);
-
-      const notificationHistory = {
-        userId: helper._id,
-        helpId: help._id,
-        title,
-        body,
-        notificationType: notificationTypesEnum.ajudaAceita,
-      };
-
-      try {
-        await this.NotificationService.createNotification(notificationHistory);
-        await this.NotificationMixin.sendNotification(
-          helper.deviceId,
-          title,
-          body
-        );
-      } catch (err) {
-        console.log("Não foi possível enviar a notificação!");
-        saveError(err);
-      }
-    }
+    */
   }
 
   async helperConfirmation(data) {
