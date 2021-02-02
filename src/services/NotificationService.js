@@ -4,6 +4,7 @@ const NotificationMixin = require("../utils/NotificationMixin")
 const UserService = require('./UserService');
 const EntityService = require("./EntityService");
 const notify = require('../utils/Notification');
+const saveError = require("../utils/ErrorHistory");
 
 class NotificationService {
   constructor() {
@@ -63,24 +64,24 @@ class NotificationService {
     const entityPosition = help.possibleEntities.indexOf(account.notificationReceiverId);
 
     if (userPosition >= 0) {
-      notificationHistory.entityId = account.deviceId;
+      notificationHistory.entityId = account.id;
     } else if(entityPosition < 0) {
-      notificationHistory.userId = account.deviceId;
+      notificationHistory.userId = account.id;
     } else {
       throw new Error('Ajudante não encontrado');
     }
-    console.log(account.deviceId);
+  
     try {
       await this.createNotification(notificationHistory);
       await this.NotificationMixin.sendNotification(
         account.deviceId,
-        title,
-        body
+        notificationHistory.title,
+        notificationHistory.body
       );
     } catch (err) {
       console.log("Não foi possível enviar a notificação!");
       console.log(err);
-      //saveError(err);
+      saveError(err);
     }
   
   }
@@ -92,6 +93,8 @@ class NotificationService {
         let owner;
         owner = await this.UserService.findOneUserWithProjection(ownerId,ownerProjection);
         
+        // It is necessary the double validation because it is possible that the ownerId provided is
+        // not a user or a entity
         if(!owner){
           // nao tem essa funcao na entity ainda
           owner = await this.EntityService.findOneUserWithProjection(ownerId,ownerProjection);
@@ -114,6 +117,8 @@ class NotificationService {
         let helper;
         helper = await this.UserService.findOneUserWithProjection(helperId,helperProjection);
         
+         // It is necessary the double validation because it is possible that the helperId provided is
+        // not a user or a entity
         if(!helper){
           // nao tem essa funcao na entity ainda
           helper = await this.EntityService.findOneUserWithProjection(helperId,helperProjection);
