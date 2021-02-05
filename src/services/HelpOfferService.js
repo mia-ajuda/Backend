@@ -12,10 +12,9 @@ class OfferedHelpService {
     return newOfferdHelp;
   }
 
-  async listHelpsOffers(userId, categoryArray) {
+  async listHelpsOffers(userId) {
     const helpOffers = await this.OfferedHelpRepository.list(
       userId,
-      categoryArray
     );
     return helpOffers;
   }
@@ -35,7 +34,8 @@ class OfferedHelpService {
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
     let helpOffer = await this.getHelpOfferById(helpOfferId);
     if (helpOffer.possibleHelpedUsers.find((value) => value == helpedId)) {
-      throw new Error("Usuário já se candidadtou para essa oferta");
+      console.log("Não é um erro 400");
+      throw new Error("Usuário já se candidatou para essa oferta");
     }
     else {
       helpOffer.possibleHelpedUsers.push(helpedId);
