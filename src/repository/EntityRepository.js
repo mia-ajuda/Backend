@@ -56,6 +56,11 @@ class EntityRepository extends BaseRepository {
 
     await super.$destroy(query);
   }
+
+  async findOneEntityWithProjection(query,projection){
+    const entity = await super.$findOne(query,projection);
+    return entity;
+  }
 }
 
 module.exports = EntityRepository;
