@@ -1,5 +1,6 @@
 const admin = require('../../config/authFirebase');
 const saveError = require('../../utils/ErrorHistory');
+const isEntity = require('../../utils/IsEntity');
 
 const isAuthenticated = async (req, res, next) => {
   if (req.headers.authorization
@@ -9,7 +10,11 @@ const isAuthenticated = async (req, res, next) => {
 
     try {
       const idToken = await admin.auth().verifyIdToken(token);
+
       req.decodedToken = idToken;
+
+      global.isUserEntity = isEntity(req.decodedToken.name);
+
       return next();
     } catch (err) {
       saveError(err);
@@ -20,5 +25,6 @@ const isAuthenticated = async (req, res, next) => {
   saveError(err);
   return res.status(403).json({ error: err.message });
 };
+
 
 module.exports = isAuthenticated;
