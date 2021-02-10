@@ -1,5 +1,6 @@
 const OfferedHelpRepository = require("../repository/HelpOfferRepository");
 const UserService = require("./UserService");
+const EntityService = require("./EntityService");
 const NotificationService = require("./NotificationService");
 const NotificationMixin = require("../utils/NotificationMixin");
 const { notificationTypesEnum } = require("../models/Notification");
@@ -11,6 +12,7 @@ class OfferedHelpService {
     this.UserService = new UserService();
     this.NotificationService = new NotificationService();
     this.NotificationMixin = new NotificationMixin();
+    this.EntityService = new EntityService();
   }
 
   async createNewHelpOffer(offeredHelpInfo) {
@@ -37,30 +39,35 @@ class OfferedHelpService {
     return helpOffers;
   }
 
-  async addPossibleHelpedUsers(helpedId, helpOfferId) {
-    const helpOffer = await this.getHelpOfferById(helpOfferId);
-    
-    const userPosition = helpOffer.possibleHelpedUsers.indexOf(helpedId);
+  async addPossibleHelpedUsers(helpedId, helpOfferId) {    
+    const helpOffer = await this.getHelpOfferById(helpOfferId); 
+    let user,findOneUser,userPosition,possibleHelpedUser;
+
+    if(isUserEntity){
+      userPosition = helpOffer.possibleEntities.indexOf(helpedId);
+      user = this.EntityService;
+      findOneUser = "findOneEntityWithProjection";
+      possibleHelpedUser = helpOffer.possibleEntities;
+    } else {
+      userPosition = helpOffer.possibleHelpedUsers.indexOf(helpedId);
+      user = this.UserService;
+      findOneUser = "findOneUserWithProjection"; 
+      possibleHelpedUser = helpOffer.possibleHelpedUsers;
+    }
+
     if (userPosition > -1) {
       throw new Error("Usuário já é um possível ajudante");
     }
 
-    helpOffer.possibleHelpedUsers.push(helpedId);
+    await this.useService(possibleHelpedUser,"push",[helpedId]);
     await this.OfferedHelpRepository.update(helpOffer);
     
-    const helpedUserProjection = {
-      name: 1, 
-      _id: 0
-    }
-   
-    const { name: helpedUserName } = await this.UserService.findOneUserWithProjection(helpedId,helpedUserProjection);
-  
-    const ownerProjection = {
-      deviceId: 1,
-      _id: 0,
-    }
+    const helpedUserProjection = { name: 1, _id: 0};
+    const { name: helpedUserName } = await this.useService(user,findOneUser,[helpedId,helpedUserProjection]);
     
-    const { deviceId:ownerDeviceId } = await this.UserService.findOneUserWithProjection(helpOffer.ownerId,ownerProjection);  
+    const ownerProjection = { deviceId: 1, _id: 0 };
+    const { deviceId:ownerDeviceId } = await this.useService(this.UserService,"findOneUserWithProjection",[helpOffer.ownerId,ownerProjection]);  
+     
     const title = `${helpedUserName} quer sua ajuda!`;
     const body = `Sua oferta ${helpOffer.title} recebeu um interessado`;
 
@@ -106,6 +113,11 @@ class OfferedHelpService {
   async getEmailByHelpOfferId(helpOfferId) {
     const ownerEmail = await this.OfferedHelpRepository.getEmailByHelpOfferId(helpOfferId);
     return ownerEmail;
+  }
+
+  async useService(service, functionName, params = []) {
+    let functionReturn = await service[functionName](...params);
+    return functionReturn;
   }
 }
 
