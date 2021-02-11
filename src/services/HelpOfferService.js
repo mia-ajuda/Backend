@@ -56,7 +56,7 @@ class OfferedHelpService {
     }
 
     if (userPosition > -1) {
-      throw new Error("Usuário já é um possível ajudante");
+      throw new Error("Usuário já é um possível ajudado");
     }
 
     await this.useService(possibleHelpedUser,"push",[helpedId]);
