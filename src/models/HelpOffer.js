@@ -60,6 +60,12 @@ const offeredHelpSchema = new Schema(
   }
 );
 
+offeredHelpSchema.virtual('category', {
+  ref: 'Category',
+  localField: 'categoryId',
+  foreignField: '_id',
+});
+
 offeredHelpSchema.virtual("user", {
   ref: "User",
   localField: "ownerId",

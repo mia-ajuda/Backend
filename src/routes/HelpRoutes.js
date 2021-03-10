@@ -9,11 +9,11 @@ routes.post('/help', isAuthenticated, async (req, res, next) => {
   helpController.createHelp(req, res, next);
 });
 
-routes.get('/help/aggregation/:id', isAuthenticated, async (req, res, next) => {
+routes.get('/help/aggregation/:id', async (req, res, next) => {
   helpController.getHelpWithAggregationByid(req, res, next);
 });
 
-routes.get('/help/helpInfo/:helpId', isAuthenticated, async (req, res, next) => {
+routes.get('/help/helpInfo/:helpId', async (req, res, next) => {
   helpController.getHelpInfoById(req, res, next);
 });
 
@@ -21,7 +21,7 @@ routes.get('/help', isAuthenticated, async (req, res, next) => {
   helpController.getHelpList(req, res, next);
 });
 
-routes.get('/help/listbyStatus/:userId', isAuthenticated, async (req, res, next) => {
+routes.get('/help/listbyStatus/:userId', async (req, res, next) => {
   helpController.getHelpListByStatus(req, res, next);
 });
 

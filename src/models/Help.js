@@ -3,6 +3,10 @@ const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 
 const helpSchema = new mongoose.Schema(
   {
+    teste: {
+      type: Boolean,
+      default: true
+    },
     title: {
       type: String,
       required: true,

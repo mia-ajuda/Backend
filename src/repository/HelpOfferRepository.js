@@ -109,8 +109,78 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async listByOwnerId(ownerId) {
+    // "60480f7868547c0077bd2dbb"
+    // ownerId = "5fc98569df03a7002e4a2b8f"
+    ownerId = "60480f7868547c0077bd2dbb"
     const query = { ownerId };
-    const helpOffers = await super.$list(query);
+    const aggregation = [
+      {
+        $match: {
+          _id: ObjectID(ownerId),
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
+      // {
+      //   $unwind: {
+      //     path: '$user',
+      //     preserveNullAndEmptyArrays: false,
+      //   },
+      // },
+      {
+        $project: {
+          _id: 1,
+          ownerId: 1,
+          description: 1,
+          helperId: 1,
+          status: 1,
+          title: 1,
+          user: {
+            photo: 1,
+            name: 1,
+            phone: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+            location: {
+              coordinates: 1,
+            },
+          },
+          categories: {
+            name: 1,
+            _id: 1,
+          },
+          possibleHelpers: {
+            _id: 1,
+            photo: 1,
+            name: 1,
+            birthday: 1,
+            phone: 1,
+            address: {
+              city: 1,
+            },
+          },
+          possibleEntities: {
+            _id: 1,
+            photo: 1,
+            name: 1,
+            birthday: 1,
+            address: {
+              city: 1,
+            },
+          },
+        },
+      },
+    ];
+    const helpOffers = await super.$listAggregate(aggregation);
+    // const helpOffers = await super.$list(query);
     return helpOffers;
   }
 

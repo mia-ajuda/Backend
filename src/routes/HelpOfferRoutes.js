@@ -17,7 +17,6 @@ routes.get("/helpOffer/list", isAuthenticated, (req, res, next) => {
 routes.get(
   "/helpOffer/listByOwner/:ownerId",
   (req, res, next) => {
-    console.log("Test");
     helpOfferController.listHelpOffersByOwnerId(req, res, next);
   }
 );

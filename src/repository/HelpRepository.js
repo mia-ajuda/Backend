@@ -134,6 +134,7 @@ class HelpRepository extends BaseRepository {
           helperId: 1,
           status: 1,
           title: 1,
+          teste: 1,
           user: {
             photo: 1,
             name: 1,
