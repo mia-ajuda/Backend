@@ -64,10 +64,11 @@ class CampaignService {
 
   async deleteCampaign(id) {
     let campaign = await this.getCampaignById(id);
-
+    console.log(campaign);
     campaign.active = false;
 
     await this.CampaignRepository.update(campaign);
+    
 
     campaign = JSON.parse(JSON.stringify(campaign));
     return { message: `Campaign ${id} deleted!` };
@@ -79,7 +80,7 @@ class CampaignService {
   }
 
   async finishCampaign(id) {
-    const campaign = await this.getHelpByid(id);
+    const campaign = await this.getCampaignById(id);
 
     campaign.status = 'finished';
 

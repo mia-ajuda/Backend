@@ -59,9 +59,8 @@ class CampaignController {
 
   async deleteCampaignLogic(req, res, next) {
     const { id } = req.params;
-
     try {
-      const result = await this.CampaignService.deleteCampaignLogically(id);
+      const result = await this.CampaignService.deleteCampaign(id);
       res.status(200).json(result);
       next();
     } catch (err) {
