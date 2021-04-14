@@ -26,7 +26,7 @@ routes.put('/campaign/:id', isAuthenticated, (req, res, next) => {
 });
 
 routes.delete('/campaign/:id', isAuthenticated, async (req, res, next) => {
-  campaignController.finishCampaign(req, res, next);
+  campaignController.deleteCampaignLogic(req, res, next);
 });
 
 module.exports = routes;
