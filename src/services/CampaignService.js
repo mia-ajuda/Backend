@@ -56,7 +56,7 @@ class CampaignService {
     const Campaign = await this.CampaignRepository.getById(id);
 
     if (!Campaign) {
-      throw new Error('Ajuda não encontrada');
+      throw new Error('Campanha não encontrada');
     }
 
     return Campaign;

@@ -124,6 +124,19 @@ class CampaignController {
       next();
     }
   }
+
+  async getCampaignById(req, res, next) {
+    const { id } = req.params;
+    try {
+      const result = await this.CampaignService.getCampaignById(id);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
 }
 
 module.exports = CampaignController;
