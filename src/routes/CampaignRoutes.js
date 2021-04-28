@@ -8,9 +8,11 @@ const routes = express.Router();
 routes.post('/campaign', isAuthenticated, (req, res, next) => {
   campaignController.createCampaign(req, res, next);
 });
+
 routes.get('/campaign', isAuthenticated, (req, res, next) => {
   campaignController.listCampaignNear(req, res, next);
 });
+
 routes.get(
   '/campaign/listbyStatus/:userId',
   isAuthenticated,
@@ -18,11 +20,13 @@ routes.get(
     campaignController.getCampaignListByStatus(req, res, next);
   },
 );
+
 routes.put('/campaign/:id', isAuthenticated, (req, res, next) => {
-  campaignController.listCampaignNear(req, res, next);
+  campaignController.finishCampaign(req, res, next);
 });
+
 routes.delete('/campaign/:id', isAuthenticated, async (req, res, next) => {
-  campaignController.deleteCampaignLogic(req, res, next);
+  campaignController.finishCampaign(req, res, next);
 });
 routes.get('/campaign/:id', isAuthenticated, (req, res, next) => {
   campaignController.getCampaignById(req, res, next);
