@@ -55,7 +55,10 @@ class OfferedHelpService {
       possibleHelpedUser = helpOffer.possibleHelpedUsers;
     }
 
-    if (userPosition > -1) {
+    if(helpOffer.ownerId == helpedId){
+      throw new Error("Usuário não pode ser ajudante da própria oferta");
+    }
+    else if (userPosition > -1) {
       throw new Error("Usuário já é um possível ajudado");
     }
 
