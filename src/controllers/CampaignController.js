@@ -59,9 +59,8 @@ class CampaignController {
 
   async deleteCampaignLogic(req, res, next) {
     const { id } = req.params;
-
     try {
-      const result = await this.CampaignService.deleteCampaignLogically(id);
+      const result = await this.CampaignService.deleteCampaign(id);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -116,6 +115,19 @@ class CampaignController {
     const { id } = req.params;
     try {
       const result = await this.CampaignService.finishCampaign(id);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
+  async getCampaignById(req, res, next) {
+    const { id } = req.params;
+    try {
+      const result = await this.CampaignService.getCampaignById(id);
       res.status(200).json(result);
       next();
     } catch (err) {
