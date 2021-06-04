@@ -5,6 +5,7 @@ const notificationTypes = {
   ajudaAceita: 'Sua oferta de ajuda foi aceita!',
   ajudaFinalizada: 'Seu pedido de ajuda foi finalizado!',
   ajudaExpirada: 'Seu pedido de ajuda expirou!',
+  ofertaRequerida: 'Sua oferta de ajuda possui um usuário interessado!',
   outros: 'Demais tipos de notificação!',
 };
 
@@ -14,6 +15,7 @@ const notificationTypesEnum = {
   ajudaFinalizada: 'ajudaFinalizada',
   ajudaExpirada: 'ajudaExpirada',
   notificacaoManual: 'notificacaoManual',
+  ofertaRequerida: 'ofertaRequerida',
   outros: 'outros',
 };
 
@@ -22,6 +24,11 @@ const NotificationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: false,
+  },
+  isOffer:{
+    type: Boolean,
+    required: false,
+    default: false,
   },
   helpId: {
     type: mongoose.Schema.Types.ObjectId,

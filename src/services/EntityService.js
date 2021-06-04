@@ -1,6 +1,7 @@
 const EntityRepository = require("../repository/EntityRepository");
 const UserRepository = require("../repository/UserRepository");
 const firebase = require("../config/authFirebase");
+const { ObjectID } = require("mongodb");
 
 class EntityService {
   constructor() {
@@ -148,6 +149,12 @@ class EntityService {
     }
 
     return false;
+  }
+  async findOneEntityWithProjection(entityId,projection){
+    const query = { _id: ObjectID(entityId) };
+    const entity = await this.entityRepository.findOneEntityWithProjection(query,projection);
+
+    return entity;
   }
 }
 

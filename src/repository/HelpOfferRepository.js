@@ -11,11 +11,21 @@ class OfferdHelpRepository extends BaseRepository {
     const newOfferdHelp = await super.$save(offeredHelp);
     return newOfferdHelp;
   }
+  
+  async update(helpOffer) {
+    await super.$update(helpOffer);
+  }
 
-  async list(userId, categoryArray) {
+  async list(userId, categoryArray,getOtherUsers) {
     const matchQuery = {};
-    matchQuery.userId = userId;
-
+    matchQuery.active = true;
+    if(!getOtherUsers){
+      matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
+      matchQuery.ownerId = { $ne :ObjectID(userId) };
+    } else{
+      matchQuery.ownerId = { $eq :ObjectID(userId) };
+    }
+    
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),

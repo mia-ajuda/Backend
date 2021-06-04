@@ -1,6 +1,7 @@
 const UserRepository = require("../repository/UserRepository");
 const EntityRepository = require("../repository/EntityRepository");
 const firebase = require("../config/authFirebase");
+const { ObjectID } = require("mongodb");
 
 class UserService {
   constructor() {
@@ -168,6 +169,14 @@ class UserService {
     }
 
     return false;
+  }
+
+  async findOneUserWithProjection(userId,projection){
+    const query = { _id: ObjectID(userId) };
+     
+    const user = await this.userRepository.findOneUserWithProjection(query,projection);
+
+    return user;
   }
 }
 

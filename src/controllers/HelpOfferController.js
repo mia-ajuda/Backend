@@ -21,25 +21,10 @@ class OfferedHelpController {
     const userId = req.query.userId;
     const getOtherUsers = req.query.getOtherUsers == 'true' ? true : false;
     try {
-      const helpOffers = await this.HelpOfferService.listHelpsOffers(null, null);
-      let helpOffersFiltered;
-      if(getOtherUsers) {
-        helpOffersFiltered = helpOffers.filter(offer => {
-          if(offer.ownerId == userId){
-            return offer;
-          }
-        });
-      }
-      else {
-        helpOffersFiltered = helpOffers.filter(offer => {
-          if(offer.ownerId != userId){
-            return offer;
-          }
-        });
-      }
-      return res.json(helpOffersFiltered);
+      const helpOffers = await this.HelpOfferService.listHelpsOffers(userId, null,getOtherUsers);
+      return res.json(helpOffers);
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({error:error.message});
     }
   }
 
@@ -61,7 +46,7 @@ class OfferedHelpController {
       await this.HelpOfferService.addPossibleHelpedUsers(helpedId, helpOfferId);
       return res.status(204).json();
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({error:error.message});
     }
   }
 

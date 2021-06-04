@@ -22,6 +22,11 @@ const offeredHelpSchema = new Schema(
       ref: "User",
       required: false,
     },
+    possibleEntities: {
+      type: [Schema.Types.ObjectId],
+      ref: 'Entity',
+      required: false,
+    },
     categoryId: {
       type: [Schema.Types.ObjectId],
       ref: "Category",
