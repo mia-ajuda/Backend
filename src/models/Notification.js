@@ -25,7 +25,7 @@ const NotificationSchema = new mongoose.Schema({
     ref: 'User',
     required: false,
   },
-  isOffer:{
+  isOffer: {
     type: Boolean,
     required: false,
     default: false,

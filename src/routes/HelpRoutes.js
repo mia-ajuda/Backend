@@ -10,7 +10,7 @@ routes.post('/help', isAuthenticated, async (req, res, next) => {
 });
 
 routes.get('/help/aggregation/:id', isAuthenticated, async (req, res, next) => {
-  helpController.getHelpWithAggregationByid(req, res, next);
+  helpController.getHelpWithAggregationById(req, res, next);
 });
 
 routes.get('/help/helpInfo/:helpId', isAuthenticated, async (req, res, next) => {

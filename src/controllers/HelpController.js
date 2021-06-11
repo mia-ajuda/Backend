@@ -25,11 +25,11 @@ class HelpController {
     }
   }
 
-  async getHelpWithAggregationByid(req, res, next) {
+  async getHelpWithAggregationById(req, res, next) {
     const { id } = req.params;
 
     try {
-      const result = await this.HelpService.getHelpWithAggregationByid(id);
+      const result = await this.HelpService.getHelpWithAggregationById(id);
       res.status(200).json(result);
       next();
     } catch (err) {

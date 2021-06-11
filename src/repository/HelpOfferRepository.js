@@ -16,6 +16,70 @@ class OfferdHelpRepository extends BaseRepository {
     await super.$update(helpOffer);
   }
 
+  async getByIdWithAggregation(id) {
+    const aggregation = [
+      {
+        $match: {
+          _id: ObjectID(id),
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'possibleHelpedUsers',
+          foreignField: '_id',
+          as: 'possibleHelpedUsers',
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'ownerId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $lookup: {
+          from: 'category',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'categories',
+        },
+      },
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          user: {
+            photo: 1,
+            location: 1,
+            name: 1,
+            phone: 1,
+            birthday: 1,
+            address: 1,
+          },
+          title: 1,
+          categories: {
+            _id: 1,
+            name: 1,
+          },
+          description: 1,
+          status: 1,
+          ownerId: 1,
+        },
+      },
+    ];
+
+    const helpOfferWithAggregation = await super.$listAggregate(aggregation);
+    return helpOfferWithAggregation[0];
+  }
+
   async list(userId, categoryArray,getOtherUsers) {
     const matchQuery = {};
     matchQuery.active = true;
