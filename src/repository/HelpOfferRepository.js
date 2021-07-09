@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
+const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
@@ -23,55 +24,11 @@ class OfferdHelpRepository extends BaseRepository {
           _id: ObjectID(id),
         },
       },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'possibleHelpedUsers',
-          foreignField: '_id',
-          as: 'possibleHelpedUsers',
-        },
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
+      ...sharedAgreggationInfo,
       {
         $unwind: {
           path: '$user',
           preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          user: {
-            photo: 1,
-            location: 1,
-            name: 1,
-            phone: 1,
-            birthday: 1,
-            address: 1,
-          },
-          title: 1,
-          categories: {
-            _id: 1,
-            name: 1,
-          },
-          description: 1,
-          status: 1,
-          ownerId: 1,
         },
       },
     ];

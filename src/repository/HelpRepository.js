@@ -2,6 +2,8 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
+const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
+
 const {
   getDistance,
   calculateDistance,
@@ -292,49 +294,8 @@ class HelpRepository extends BaseRepository {
         $match: matchQuery,
       },
       ...possibleHelpersEntityArray,
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $project: {
-          description: 1,
-          status: 1,
-          title: 1,
-          user: {
-            photo: 1,
-            phone: 1,
-            name: 1,
-            birthday: 1,
-            address: {
-              city: 1,
-            },
-          },
-          categories: {
-            name: 1,
-            _id: 1,
-          },
-        },
-      },
-    ];
+      ...sharedAgreggationInfo,
+     ];
     // Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
     if (showPossibleHelpers) {
       aggregation[aggregation.length - 1].$project.possibleHelpers = {
