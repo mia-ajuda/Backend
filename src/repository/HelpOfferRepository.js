@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
+const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
@@ -14,6 +15,26 @@ class OfferdHelpRepository extends BaseRepository {
   
   async update(helpOffer) {
     await super.$update(helpOffer);
+  }
+
+  async getByIdWithAggregation(id) {
+    const aggregation = [
+      {
+        $match: {
+          _id: ObjectID(id),
+        },
+      },
+      ...sharedAgreggationInfo,
+      {
+        $unwind: {
+          path: '$user',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+    ];
+
+    const helpOfferWithAggregation = await super.$listAggregate(aggregation);
+    return helpOfferWithAggregation[0];
   }
 
   async list(userId, categoryArray,getOtherUsers) {

@@ -22,6 +22,16 @@ class OfferedHelpService {
     return newOfferdHelp;
   }
 
+  async getHelpOfferWithAggregationById(id) {
+    const help = await this.OfferedHelpRepository.getByIdWithAggregation(id);
+
+    if (!help) {
+      throw new Error('Oferta não encontrada');
+    }
+
+    return help;
+  }
+
   async listHelpsOffers(userId, categoryArray,getOtherUsers) {
     const helpOffers = await this.OfferedHelpRepository.list(userId, categoryArray,getOtherUsers);
     return helpOffers;

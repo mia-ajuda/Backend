@@ -17,6 +17,20 @@ class OfferedHelpController {
     }
   }
 
+  async getHelpWithAggregationById(req, res, next) {
+    const { id } = req.params;
+
+    try {
+      const result = await this.HelpOfferService.getHelpOfferWithAggregationById(id);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).send({ error: err.message });
+      next();
+    }
+  }
+
   async listHelpsOffers(req, res) {
     const userId = req.query.userId;
     const getOtherUsers = req.query.getOtherUsers == 'true' ? true : false;
