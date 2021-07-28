@@ -12,41 +12,73 @@ class OfferdHelpRepository extends BaseRepository {
     const newOfferdHelp = await super.$save(offeredHelp);
     return newOfferdHelp;
   }
-  
+
   async update(helpOffer) {
     await super.$update(helpOffer);
   }
 
   async getByIdWithAggregation(id) {
+    let project = {...sharedAgreggationInfo[sharedAgreggationInfo.length - 1]};
+    project.$project.possibleHelpedUsers = {
+      _id: 1,
+      name: 1,
+      photo: 1,
+      birthday: 1,
+      phone: 1,
+      address: {
+        city: 1,
+      },
+    }
+    project.$project.possibleEntities = {
+      _id: 1,
+      name: 1,
+      photo: 1,
+      birthday: 1,
+      address: {
+        city: 1,
+      },
+    }
+
     const aggregation = [
       {
         $match: {
           _id: ObjectID(id),
         },
       },
-      ...sharedAgreggationInfo,
       {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
+        $lookup: {
+          from: 'user',
+          localField: 'possibleHelpedUsers',
+          foreignField: '_id',
+          as: 'possibleHelpedUsers',
         },
       },
+      {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
+        },
+      },
+      ...sharedAgreggationInfo,
+      project,
     ];
 
     const helpOfferWithAggregation = await super.$listAggregate(aggregation);
     return helpOfferWithAggregation[0];
   }
 
-  async list(userId, categoryArray,getOtherUsers) {
+  async list(userId, categoryArray, getOtherUsers) {
     const matchQuery = {};
     matchQuery.active = true;
-    if(!getOtherUsers){
+    if (!getOtherUsers) {
       matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
-      matchQuery.ownerId = { $ne :ObjectID(userId) };
-    } else{
-      matchQuery.ownerId = { $eq :ObjectID(userId) };
+      matchQuery.ownerId = { $ne: ObjectID(userId) };
+    } else {
+      matchQuery.ownerId = { $eq: ObjectID(userId) };
     }
-    
+
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),
@@ -79,6 +111,22 @@ class OfferdHelpRepository extends BaseRepository {
         },
       },
       {
+        $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
+        },
+      },
+      {
+        $lookup: {
+          from: 'user',
+          localField: 'possibleHelpedUsers',
+          foreignField: '_id',
+          as: 'possibleHelpedUsers',
+        },
+      },
+      {
         $sort: {
           creationDate: -1,
         },
@@ -92,7 +140,15 @@ class OfferdHelpRepository extends BaseRepository {
           'user.name': 1,
           'user.address': 1,
           'user.location.coordinates': 1,
-          'user.birthday': 1
+          'user.birthday': 1,
+          possibleEntities: {
+            _id: 1,
+            name: 1,
+          },
+          possibleHelpedUsers: {
+            _id: 1,
+            name: 1,
+          }
         },
       },
     ];
