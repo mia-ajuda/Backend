@@ -327,40 +327,24 @@ class HelpRepository extends BaseRepository {
   async getHelpInfoById(helpId) {
     const matchQuery = {};
     matchQuery._id = ObjectID(helpId);
-    const aggregation = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          description: 1,
-          user: {
-            photo: 1,
-            birthday: 1,
-            address: {
-              city: 1,
-            },
-          },
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-    ];
-    const helpInfo = await super.$listAggregate(aggregation);
-    return helpInfo[0];
+
+    const populate = {
+      path: 'ownerId',
+      select: ['photo', 'birthday', 'address.city']
+    }
+
+    const projection = {
+      description: 1,
+      _id: 0,
+    };
+
+    const helpInfo = await super.$findOne(
+      matchQuery,
+      projection,
+      populate
+    );
+
+    return helpInfo;
   }
 }
 

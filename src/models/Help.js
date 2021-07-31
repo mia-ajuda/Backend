@@ -27,10 +27,10 @@ const helpSchema = new mongoose.Schema(
       ref: 'Entity',
       required: false,
     },
-    categoryId: {
-      type: [mongoose.Schema.Types.ObjectId],
+    categoryId: [{
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-    },
+    }],
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

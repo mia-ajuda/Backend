@@ -75,8 +75,11 @@ class BaseRepository {
     return numberDocuments;
   }
 
-  async $findOne(query,projection) {
-    const result = await this.modelClass.findOne(query,projection);
+  async $findOne(query, projection, populate = null) {
+    const result = await this.modelClass.findOne(
+      query,
+      projection
+    ).populate(populate);
     return result;
   }
 
