@@ -15,6 +15,11 @@ class BaseRepository {
     return savedModel;
   }
 
+  async $populateExistingDoc(doc, populate){
+    const populatedDoc = doc.populate(populate).execPopulate();
+    return populatedDoc;
+  }
+
   async $saveMany(itemsModel, mongoSession = {}) {
     itemsModel.forEach((item) => {
       item.lastUpdateDate = Date.now();

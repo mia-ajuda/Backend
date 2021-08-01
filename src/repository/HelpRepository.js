@@ -71,19 +71,26 @@ class HelpRepository extends BaseRepository {
   }
 
   async create(help) {
-    const result = await super.$save(help);
-    const matchQuery = {
+    const doc = await super.$save(help);
+    const populate = [
+      { 
+        path: 'user',
+        select: ['name', 'riskGroup', 'location.coordinates']
+      },
+      {
+        path: 'category',
+        select: ['name']
+      }
+    ]
+    let result = await super.$populateExistingDoc(doc,populate);
+    const dataForSocket = {
       _id: result._id,
-    };
+      title: result.title,
+      categories: result.category,
+      user: result.user,
+    }
 
-    const aggregation = this.projectHelp(matchQuery);
-    aggregation[aggregation.length - 1].$project.ownerId = 1;
-    aggregation[aggregation.length - 1].$project.category = {
-      _id: 1,
-    };
-
-    const createdHelp = await super.$listAggregate(aggregation);
-    return createdHelp[0];
+    return dataForSocket;
   }
 
   async getById(id) {
@@ -329,7 +336,7 @@ class HelpRepository extends BaseRepository {
     matchQuery._id = ObjectID(helpId);
 
     const populate = {
-      path: 'ownerId',
+      path: 'user',
       select: ['photo', 'birthday', 'address.city']
     }
 
