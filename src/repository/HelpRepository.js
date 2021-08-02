@@ -108,6 +108,14 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
+          from: 'entity',
+          localField: 'possibleEntities',
+          foreignField: '_id',
+          as: 'possibleEntities',
+        },
+      },
+      {
+        $lookup: {
           from: 'user',
           localField: 'ownerId',
           foreignField: '_id',
@@ -295,7 +303,7 @@ class HelpRepository extends BaseRepository {
       },
       ...possibleHelpersEntityArray,
       ...sharedAgreggationInfo,
-     ];
+    ];
     // Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
     if (showPossibleHelpers) {
       aggregation[aggregation.length - 1].$project.possibleHelpers = {
