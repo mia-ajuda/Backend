@@ -12,7 +12,7 @@ class OfferdHelpRepository extends BaseRepository {
     const newOfferdHelp = await super.$save(offeredHelp);
     return newOfferdHelp;
   }
-  
+
   async update(helpOffer) {
     await super.$update(helpOffer);
   }
@@ -37,16 +37,16 @@ class OfferdHelpRepository extends BaseRepository {
     return helpOfferWithAggregation[0];
   }
 
-  async list(userId, categoryArray,getOtherUsers) {
+  async list(userId, categoryArray, getOtherUsers) {
     const matchQuery = {};
     matchQuery.active = true;
-    if(!getOtherUsers){
+    if (!getOtherUsers) {
       matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
-      matchQuery.ownerId = { $ne :ObjectID(userId) };
-    } else{
-      matchQuery.ownerId = { $eq :ObjectID(userId) };
+      matchQuery.ownerId = { $ne: ObjectID(userId) };
+    } else {
+      matchQuery.ownerId = { $eq: ObjectID(userId) };
     }
-    
+
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),
@@ -125,38 +125,17 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getEmailByHelpOfferId(helpOfferId) {
-    const matchQuery = {};
-    matchQuery._id = ObjectID(helpOfferId);
-
-    const aggregation = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          user: {
-            email: 1,
-          },
-        },
-      },
-    ];
-    const helpOffer = await super.$listAggregate(aggregation);
-    return helpOffer[0].user.email;
+    const matchQuery = { _id: ObjectID(helpOfferId) };
+    const helpProjection = {
+      _id: 0,
+      ownerId: 1,
+    }
+    const user = {
+      path: 'user',
+      select: 'email -_id'
+    }
+    const helpOffer = await super.$findOne(matchQuery, helpProjection, user);
+    return helpOffer.user[0].email;
   }
 }
 
