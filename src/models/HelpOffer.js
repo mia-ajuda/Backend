@@ -27,10 +27,10 @@ const offeredHelpSchema = new Schema(
       ref: 'Entity',
       required: false,
     },
-    categoryId: {
-      type: [Schema.Types.ObjectId],
+    categoryId: [{
+      type: Schema.Types.ObjectId,
       ref: "Category",
-    },
+    }],
     ownerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -68,6 +68,13 @@ const offeredHelpSchema = new Schema(
 offeredHelpSchema.virtual("user", {
   ref: "User",
   localField: "ownerId",
+  foreignField: "_id",
+  justOne: true,
+});
+
+offeredHelpSchema.virtual("categories", {
+  ref: 'Category',
+  localField: "categoryId",
   foreignField: "_id",
 });
 
