@@ -18,23 +18,17 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
-    const aggregation = [
-      {
-        $match: {
-          _id: ObjectID(id),
-        },
-      },
-      ...sharedAgreggationInfo,
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-    ];
-
-    const helpOfferWithAggregation = await super.$listAggregate(aggregation);
-    return helpOfferWithAggregation[0];
+    const query = { _id: ObjectID(id) };
+    const helpOfferFields = ['_id', 'description', 'title', 'status', 'ownerId', 'categoryId'];
+    const user = {
+      path: 'user',
+      select: ['photo', 'phone', 'name', 'birthday', 'address.city']
+    }
+    const categories = {
+      path: 'categories',
+      select: ['_id', 'name']
+    }
+    return super.$findOne(query, helpOfferFields, [user, categories]);
   }
 
   async list(userId, categoryArray, getOtherUsers) {
