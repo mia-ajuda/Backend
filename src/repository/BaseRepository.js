@@ -15,7 +15,7 @@ class BaseRepository {
     return savedModel;
   }
 
-  async $populateExistingDoc(doc, populate){
+  async $populateExistingDoc(doc, populate) {
     const populatedDoc = doc.populate(populate).execPopulate();
     return populatedDoc;
   }
@@ -70,9 +70,10 @@ class BaseRepository {
     return recordModel;
   }
 
-  async $list(query, selectedField, populate = null) {
-    const recordModel = await this.modelClass.find(query, selectedField).populate(populate);
-    return recordModel;
+  async $list(query, selectedField, populate = null, sort = null) {
+    return this.modelClass.find(query, selectedField)
+      .populate(populate)
+      .sort(sort);
   }
 
   async $countDocuments(query) {
@@ -81,11 +82,8 @@ class BaseRepository {
   }
 
   async $findOne(query, projection, populate = null) {
-    const result = await this.modelClass.findOne(
-      query,
-      projection
-    ).populate(populate);
-    return result;
+    return this.modelClass.findOne(query, projection)
+      .populate(populate);
   }
 
   async $destroy(query) {

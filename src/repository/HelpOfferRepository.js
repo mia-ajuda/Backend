@@ -34,12 +34,13 @@ class OfferdHelpRepository extends BaseRepository {
   async list(userId, categoryArray, getOtherUsers) {
     const matchQuery = this.getHelpOfferListQuery(userId, true, getOtherUsers, categoryArray);
     const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId'];
+    const sort = {creationDate: -1}
     const user = {
       path: 'user',
       select: ['name', 'address', 'birthday', 'location.coordinates']
     }
     const categories = 'categories';
-    return super.$list(matchQuery, helpOfferFields, [user, categories])
+    return super.$list(matchQuery, helpOfferFields, [user, categories], sort);
   }
   getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
     var matchQuery = { active };
