@@ -53,7 +53,7 @@ const campaignSchema = new mongoose.Schema({
   },
 });
 
-campaignSchema.virtual('category', {
+campaignSchema.virtual('categories', {
   ref: 'Category',
   localField: 'categoryId',
   foreignField: '_id',
@@ -62,6 +62,7 @@ campaignSchema.virtual('entity', {
   ref: 'Entity',
   localField: 'ownerId',
   foreignField: '_id',
+  justOne: true,
 });
 
 module.exports = mongoose.model('Campaign', campaignSchema);
