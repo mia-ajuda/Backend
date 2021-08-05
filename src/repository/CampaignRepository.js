@@ -103,6 +103,7 @@ class CampaignRepository extends BaseRepository {
 
       campaign.distance = getDistance(coordinates, campaignCoords);
       campaign.distanceValue = calculateDistance(coordinates, campaignCoords);
+      console.log(campaign);
       return campaign;
     });
     campaignsWithDistance.sort((a, b) => {
@@ -119,41 +120,15 @@ class CampaignRepository extends BaseRepository {
 
   async getCampaignListByStatus(userId, statusList) {
     const matchQuery = {
+      ownerId: ObjectID(userId),
       status: {
         $in: [...statusList],
       },
       active: true,
     };
-    matchQuery.ownerId = ObjectID(userId);
-
-    const campaign = await super.$listAggregate([
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'entity',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'entity',
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $unwind: {
-          path: '$entity',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-    ]);
-    return campaign;
+    const entity = 'entity';
+    const categories = 'categories';
+    return super.$list(matchQuery, {}, [entity, categories]);
   }
 }
 
