@@ -32,66 +32,29 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async list(userId, categoryArray, getOtherUsers) {
-    const matchQuery = {};
-    matchQuery.active = true;
+    const matchQuery = this.getHelpOfferListQuery(userId, true, getOtherUsers, categoryArray);
+    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId'];
+    const user = {
+      path: 'user',
+      select: ['name', 'address', 'birthday', 'location.coordinates']
+    }
+    const categories = 'categories';
+    return super.$list(matchQuery, helpOfferFields, [user, categories])
+  }
+  getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
+    var matchQuery = { active };
     if (!getOtherUsers) {
       matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
       matchQuery.ownerId = { $ne: ObjectID(userId) };
     } else {
       matchQuery.ownerId = { $eq: ObjectID(userId) };
     }
-
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),
       };
     }
-    const aggregate = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $sort: {
-          creationDate: -1,
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          categories: 1,
-          ownerId: 1,
-          'user.name': 1,
-          'user.address': 1,
-          'user.location.coordinates': 1,
-          'user.birthday': 1
-        },
-      },
-    ];
-    const helpOffers = await super.$listAggregate(aggregate);
-    return helpOffers;
+    return matchQuery;
   }
 
   async listByOwnerId(ownerId) {
@@ -129,7 +92,7 @@ class OfferdHelpRepository extends BaseRepository {
       select: 'email -_id'
     }
     const helpOffer = await super.$findOne(matchQuery, helpProjection, user);
-    return helpOffer.user[0].email;
+    return helpOffer.user.email;
   }
 }
 
