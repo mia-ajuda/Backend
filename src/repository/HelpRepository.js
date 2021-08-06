@@ -29,7 +29,7 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: 'category',
+          from: 'categories',
           localField: 'categoryId',
           foreignField: '_id',
           as: 'categories',
@@ -73,24 +73,24 @@ class HelpRepository extends BaseRepository {
   async create(help) {
     const doc = await super.$save(help);
     const populate = [
-      { 
+      {
         path: 'user',
         select: ['name', 'riskGroup', 'location.coordinates']
       },
       {
-        path: 'category',
+        path: 'categories',
         select: ['name']
       }
     ]
-    let result = await super.$populateExistingDoc(doc,populate);
-    const dataForSocket = {
+    let result = await super.$populateExistingDoc(doc, populate);
+    return {
       _id: result._id,
+      ownerId: result.ownerId,
       title: result.title,
-      categories: result.category,
-      user: result.user,
+      categoryId: result.categoryId,
+      categories: result.categories,
+      user: result.user
     }
-
-    return dataForSocket;
   }
 
   async getById(id) {
@@ -123,7 +123,7 @@ class HelpRepository extends BaseRepository {
       },
       {
         $lookup: {
-          from: 'category',
+          from: 'categories',
           localField: 'categoryId',
           foreignField: '_id',
           as: 'categories',
@@ -302,7 +302,7 @@ class HelpRepository extends BaseRepository {
       },
       ...possibleHelpersEntityArray,
       ...sharedAgreggationInfo,
-     ];
+    ];
     // Caso seja os meus pedidos você quer ver os possíveis ajudantes e o helperId
     if (showPossibleHelpers) {
       aggregation[aggregation.length - 1].$project.possibleHelpers = {
@@ -332,8 +332,7 @@ class HelpRepository extends BaseRepository {
   }
 
   async getHelpInfoById(helpId) {
-    const matchQuery = {};
-    matchQuery._id = ObjectID(helpId);
+    const matchQuery = { _id = ObjectID(helpId) };
 
     const populate = {
       path: 'user',
@@ -345,13 +344,11 @@ class HelpRepository extends BaseRepository {
       _id: 0,
     };
 
-    const helpInfo = await super.$findOne(
+    return super.$findOne(
       matchQuery,
       projection,
       populate
     );
-
-    return helpInfo;
   }
 }
 

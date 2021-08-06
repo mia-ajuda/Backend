@@ -9,7 +9,7 @@ const sharedAgreggationInfo = [
     },
     {
         $lookup: {
-            from: 'category',
+            from: 'categories',
             localField: 'categoryId',
             foreignField: '_id',
             as: 'categories',

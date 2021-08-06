@@ -65,7 +65,7 @@ const helpSchema = new mongoose.Schema(
   },
 );
 
-helpSchema.virtual('category', {
+helpSchema.virtual('categories', {
   ref: 'Category',
   localField: 'categoryId',
   foreignField: '_id',
@@ -74,6 +74,7 @@ helpSchema.virtual('user', {
   ref: 'User',
   localField: 'ownerId',
   foreignField: '_id',
+  justOne: true
 });
 
 module.exports = mongoose.model('Help', helpSchema);
