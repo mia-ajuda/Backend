@@ -99,90 +99,33 @@ class HelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
-    const aggregation = [
-      {
-        $match: {
-          _id: ObjectID(id),
-        },
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'possibleHelpers',
-          foreignField: '_id',
-          as: 'possibleHelpers',
-        },
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          ownerId: 1,
-          description: 1,
-          helperId: 1,
-          status: 1,
-          title: 1,
-          user: {
-            photo: 1,
-            name: 1,
-            phone: 1,
-            birthday: 1,
-            address: {
-              city: 1,
-            },
-            location: {
-              coordinates: 1,
-            },
-          },
-          categories: {
-            name: 1,
-            _id: 1,
-          },
-          possibleHelpers: {
-            _id: 1,
-            photo: 1,
-            name: 1,
-            birthday: 1,
-            phone: 1,
-            address: {
-              city: 1,
-            },
-          },
-          possibleEntities: {
-            _id: 1,
-            photo: 1,
-            name: 1,
-            birthday: 1,
-            address: {
-              city: 1,
-            },
-          },
-        },
-      },
+    const matchQuery = { _id: ObjectID(id) };
+    const helpFields = [
+      '_id', 'ownerId', 'categoryId',
+      'possibleHelpers', 'possibleEntities',
+      'description', 'helperId', 'status', 'title'
     ];
-    const helpWithAggregation = await super.$listAggregate(aggregation);
-    return helpWithAggregation[0];
+    const user = {
+      path: 'user',
+      select: ['photo', 'name', 'phone', 'birthday', 'address.city', 'location.coordinates']
+    }
+    const categories = {
+      path: 'categories',
+      select: ['_id', 'name']
+    }
+    const possibleHelpers = {
+      path: 'possibleHelpers',
+      select: ['_id', 'name', 'phone', 'photo', 'birthday', 'address.city']
+    }
+    const possibleEntities = {
+      path: 'possibleEntities',
+      select: ['_id', 'name', 'photo', 'address.city']
+    }
+    return super.$findOne(
+      matchQuery,
+      helpFields,
+      [user, categories, possibleHelpers, possibleEntities]
+    );
   }
 
   async update(help) {
@@ -247,8 +190,7 @@ class HelpRepository extends BaseRepository {
     const date = new Date();
     date.setDate(date.getDate() - 14);
 
-    // eslint-disable-next-line no-return-await
-    return await super.$list({
+    return super.$list({
       creationDate: { $lt: new Date(date) },
       active: true,
     });
@@ -332,7 +274,7 @@ class HelpRepository extends BaseRepository {
   }
 
   async getHelpInfoById(helpId) {
-    const matchQuery = { _id = ObjectID(helpId) };
+    const matchQuery = { _id: ObjectID(helpId) };
 
     const populate = {
       path: 'user',

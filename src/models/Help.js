@@ -17,16 +17,16 @@ const helpSchema = new mongoose.Schema(
       enum: Object.values(helpStatusEnum),
       default: helpStatusEnum.WAITING,
     },
-    possibleHelpers: {
-      type: [mongoose.Schema.Types.ObjectId],
+    possibleHelpers: [{
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: false,
-    },
-    possibleEntities: {
-      type: [mongoose.Schema.Types.ObjectId],
+    }],
+    possibleEntities: [{
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Entity',
       required: false,
-    },
+    }],
     categoryId: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
