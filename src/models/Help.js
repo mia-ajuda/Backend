@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
+const {
+  getDistance,
+  calculateDistance,
+} = require('../utils/geolocation/calculateDistance');
 
 const helpSchema = new mongoose.Schema(
   {
@@ -76,5 +80,24 @@ helpSchema.virtual('user', {
   foreignField: '_id',
   justOne: true
 });
+
+helpSchema.virtual('distances')
+  .set(({ userCoords, coords }) => {
+    userCoords = {
+      longitude: userCoords[0],
+      latitude: userCoords[1],
+    };
+    const coordinates = {
+      longitude: coords[0],
+      latitude: coords[1],
+    };
+    this.distanceValue = calculateDistance(coordinates, userCoords);
+    this.distance = getDistance(coordinates, userCoords);
+  });
+
+helpSchema.virtual('distanceValue')
+  .get(() => this.distanceValue);
+helpSchema.virtual('distance')
+  .get(() => this.distance);
 
 module.exports = mongoose.model('Help', helpSchema);
