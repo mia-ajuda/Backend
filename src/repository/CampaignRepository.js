@@ -55,12 +55,14 @@ class CampaignRepository extends BaseRepository {
     }
 
     const campaigns = await super.$list(matchQuery, {}, populate);
-
-    campaigns.forEach(campaign =>
+    const campaignsWithDistances = campaigns.map(campaign => {
       campaign.distances = { campaignCoords: campaign.entity.location.coordinates, coords }
-    );
-    campaigns.sort((a, b) => a.distanceValue - b.distanceValue);
-    return campaigns;
+      return campaign.toObject();
+    })
+
+    campaignsWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
+
+    return campaignsWithDistances;
   }
 
   async getCampaignListByStatus(userId, statusList) {

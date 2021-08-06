@@ -4,70 +4,9 @@ const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
 const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
 
-const {
-  getDistance,
-  calculateDistance,
-} = require('../utils/geolocation/calculateDistance');
-
 class HelpRepository extends BaseRepository {
   constructor() {
     super(HelpSchema);
-  }
-
-  projectHelp(matchQuery) {
-    const aggregation = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $lookup: {
-          from: 'entity',
-          localField: 'possibleEntities',
-          foreignField: '_id',
-          as: 'possibleEntities',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          categories: {
-            _id: 1,
-            name: 1,
-          },
-          user: {
-            name: 1,
-            riskGroup: 1,
-            location: {
-              coordinates: 1,
-            },
-          },
-        },
-      },
-    ];
-    return aggregation;
   }
 
   async create(help) {
@@ -133,46 +72,35 @@ class HelpRepository extends BaseRepository {
   }
 
   async shortList(coords, id, categoryArray) {
-    const matchQuery = {};
-    matchQuery.active = true;
-    matchQuery.possibleHelpers = { $not: { $in: [ObjectID(id)] } };
-    matchQuery.ownerId = { $not: { $in: [ObjectID(id)] } };
-    matchQuery.status = 'waiting';
+    const matchQuery = {
+      active: true,
+      possibleHelpers: { $not: { $in: [ObjectID(id)] } },
+      ownerId: { $not: { $in: [ObjectID(id)] } },
+      status: 'waiting'
+    };
 
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
-
-    const aggregation = this.projectHelp(matchQuery);
-    aggregation[aggregation.length - 1].$project.ownerId = 1;
-    aggregation[aggregation.length - 1].$project.description = 1;
-    const helps = await super.$listAggregate(aggregation);
-
-    const helpsWithDistance = helps.map((help) => {
-      const coordinates = {
-        latitude: coords[1],
-        longitude: coords[0],
-      };
-      const helpCoords = {
-        latitude: help.user.location.coordinates[1],
-        longitude: help.user.location.coordinates[0],
-      };
-      help.distance = getDistance(coordinates, helpCoords);
-      help.distanceValue = calculateDistance(coordinates, helpCoords);
-      return help;
+    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId'];
+    const user = {
+      path: 'user',
+      select: ['name', 'riskGroup', 'location.coordinates']
+    };
+    const categories = {
+      path: 'categories',
+      select: ['_id', 'name']
+    }
+    const helps = await super.$list(matchQuery, helpFields, [user, categories])
+    const helpsWithDistance = helps.map(help => {
+      help.distances = { userCoords: help.user.location.coordinates, coords }
+      return help.toObject();
     });
 
-    helpsWithDistance.sort((a, b) => {
-      if (a.distanceValue < b.distanceValue) {
-        return -1;
-      }
-      if (a.distanceValue > b.distanceValue) {
-        return 1;
-      }
-      return 0;
-    });
+    helpsWithDistance.sort((a, b) => a.distanceValue - b.distanceValue);
+
     return helpsWithDistance;
   }
 
