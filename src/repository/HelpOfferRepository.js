@@ -1,7 +1,6 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
-const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
