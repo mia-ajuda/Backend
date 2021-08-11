@@ -132,7 +132,14 @@ class HelpRepository extends BaseRepository {
       active: true,
     };
 
-    const fields = ['_id', 'description', 'title', 'status', 'ownerId'];
+    const fields = [
+      '_id',
+      'description',
+      'title',
+      'status',
+      'ownerId',
+      'categoryId'
+    ];
 
     const user = {
       path: 'user',
