@@ -9,11 +9,11 @@ routes.post('/helpOffer', isAuthenticated, (req, res, next) => {
   helpOfferController.createHelpOffer(req, res, next);
 });
 
-routes.get('/helpOffer/list', (req, res, next) => {
+routes.get('/helpOffer/list', isAuthenticated, (req, res, next) => {
   helpOfferController.listHelpsOffers(req, res, next);
 });
 
-routes.get('/helpOffer/aggregation/:id', async (req, res, next) => {
+routes.get('/helpOffer/aggregation/:id', isAuthenticated, async (req, res, next) => {
   helpOfferController.getHelpWithAggregationById(req, res, next);
 });
 

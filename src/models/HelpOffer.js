@@ -17,16 +17,16 @@ const offeredHelpSchema = new Schema(
       enum: Object.values(helpStatusEnum),
       default: helpStatusEnum.WAITING,
     },
-    possibleHelpedUsers: {
-      type: [Schema.Types.ObjectId],
+    possibleHelpedUsers: [{
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: false,
-    },
-    possibleEntities: {
-      type: [Schema.Types.ObjectId],
+    }],
+    possibleEntities: [{
+      type: Schema.Types.ObjectId,
       ref: 'Entity',
       required: false,
-    },
+    }],
     categoryId: [{
       type: Schema.Types.ObjectId,
       ref: "Category",

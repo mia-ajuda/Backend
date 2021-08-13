@@ -18,28 +18,64 @@ class OfferdHelpRepository extends BaseRepository {
 
   async getByIdWithAggregation(id) {
     const query = { _id: ObjectID(id) };
-    const helpOfferFields = ['_id', 'description', 'title', 'status', 'ownerId', 'categoryId'];
+    const helpOfferFields = [
+      '_id',
+      'description',
+      'title',
+      'status',
+      'ownerId',
+      'categoryId'
+    ];
     const user = {
       path: 'user',
       select: ['photo', 'phone', 'name', 'birthday', 'address.city']
-    }
+    };
     const categories = {
       path: 'categories',
       select: ['_id', 'name']
-    }
-    return super.$findOne(query, helpOfferFields, [user, categories]);
+    };
+    const possibleHelpedUsers = {
+      path: 'possibleHelpedUsers',
+      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city']
+    };
+    const possibleEntities = {
+      path: 'possibleEntities',
+      select: ['_id', 'name', 'photo', 'birthday', 'address.city']
+    };
+
+    const populate = [user, categories, possibleHelpedUsers, possibleEntities];
+    return super.$findOne(query, helpOfferFields, populate);
   }
 
   async list(userId, categoryArray, getOtherUsers) {
-    const matchQuery = this.getHelpOfferListQuery(userId, true, getOtherUsers, categoryArray);
+    const matchQuery = this.getHelpOfferListQuery(
+      userId,
+      true,
+      getOtherUsers,
+      categoryArray
+    );
     const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId'];
     const sort = {creationDate: -1}
     const user = {
       path: 'user',
       select: ['name', 'address', 'birthday', 'location.coordinates']
     }
+
     const categories = 'categories';
-    return super.$list(matchQuery, helpOfferFields, [user, categories], sort);
+
+    const possibleHelpedUsers = {
+      path: 'possibleHelpedUsers',
+      select: ['_id', 'name']
+    };
+
+    const possibleEntities = {
+      path: 'possibleEntities',
+      select: ['_id', 'name']
+    };
+
+    const populate = [user, categories, possibleHelpedUsers, possibleEntities];
+
+    return super.$list(matchQuery, helpOfferFields, populate, sort);
   }
   getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
     var matchQuery = { active };
@@ -49,6 +85,7 @@ class OfferdHelpRepository extends BaseRepository {
     } else {
       matchQuery.ownerId = { $eq: ObjectID(userId) };
     }
+
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),
