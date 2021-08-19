@@ -34,7 +34,7 @@ routes.put(
 );
 
 routes.put(
-  '/helpOffer/helpedUsers/:helpedId/:helpOfferId',
+  '/helpOffer/chooseHelpedUsers/:helpedId/:helpOfferId',
   (req, res, next) => {
     helpOfferController.chooseHelpedUsers(req, res, next);
   }
