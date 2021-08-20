@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
+const {
+  getDistance,
+  calculateDistance,
+} = require('../utils/geolocation/calculateDistance');
 
 const helpSchema = new mongoose.Schema(
   {
@@ -17,20 +21,20 @@ const helpSchema = new mongoose.Schema(
       enum: Object.values(helpStatusEnum),
       default: helpStatusEnum.WAITING,
     },
-    possibleHelpers: {
-      type: [mongoose.Schema.Types.ObjectId],
+    possibleHelpers: [{
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: false,
-    },
-    possibleEntities: {
-      type: [mongoose.Schema.Types.ObjectId],
+    }],
+    possibleEntities: [{
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Entity',
       required: false,
-    },
-    categoryId: {
-      type: [mongoose.Schema.Types.ObjectId],
+    }],
+    categoryId: [{
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-    },
+    }],
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -65,7 +69,7 @@ const helpSchema = new mongoose.Schema(
   },
 );
 
-helpSchema.virtual('category', {
+helpSchema.virtual('categories', {
   ref: 'Category',
   localField: 'categoryId',
   foreignField: '_id',
@@ -74,6 +78,26 @@ helpSchema.virtual('user', {
   ref: 'User',
   localField: 'ownerId',
   foreignField: '_id',
+  justOne: true
 });
+
+helpSchema.virtual('distances')
+  .set(({ userCoords, coords }) => {
+    userCoords = {
+      longitude: userCoords[0],
+      latitude: userCoords[1],
+    };
+    const coordinates = {
+      longitude: coords[0],
+      latitude: coords[1],
+    };
+    this.distanceValue = calculateDistance(coordinates, userCoords);
+    this.distance = getDistance(coordinates, userCoords);
+  });
+
+helpSchema.virtual('distanceValue')
+  .get(() => this.distanceValue);
+helpSchema.virtual('distance')
+  .get(() => this.distance);
 
 module.exports = mongoose.model('Help', helpSchema);
