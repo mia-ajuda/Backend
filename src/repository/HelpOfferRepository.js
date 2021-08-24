@@ -84,6 +84,7 @@ class OfferdHelpRepository extends BaseRepository {
 
     return super.$list(matchQuery, helpOfferFields, populate, sort);
   }
+ 
   getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
     var matchQuery = { active };
     if (!getOtherUsers) {
@@ -99,12 +100,6 @@ class OfferdHelpRepository extends BaseRepository {
       };
     }
     return matchQuery;
-  }
-
-  async listByOwnerId(ownerId) {
-    const query = { ownerId };
-    const helpOffers = await super.$list(query);
-    return helpOffers;
   }
 
   async listByHelpedUserId(helpedUserId) {

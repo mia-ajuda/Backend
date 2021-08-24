@@ -40,11 +40,6 @@ class OfferedHelpService {
     return helpOffers;
   }
 
-  async listHelpsOffersByOwnerId(ownerId) {
-    const helpOffers = await this.OfferedHelpRepository.listByOwnerId(ownerId);
-    return helpOffers;
-  }
-
   async listHelpOffersByHelpedUserId(helpedUserId) {
     const helpOffers = await this.OfferedHelpRepository.listByHelpedUserId(
       helpedUserId
