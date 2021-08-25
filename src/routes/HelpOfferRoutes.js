@@ -13,7 +13,7 @@ routes.get('/helpOffer/list', isAuthenticated, (req, res, next) => {
   helpOfferController.listHelpsOffers(req, res, next);
 });
 
-routes.get('/helpOffer/aggregation/:id', async (req, res, next) => {
+routes.get('/helpOffer/aggregation/:id', isAuthenticated, async (req, res, next) => {
   helpOfferController.getHelpWithAggregationById(req, res, next);
 });
 
@@ -35,6 +35,7 @@ routes.put(
 
 routes.put(
   '/helpOffer/chooseHelpedUsers/:helpedId/:helpOfferId',
+  isAuthenticated,
   (req, res, next) => {
     helpOfferController.chooseHelpedUsers(req, res, next);
   }
