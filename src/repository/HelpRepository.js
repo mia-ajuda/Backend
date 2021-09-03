@@ -74,10 +74,15 @@ class HelpRepository extends BaseRepository {
   async shortList(coords, id, categoryArray) {
     const matchQuery = {
       active: true,
-      possibleHelpers: { $not: { $in: [ObjectID(id)] } },
-      ownerId: { $not: { $in: [ObjectID(id)] } },
+      ownerId: { $ne: ObjectID(id) },
       status: 'waiting'
     };
+
+    if(global.isUserEntity){
+      matchQuery.possibleEntities = { $nin: [ObjectID(id)] };
+    }else{
+      matchQuery.possibleHelpers = { $nin: [ObjectID(id)] };
+    }
 
     if (categoryArray) {
       matchQuery.categoryId = {

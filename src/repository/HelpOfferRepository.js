@@ -87,8 +87,13 @@ class OfferdHelpRepository extends BaseRepository {
   getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
     var matchQuery = { active };
     if (!getOtherUsers) {
-      matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
       matchQuery.ownerId = { $ne: ObjectID(userId) };
+      
+      if(global.isUserEntity){
+        matchQuery.possibleEntities = { $nin: [ObjectID(userId)] };
+      }else{
+        matchQuery.possibleHelpedUsers = { $nin: [ObjectID(userId)] };
+      }
     } else {
       matchQuery.ownerId = { $eq: ObjectID(userId) };
     }
