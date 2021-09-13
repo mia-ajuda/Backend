@@ -80,6 +80,7 @@ class CampaignController {
   }
 
   async finishCampaign(req, res) {
+    const { id } = req.params;
     if(!id) throw new BadRequestError('No id provided');
     const result = await this.CampaignService.finishCampaign(id);
     return res.status(200).json(result);

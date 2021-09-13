@@ -22,12 +22,12 @@ const { errorHandler } = require('./src/utils/errorHandler');
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(errorHandler);
 
 databaseConnect();
 dailySchedule();
 setRoutes(app);
 
-app.use(errorHandler);
 app.use(Sentry.Handlers.errorHandler());
 
 server.listen(8000);

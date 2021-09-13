@@ -1,6 +1,6 @@
-import saveError from "./ErrorHistory";
+const saveError = require('./ErrorHistory');
 
-export const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, _req, res, _next) => {
     if(err instanceof GeneralError) {
         return res.status(err.getCode()).json({
             status: 'error',
@@ -15,51 +15,62 @@ export const errorHandler = (err, req, res, next) => {
     })
 }
 
-export class GeneralError extends Error {
+class GeneralError extends Error {
     constructor(msg) {
         super(msg);
     }
 
     getCode() {
-        if(this instanceof BadRequestError) return 400;
-        else if(this instanceof UnauthorizedError) return 404;
-        else if(this instanceof ForbiddenError) return 404;
-        else if(this instanceof NotFoundError) return 404;
-        else if(this instanceof ConflictError) return 409;
+        return this.code;
     }
 }
 
-export class BadRequestError extends GeneralError {
+class BadRequestError extends GeneralError {
     constructor(msg) {
         super(msg);
+        this.code = 400;
         this.name = `BadRequestError:${msg}`;
     }
 }
 
-export class UnauthorizedError extends GeneralError {
+class UnauthorizedError extends GeneralError {
     constructor(msg) {
         super(msg);
+        this.code = 401;
         this.name = `UnauthorizedError:${msg}`;
     }
 }
 
-export class ForbiddenError extends GeneralError {
+class ForbiddenError extends GeneralError {
     constructor(msg) {
         super(msg);
+        this.code = 403;
         this.name = `ForbiddenError:${msg}`;
     }
 }
 
-export class NotFoundError extends GeneralError {
+class NotFoundError extends GeneralError {
     constructor(msg) {
         super(msg);
+        this.code = 404;
         this.name = `NotFoundError:${msg}`;
     }
 }
 
-export class ConflictError extends GeneralError {
+class ConflictError extends GeneralError {
     constructor(msg) {
         super(msg);
+        this.code = 409;
         this.name = `ConflictError:${msg}`;
     }
 }
+
+module.exports = {
+    errorHandler,
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
+    GeneralError,
+    NotFoundError,
+    UnauthorizedError
+};
