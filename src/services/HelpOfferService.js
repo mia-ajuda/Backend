@@ -50,33 +50,51 @@ class OfferedHelpService {
     return helpOffers;
   }
 
-  async addPossibleHelpedUsers(helpedId, helpOfferId) {
-    const helpOffer = await this.getHelpOfferById(helpOfferId);
-    const helpedUser = await this.verifyUserEntity(helpedId);
-    let isUserPossibleHelped, possibleHelpedUser;
+  async putUserInArray(array, userId) {
+    await this.useService(array, "push", [userId]);
+  }
+
+  validateOwnerAndHelpedUser(helpedId, helpOffer) {
+    if (helpOffer.ownerId == helpedId)
+      throw new Error("Dono não pode ser ajudado da própria oferta");
+    else if (helpOffer.helpedUserId != null && helpOffer.helpedUserId.includes(helpedId))
+      throw new Error("Usuário já está sendo ajudado");
+  }
+
+  isUserInPossibleHelpedUsers(helpedUser) {
+    let isUserPossibleHelped;
 
     if (!helpedUser.isEntity) {
       isUserPossibleHelped = helpOffer.possibleHelpedUsers.includes(helpedId)
-      possibleHelpedUser = helpOffer.possibleHelpedUsers;
     }
     else {
       isUserPossibleHelped = helpOffer.possibleEntities.includes(helpedId)
-      possibleHelpedUser = helpOffer.possibleEntities;
     }
+    return isUserPossibleHelped;
+  }
 
-    if (helpOffer.ownerId == helpedId) {
-      throw new Error("Usuário não pode ser ajudante do próprio pedido");
-    }
-    else if (isUserPossibleHelped) {
+  possibleInterestedArray(helpOffer, helpedUser){
+    if(helpedUser.isEntity)
+      return helpOffer.possibleEntities
+    else
+      return helpOffer.possibleHelpedUser
+  }
+
+  async addPossibleHelpedUsers(helpedId, helpOfferId) {
+    const helpOffer = await this.getHelpOfferById(helpOfferId);
+    const helpedUser = await this.verifyUserEntity(helpedId);
+    const possibleHelpedUser = this.possibleInterestedArray(helpOffer, helpedUser)
+
+    // Validacao
+    this.validateOwnerAndHelpedUser(helpedId, helpOffer)
+    if (this.isUserInPossibleHelpedUsers(helpedUser))
       throw new Error("Usuário já é um possível ajudado");
-    }
-    else if(helpOffer.helpedUserId != null && helpOffer.helpedUserId.includes(helpedId)){
-      throw new Error("Usuário já está sendo ajudado");
-    }
 
-    await this.useService(possibleHelpedUser, "push", [helpedId]);
+    // Alteracao do array
+    await this.putUserInArray(possibleHelpedUser, helpedId);
     await this.OfferedHelpRepository.update(helpOffer);
 
+    //Notificação
     const ownerProjection = { deviceId: 1, _id: 0 };
     const { deviceId: ownerDeviceId } = await this.useService(this.UserService, "findOneUserWithProjection", [helpOffer.ownerId, ownerProjection]);
 
@@ -89,31 +107,20 @@ class OfferedHelpService {
 
   async addHelpedUsers(helpedId, helpOfferId) {
     const helpOffer = await this.getHelpOfferById(helpOfferId);
-    if (helpOffer.ownerId == helpedId) {
-      throw new Error("Dono não pode ser o usuário ajudado");
-    }
-
     const helpedUser = await this.verifyUserEntity(helpedId);
-    let isHelpedInterested, interestedArray;
+    const interestedArray = this.possibleInterestedArray(helpOffer, helpedUser)
 
-    if (!helpedUser.isEntity) {
-      isHelpedInterested = helpOffer.possibleHelpedUsers.includes(helpedId)
-      interestedArray = helpOffer.possibleHelpedUsers;
-    }
-    else {
-      isHelpedInterested = helpOffer.possibleEntities.includes(helpedId)
-      interestedArray = helpOffer.possibleEntities;
-    }
-
-
-    if (!isHelpedInterested)
+    // Validacao
+    this.validateOwnerAndHelpedUser(helpedId, helpOffer)
+    if (!this.isUserInPossibleHelpedUsers(helpedUser))
       throw new Error("Usuário não é um interessado na ajuda");
 
-    await this.useService(helpOffer.helpedUserId, "push", [helpedId]);
+    // Alteracao do array
+    await this.putUserInArray(helpOffer.helpedUserId, helpedId);
     await this.useService(interestedArray, "pull", [helpedId]);
-
     await this.OfferedHelpRepository.update(helpOffer);
 
+    //Notificacao
     const ownerProjection = { name: 1, _id: 0 };
     const { name: ownerName } = await this.useService(this.UserService, "findOneUserWithProjection", [helpOffer.ownerId, ownerProjection]);
 
@@ -121,7 +128,6 @@ class OfferedHelpService {
     const body = `Você foi escolhido para ser ajudado na oferta ${helpOffer.title}`;
 
     await this.sendHelpOfferNotification(helpedUser.deviceId, title, body, helpedId, helpOfferId, notificationTypesEnum.ofertaAceita);
-
   }
 
   async verifyUserEntity(helpedId) {
