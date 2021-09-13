@@ -50,10 +50,6 @@ class OfferedHelpService {
     return helpOffers;
   }
 
-  async putUserInArray(array, userId) {
-    await this.useService(array, "push", [userId]);
-  }
-
   validateOwnerAndHelpedUser(helpedId, helpOffer) {
     if (helpOffer.ownerId == helpedId)
       throw new Error("Dono não pode ser ajudado da própria oferta");
@@ -61,23 +57,18 @@ class OfferedHelpService {
       throw new Error("Usuário já está sendo ajudado");
   }
 
-  isUserInPossibleHelpedUsers(helpedUser) {
-    let isUserPossibleHelped;
-
-    if (!helpedUser.isEntity) {
-      isUserPossibleHelped = helpOffer.possibleHelpedUsers.includes(helpedId)
-    }
-    else {
-      isUserPossibleHelped = helpOffer.possibleEntities.includes(helpedId)
-    }
-    return isUserPossibleHelped;
+  isUserInPossibleHelpedUsers(helpedUser, helpOffer, helpedId) {
+    if (!helpedUser.isEntity) 
+     return helpOffer.possibleHelpedUsers.includes(helpedId)
+    else 
+      return helpOffer.possibleEntities.includes(helpedId)
   }
 
   possibleInterestedArray(helpOffer, helpedUser){
     if(helpedUser.isEntity)
       return helpOffer.possibleEntities
     else
-      return helpOffer.possibleHelpedUser
+      return helpOffer.possibleHelpedUsers
   }
 
   async addPossibleHelpedUsers(helpedId, helpOfferId) {
@@ -87,12 +78,13 @@ class OfferedHelpService {
 
     // Validacao
     this.validateOwnerAndHelpedUser(helpedId, helpOffer)
-    if (this.isUserInPossibleHelpedUsers(helpedUser))
+    if (this.isUserInPossibleHelpedUsers(helpedUser, helpOffer, helpedId))
       throw new Error("Usuário já é um possível ajudado");
 
     // Alteracao do array
-    await this.putUserInArray(possibleHelpedUser, helpedId);
+    await this.useService(possibleHelpedUser, "push", [helpedId]);
     await this.OfferedHelpRepository.update(helpOffer);
+
 
     //Notificação
     const ownerProjection = { deviceId: 1, _id: 0 };
@@ -112,11 +104,11 @@ class OfferedHelpService {
 
     // Validacao
     this.validateOwnerAndHelpedUser(helpedId, helpOffer)
-    if (!this.isUserInPossibleHelpedUsers(helpedUser))
+    if (!this.isUserInPossibleHelpedUsers(helpedUser, helpOffer, helpedId))
       throw new Error("Usuário não é um interessado na ajuda");
 
     // Alteracao do array
-    await this.putUserInArray(helpOffer.helpedUserId, helpedId);
+    await this.useService(helpOffer.helpedUserId, "push", [helpedId]);
     await this.useService(interestedArray, "pull", [helpedId]);
     await this.OfferedHelpRepository.update(helpOffer);
 
