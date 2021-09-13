@@ -71,14 +71,14 @@ class HelpRepository extends BaseRepository {
     await super.$update(help);
   }
 
-  async shortList(coords, id, categoryArray) {
+  async shortList(coords, id, isUserEntity, categoryArray) {
     const matchQuery = {
       active: true,
       ownerId: { $ne: ObjectID(id) },
       status: 'waiting'
     };
 
-    if(global.isUserEntity){
+    if(isUserEntity){
       matchQuery.possibleEntities = { $nin: [ObjectID(id)] };
     }else{
       matchQuery.possibleHelpers = { $nin: [ObjectID(id)] };
