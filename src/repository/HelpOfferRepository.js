@@ -61,7 +61,7 @@ class OfferdHelpRepository extends BaseRepository {
       getOtherUsers,
       categoryArray
     );
-    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId'];
+    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId', 'helpedUserId'];
     const sort = { creationDate: -1 }
     const user = {
       path: 'user',
@@ -80,12 +80,7 @@ class OfferdHelpRepository extends BaseRepository {
       select: ['_id', 'name']
     };
 
-    const helpedUsers = {
-      path: 'helpedUserId',
-      select: ['_id', 'name']
-    };
-
-    const populate = [user, categories, possibleHelpedUsers, possibleEntities, helpedUsers];
+    const populate = [user, categories, possibleHelpedUsers, possibleEntities];
 
     return super.$list(matchQuery, helpOfferFields, populate, sort);
   }
