@@ -93,7 +93,7 @@ class OfferedHelpService {
     const title = `${helpedUser.name} quer sua ajuda!`;
     const body = `Sua oferta ${helpOffer.title} recebeu um interessado`;
 
-    await this.sendHelpOfferNotification(ownerDeviceId, title, body, ownerDeviceId, helpOfferId, notificationTypesEnum.ofertaRequerida);
+    await this.sendHelpOfferNotification(ownerDeviceId, title, body, helpOffer.ownerId, helpOfferId, notificationTypesEnum.ofertaRequerida);
 
   }
 
