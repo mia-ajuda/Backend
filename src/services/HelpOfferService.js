@@ -7,6 +7,7 @@ const isEntity = require('../utils/IsEntity');
 const { notificationTypesEnum } = require("../models/Notification");
 const saveError = require('../utils/ErrorHistory');
 const { findConnections, sendMessage } = require("../../websocket");
+const { ObjectID } = require('mongodb');
 
 class OfferedHelpService {
   constructor() {
@@ -56,6 +57,12 @@ class OfferedHelpService {
       throw new Error("Dono não pode ser ajudado da própria oferta");
     else if (helpOffer.helpedUserId != null && helpOffer.helpedUserId.includes(helpedId))
       throw new Error("Usuário já está sendo ajudado");
+  }
+
+  validateOwner(helpOffer, email){
+    if (helpOffer.user.email !== email) {
+      throw new Error('Usuário não autorizado');
+    }
   }
 
   isUserInPossibleHelpedUsers(helpedUser, helpOffer, helpedId) {
@@ -166,8 +173,18 @@ class OfferedHelpService {
   }
 
   async finishHelpOfferByOwner(helpOfferId, email) {
-    const helpOffer = await this.OfferedHelpRepository.finishHelpOfferByOwner(helpOfferId, email);
-   
+    const query = {_id: ObjectID(helpOfferId)};
+    const helpOfferProjection = ['ownerId', 'categoryId', 'active'];
+    const owner = {
+      path: 'user',
+      select: 'email'
+    }
+    let helpOffer = await this.OfferedHelpRepository.findOne(query, helpOfferProjection, owner);
+    
+    this.validateOwner(helpOffer, email);
+
+    helpOffer = await this.OfferedHelpRepository.finishHelpOfferByOwner(helpOffer);
+
     const sendSocketMessageTo = findConnections(helpOffer.categoryId, helpOffer.ownerId.toString());
     sendMessage(sendSocketMessageTo, 'delete-help-offer', helpOfferId);
   }
