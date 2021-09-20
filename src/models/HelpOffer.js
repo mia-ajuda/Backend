@@ -1,5 +1,5 @@
-const { Schema, model } = require("mongoose");
-const helpStatusEnum = require("../utils/enums/helpStatusEnum");
+const { Schema, model } = require('mongoose');
+const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 
 const offeredHelpSchema = new Schema(
   {
@@ -19,7 +19,7 @@ const offeredHelpSchema = new Schema(
     },
     possibleHelpedUsers: [{
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: false,
     }],
     possibleEntities: [{
@@ -29,18 +29,18 @@ const offeredHelpSchema = new Schema(
     }],
     categoryId: [{
       type: Schema.Types.ObjectId,
-      ref: "Category",
+      ref: 'Category',
     }],
     ownerId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
-    helpedUserId: {
-      type: [Schema.Types.ObjectId],
-      ref: "User",
+    helpedUserId: [{
+      type: Schema.Types.ObjectId,
+      ref: ['User' , 'Entity'],
       required: false,
-    },
+    }],
     creationDate: {
       type: Date,
       default: Date.now,
@@ -55,7 +55,7 @@ const offeredHelpSchema = new Schema(
     },
   },
   {
-    collection: "helpOffer",
+    collection: 'helpOffer',
     toObject: {
       virtuals: true,
     },
@@ -65,17 +65,23 @@ const offeredHelpSchema = new Schema(
   }
 );
 
-offeredHelpSchema.virtual("user", {
-  ref: "User",
-  localField: "ownerId",
-  foreignField: "_id",
+offeredHelpSchema.virtual('user', {
+  ref: 'User',
+  localField: 'ownerId',
+  foreignField: '_id',
   justOne: true,
 });
 
-offeredHelpSchema.virtual("categories", {
+offeredHelpSchema.virtual('categories', {
   ref: 'Category',
-  localField: "categoryId",
-  foreignField: "_id",
+  localField: 'categoryId',
+  foreignField: '_id',
 });
 
-module.exports = model("OfferedHelp", offeredHelpSchema);
+offeredHelpSchema.virtual('helpedUsers', {
+  ref: ['User', 'Entity'],
+  localField: 'helpedUserId',
+  foreignField: '_id',
+});
+
+module.exports = model('OfferedHelp', offeredHelpSchema);
