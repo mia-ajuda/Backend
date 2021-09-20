@@ -6,6 +6,7 @@ const NotificationMixin = require("../utils/NotificationMixin");
 const isEntity = require('../utils/IsEntity');
 const { notificationTypesEnum } = require("../models/Notification");
 const saveError = require('../utils/ErrorHistory');
+const { findConnections, sendMessage } = require("../../websocket");
 
 class OfferedHelpService {
   constructor() {
@@ -165,15 +166,10 @@ class OfferedHelpService {
   }
 
   async finishHelpOfferByOwner(helpOfferId, email) {
-    const ownerEmail = await this.getEmailByHelpOfferId(
-      helpOfferId,
-    );
-
-    if (ownerEmail !== email) {
-      throw new Error('Usuário não autorizado');
-    }
-
-    this.OfferedHelpRepository.finishHelpOfferByOwner(helpOfferId);
+    const helpOffer = await this.OfferedHelpRepository.finishHelpOfferByOwner(helpOfferId, email);
+   
+    const sendSocketMessageTo = findConnections(helpOffer.categoryId, helpOffer.ownerId.toString());
+    sendMessage(sendSocketMessageTo, 'delete-help-offer', helpOfferId);
   }
 
   async getEmailByHelpOfferId(helpOfferId) {
