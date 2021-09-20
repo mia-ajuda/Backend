@@ -8,7 +8,7 @@ class HelpController {
     this.UserService = new UserService();
   }
 
-  async createHelp(req, res, next) {
+  async createHelp(req, res, next) { 
     const data = {
       ...req.body,
     };
@@ -25,7 +25,7 @@ class HelpController {
     }
   }
 
-  async getHelpWithAggregationById(req, res, next) {
+  async getHelpWithAggregationById(req, res, next) { 
     const { id } = req.params;
 
     try {
@@ -39,7 +39,7 @@ class HelpController {
     }
   }
 
-  async getHelpList(req, res, next) {
+  async getHelpList(req, res, next) { 
     const { id } = req.query;
     const coords = req.query.coords.split(',').map((coord) => Number(coord));
     const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
@@ -61,7 +61,7 @@ class HelpController {
     }
   }
 
-  async getHelpListByStatus(req, res, next) {
+  async getHelpListByStatus(req, res, next) { 
     const { userId } = req.params;
 
     /* A lista de status deve vir numa query  separada por vírgulas
@@ -84,7 +84,7 @@ class HelpController {
     }
   }
 
-  async deleteHelpLogic(req, res, next) {
+  async deleteHelpLogic(req, res, next) { 
     const { id } = req.params;
 
     try {
@@ -98,7 +98,7 @@ class HelpController {
     }
   }
 
-  async helperConfirmation(req, res, next) {
+  async helperConfirmation(req, res, next) { 
     const data = { ...req.params };
 
     try {
@@ -112,7 +112,7 @@ class HelpController {
     }
   }
 
-  async ownerConfirmation(req, res, next) {
+  async ownerConfirmation(req, res, next) { 
     const data = { ...req.params };
 
     try {
@@ -139,7 +139,7 @@ class HelpController {
     }
   }
 
-  async addPossibleHelpers(req, res, next) {
+  async addPossibleHelpers(req, res, next) { 
     const id = req.params.idHelp;
     const { idHelper } = req.params;
 
@@ -154,20 +154,7 @@ class HelpController {
     }
   }
 
-  async getToExpireList(req, res, next) {
-    try {
-      const result = await this.HelpService.getListToDelete();
-      res.status(200);
-      res.json(result);
-      next();
-    } catch (err) {
-      saveError(err);
-      res.status(400).json({ error: err.message });
-      next();
-    }
-  }
-
-  async getHelpInfoById(req, res, next) {
+  async getHelpInfoById(req, res, next) { 
     try {
       const { helpId } = req.params;
       const result = await this.HelpService.getHelpInfoById(helpId);
