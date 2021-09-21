@@ -118,11 +118,13 @@ class OfferdHelpRepository extends BaseRepository {
     return helpOffer;
   }
 
-  async finishHelpOfferByOwner(helpOfferId) {
-    const filter = { _id: helpOfferId };
-    const update = { active: false };
+  async findOne(query, projection, populate = null) {
+    return super.$findOne(query, projection, populate);
+  }
 
-    await super.$findOneAndUpdate(filter, update);
+  async finishHelpOfferByOwner(helpOffer) {
+    helpOffer.active = false;
+    return super.$update(helpOffer);
   }
 
   async getEmailByHelpOfferId(helpOfferId) {
