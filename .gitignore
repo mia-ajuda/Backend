@@ -125,4 +125,7 @@ package-lock.json
 # Arquivo de configuração de backup remoto
 rclone.conf
 
+#Local IDE config
+.idea/
+
 miaajuda.pem
