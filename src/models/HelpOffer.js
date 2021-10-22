@@ -1,5 +1,5 @@
-const { Schema, model } = require("mongoose");
-const helpStatusEnum = require("../utils/enums/helpStatusEnum");
+const { Schema, model } = require('mongoose');
+const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 
 const offeredHelpSchema = new Schema(
   {
@@ -17,30 +17,30 @@ const offeredHelpSchema = new Schema(
       enum: Object.values(helpStatusEnum),
       default: helpStatusEnum.WAITING,
     },
-    possibleHelpedUsers: {
-      type: [Schema.Types.ObjectId],
-      ref: "User",
+    possibleHelpedUsers: [{
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: false,
-    },
-    possibleEntities: {
-      type: [Schema.Types.ObjectId],
+    }],
+    possibleEntities: [{
+      type: Schema.Types.ObjectId,
       ref: 'Entity',
       required: false,
-    },
-    categoryId: {
-      type: [Schema.Types.ObjectId],
-      ref: "Category",
-    },
+    }],
+    categoryId: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+    }],
     ownerId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
-    helpedUserId: {
-      type: [Schema.Types.ObjectId],
-      ref: "User",
+    helpedUserId: [{
+      type: Schema.Types.ObjectId,
+      ref: ['User' , 'Entity'],
       required: false,
-    },
+    }],
     creationDate: {
       type: Date,
       default: Date.now,
@@ -55,7 +55,7 @@ const offeredHelpSchema = new Schema(
     },
   },
   {
-    collection: "helpOffer",
+    collection: 'helpOffer',
     toObject: {
       virtuals: true,
     },
@@ -65,10 +65,23 @@ const offeredHelpSchema = new Schema(
   }
 );
 
-offeredHelpSchema.virtual("user", {
-  ref: "User",
-  localField: "ownerId",
-  foreignField: "_id",
+offeredHelpSchema.virtual('user', {
+  ref: 'User',
+  localField: 'ownerId',
+  foreignField: '_id',
+  justOne: true,
 });
 
-module.exports = model("OfferedHelp", offeredHelpSchema);
+offeredHelpSchema.virtual('categories', {
+  ref: 'Category',
+  localField: 'categoryId',
+  foreignField: '_id',
+});
+
+offeredHelpSchema.virtual('helpedUsers', {
+  ref: ['User', 'Entity'],
+  localField: 'helpedUserId',
+  foreignField: '_id',
+});
+
+module.exports = model('OfferedHelp', offeredHelpSchema);

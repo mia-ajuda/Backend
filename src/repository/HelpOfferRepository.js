@@ -1,7 +1,6 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
-const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
@@ -12,92 +11,94 @@ class OfferdHelpRepository extends BaseRepository {
     const newOfferdHelp = await super.$save(offeredHelp);
     return newOfferdHelp;
   }
-  
+
   async update(helpOffer) {
     await super.$update(helpOffer);
   }
 
   async getByIdWithAggregation(id) {
-    const aggregation = [
-      {
-        $match: {
-          _id: ObjectID(id),
-        },
-      },
-      ...sharedAgreggationInfo,
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
+    const query = { _id: ObjectID(id) };
+    const helpOfferFields = [
+      '_id',
+      'description',
+      'title',
+      'status',
+      'ownerId',
+      'categoryId',
+      'possibleHelpedUsers',
+      'possibleEntities',
+      'helpedUserId'
     ];
+    const user = {
+      path: 'user',
+      select: ['photo', 'phone', 'name', 'birthday', 'address.city']
+    };
+    const categories = {
+      path: 'categories',
+      select: ['_id', 'name']
+    };
+    const possibleHelpedUsers = {
+      path: 'possibleHelpedUsers',
+      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city']
+    };
+    const possibleEntities = {
+      path: 'possibleEntities',
+      select: ['_id', 'name', 'photo', 'birthday', 'address.city']
+    };
+    const helpedUsers = {
+      path: 'helpedUsers',
+      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city']
+    };
 
-    const helpOfferWithAggregation = await super.$listAggregate(aggregation);
-    return helpOfferWithAggregation[0];
+    const populate = [user, categories, possibleHelpedUsers, possibleEntities, helpedUsers];
+    return super.$findOne(query, helpOfferFields, populate);
   }
 
-  async list(userId, categoryArray,getOtherUsers) {
-    const matchQuery = {};
-    matchQuery.active = true;
-    if(!getOtherUsers){
-      matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
-      matchQuery.ownerId = { $ne :ObjectID(userId) };
-    } else{
-      matchQuery.ownerId = { $eq :ObjectID(userId) };
+  async list(userId, categoryArray, getOtherUsers) {
+    const matchQuery = this.getHelpOfferListQuery(
+      userId,
+      true,
+      getOtherUsers,
+      categoryArray
+    );
+    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId', 'helpedUserId'];
+    const sort = { creationDate: -1 }
+    const user = {
+      path: 'user',
+      select: ['name', 'address', 'birthday', 'location.coordinates']
     }
-    
+
+    const categories = 'categories';
+
+    const possibleHelpedUsers = {
+      path: 'possibleHelpedUsers',
+      select: ['_id', 'name']
+    };
+
+    const possibleEntities = {
+      path: 'possibleEntities',
+      select: ['_id', 'name']
+    };
+
+    const populate = [user, categories, possibleHelpedUsers, possibleEntities];
+
+    return super.$list(matchQuery, helpOfferFields, populate, sort);
+  }
+  getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
+    var matchQuery = { active };
+    if (!getOtherUsers) {
+      matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
+      matchQuery.ownerId = { $ne: ObjectID(userId) };
+    } else {
+      matchQuery.ownerId = { $eq: ObjectID(userId) };
+    }
+
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((category) => ObjectID(category)),
       };
     }
-    const aggregate = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $lookup: {
-          from: 'category',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'categories',
-        },
-      },
-      {
-        $sort: {
-          creationDate: -1,
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          categories: 1,
-          ownerId: 1,
-          'user.name': 1,
-          'user.address': 1,
-          'user.location.coordinates': 1,
-          'user.birthday': 1
-        },
-      },
-    ];
-    const helpOffers = await super.$listAggregate(aggregate);
-    return helpOffers;
+    return matchQuery;
   }
 
   async listByOwnerId(ownerId) {
@@ -117,46 +118,27 @@ class OfferdHelpRepository extends BaseRepository {
     return helpOffer;
   }
 
-  async finishHelpOfferByOwner(helpOfferId) {
-    const filter = { _id: helpOfferId };
-    const update = { active: false };
+  async findOne(query, projection, populate = null) {
+    return super.$findOne(query, projection, populate);
+  }
 
-    await super.$findOneAndUpdate(filter, update);
+  async finishHelpOfferByOwner(helpOffer) {
+    helpOffer.active = false;
+    return super.$update(helpOffer);
   }
 
   async getEmailByHelpOfferId(helpOfferId) {
-    const matchQuery = {};
-    matchQuery._id = ObjectID(helpOfferId);
-
-    const aggregation = [
-      {
-        $match: matchQuery,
-      },
-      {
-        $lookup: {
-          from: 'user',
-          localField: 'ownerId',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      {
-        $unwind: {
-          path: '$user',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          user: {
-            email: 1,
-          },
-        },
-      },
-    ];
-    const helpOffer = await super.$listAggregate(aggregation);
-    return helpOffer[0].user.email;
+    const matchQuery = { _id: ObjectID(helpOfferId) };
+    const helpProjection = {
+      _id: 0,
+      ownerId: 1,
+    }
+    const user = {
+      path: 'user',
+      select: 'email -_id'
+    }
+    const helpOffer = await super.$findOne(matchQuery, helpProjection, user);
+    return helpOffer.user.email;
   }
 }
 
