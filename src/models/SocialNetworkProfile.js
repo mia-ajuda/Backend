@@ -4,7 +4,6 @@ const SocialNetworkProfileSchema = new mongoose.Schema({
   
   userId:{  
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
     required: true,
     unique: true,
   },
@@ -15,7 +14,7 @@ const SocialNetworkProfileSchema = new mongoose.Schema({
   followers: [{
     type: mongoose.Schema.Types.ObjectId,
     required: false,
-    ref: 'socialNetworkProfile'
+    ref: 'socialNetworkProfile',
   }],
   following: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -23,7 +22,15 @@ const SocialNetworkProfileSchema = new mongoose.Schema({
     ref: 'socialNetworkProfile'
   }],
  
-}, { collection: 'socialNetworkProfile' });
+}, { 
+    collection: 'socialNetworkProfile',
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+  });
 
 SocialNetworkProfileSchema.virtual('user', {
   ref: 'User',
@@ -31,6 +38,40 @@ SocialNetworkProfileSchema.virtual('user', {
   foreignField: '_id',
   justOne: true
 });
+
+SocialNetworkProfileSchema.virtual('entity', {
+  ref: 'Entity',
+  localField: 'userId',
+  foreignField: '_id',
+  justOne: true
+});
+
+SocialNetworkProfileSchema.virtual('Followers', {
+  ref: 'socialNetworkProfile',
+  localField: 'followers',
+  foreignField: 'userId'
+});
+
+SocialNetworkProfileSchema.virtual('Following', {
+  ref: 'socialNetworkProfile',
+  localField: 'following',
+  foreignField: 'userId'
+});
+
+SocialNetworkProfileSchema.virtual('helpsOffers', {
+  ref: 'OfferedHelp',
+  localField: 'userId',
+  foreignField: 'ownerId'
+});
+
+SocialNetworkProfileSchema.virtual('userHelps', {
+  ref: 'Help',
+  localField: 'userId',
+  foreignField: 'ownerId'
+});
+
+
+
 
 
 module.exports = mongoose.model('socialNetworkProfile', SocialNetworkProfileSchema);

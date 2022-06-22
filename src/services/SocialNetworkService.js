@@ -15,23 +15,34 @@ class SocialNetworkService {
       username: createdUser.name,
       userId: createdUser._id,
     };
-
-    console.log(socialProfileData.username);
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    console.log(socialProfileData.userId);
-    
-
-    return this.socialNetworkRepository.create(socialProfileData);
-
+  
+    const createdSocialNetworkUser = await this.socialNetworkRepository.create(socialProfileData);
+    console.log(createdSocialNetworkUser);
+    return createdSocialNetworkUser;
 
   }
 
 
-  async followUser(followerId, followedId){
+  async removeSocialNetworkUser(id){
 
-    let followedUser = await this.socialNetworkRepository.findUserProfilebyUserId(followedId);
+    await this.socialNetworkRepository.destroy(id);
+
+  }
+
+
+  async followUser(followerId, userId){
+
+    let a = await this.socialNetworkRepository.getUserByIdWithHelpsAndOffers(userId);    
+    console.log(a.number_of_followers);
+    console.log(a.number_of_following);
+    return true;
+
+
+
+    let followedUser = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
     let followerUser = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
     
+    console.log(global.isUserEntity);
     console.log(followedUser);
     console.log(followerUser);
     if(!followedUser){
@@ -41,22 +52,22 @@ class SocialNetworkService {
     }
 
     const followerPosition = followedUser.followers.indexOf(followerId);
-    const followingPosition = followerUser.following.indexOf(followedId);
+    const followingPosition = followerUser.following.indexOf(userId);
     if (followerPosition > -1 || followingPosition > -1) {
       throw new Error("Usuário já é um seguidor");
     }
     
     followedUser.followers.push(followerId);
-    followerUser.following.push(followedId);
+    followerUser.following.push(userId);
 
     await this.socialNetworkRepository.updateProfile(followedUser);
     await this.socialNetworkRepository.updateProfile(followerUser);
     
   }
 
-  async unfollowUser(followerId, followedId){
+  async unfollowUser(followerId, userId){
   
-    let followedUser = await this.socialNetworkRepository.findUserProfilebyUserId(followedId);
+    let followedUser = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
     let followerUser = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
     
     console.log(followedUser);
@@ -68,7 +79,7 @@ class SocialNetworkService {
     }
 
     const followerPosition = followedUser.followers.indexOf(followerId);
-    const followingPosition = followerUser.following.indexOf(followedId);
+    const followingPosition = followerUser.following.indexOf(userId);
     if (followerPosition < 0  || followingPosition < 0) {
       throw new Error("Usuário não é um seguidor");
     }
@@ -79,6 +90,17 @@ class SocialNetworkService {
     await this.socialNetworkRepository.updateProfile(followedUser);
     await this.socialNetworkRepository.updateProfile(followerUser);
 
+  }
+
+
+  async findUsers(userId,username) {
+
+    const user = await this.socialNetworkRepository.findUsersbyName(userId,username);
+
+    if(!user){
+      throw new Error("Nenhuma usuário encontrado");
+    }
+    return user;
   }
 
 }

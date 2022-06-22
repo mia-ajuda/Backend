@@ -45,6 +45,7 @@ class UserService {
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
+            await this.socialNetworkService.removeSocialNetworkUser(createdSocialNetworkUser._id);
             throw err;
           });
       }
