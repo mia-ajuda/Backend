@@ -54,9 +54,10 @@ class OfferdHelpRepository extends BaseRepository {
     return super.$findOne(query, helpOfferFields, populate);
   }
 
-  async list(userId, categoryArray, getOtherUsers) {
+  async list(userId, isUserEntity, categoryArray, getOtherUsers) {
     const matchQuery = this.getHelpOfferListQuery(
       userId,
+      isUserEntity,
       true,
       getOtherUsers,
       categoryArray
@@ -84,11 +85,16 @@ class OfferdHelpRepository extends BaseRepository {
 
     return super.$list(matchQuery, helpOfferFields, populate, sort);
   }
-  getHelpOfferListQuery(userId, active, getOtherUsers, categoryArray) {
+  getHelpOfferListQuery(userId, isUserEntity, active, getOtherUsers, categoryArray) {
     var matchQuery = { active };
     if (!getOtherUsers) {
-      matchQuery.possibleHelpedUsers = { $not: { $in: [ObjectID(userId)] } };
       matchQuery.ownerId = { $ne: ObjectID(userId) };
+      
+      if(isUserEntity){
+        matchQuery.possibleEntities = { $nin: [ObjectID(userId)] };
+      }else{
+        matchQuery.possibleHelpedUsers = { $nin: [ObjectID(userId)] };
+      }
     } else {
       matchQuery.ownerId = { $eq: ObjectID(userId) };
     }

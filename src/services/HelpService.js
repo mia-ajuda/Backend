@@ -57,10 +57,11 @@ class HelpService {
     return Help;
   }
 
-  async getHelpList(coords, id, categoryArray) {
+  async getHelpList(coords, id, isUserEntity, categoryArray) {
     const Helplist = await this.HelpRepository.shortList(
       coords,
       id,
+      isUserEntity,
       categoryArray
     );
     if (!Helplist) {
