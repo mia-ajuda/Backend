@@ -71,6 +71,14 @@ SocialNetworkProfileSchema.virtual('userHelps', {
 });
 
 
+SocialNetworkProfileSchema.virtual('numberOfFollowers').get(function() {
+  return this.followers.length;
+});
+
+SocialNetworkProfileSchema.virtual('numberOfFollowing').get(function() {
+  return this.following.length;
+});
+
 
 
 

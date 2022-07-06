@@ -37,14 +37,18 @@ class SocialNetworkRepository extends BaseRepository {
   }
 
   async findUsersbyName(userId,userName) {
-    console.log(userId);
-    console.log(userName);
+   
     const query = {
       userId: {$ne:ObjectID(userId)},
       username: {$regex: userName,$options:'i'}
     }
 
-    const selectField = ['userId','username'];
+    const selectField = [
+      'userId',
+      'username',
+      'followers',
+      'following',
+    ];
 
     const populate  = {
       path: 'user',
@@ -53,7 +57,7 @@ class SocialNetworkRepository extends BaseRepository {
     
 
     const result = await super.$list(query,selectField,populate);
-    console.log(result);
+    
     return result;
 
   }
