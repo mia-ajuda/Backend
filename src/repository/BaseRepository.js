@@ -15,6 +15,11 @@ class BaseRepository {
     return savedModel;
   }
 
+  async $populateExistingDoc(doc, populate) {
+    const populatedDoc = doc.populate(populate).execPopulate();
+    return populatedDoc;
+  }
+
   async $saveMany(itemsModel, mongoSession = {}) {
     itemsModel.forEach((item) => {
       item.lastUpdateDate = Date.now();
@@ -65,9 +70,10 @@ class BaseRepository {
     return recordModel;
   }
 
-  async $list(query, populate = null) {
-    const recordModel = await this.modelClass.find(query).populate(populate);
-    return recordModel;
+  async $list(query, selectedField, populate = null, sort = null) {
+    return this.modelClass.find(query, selectedField)
+      .populate(populate)
+      .sort(sort);
   }
 
   async $countDocuments(query) {
@@ -75,23 +81,18 @@ class BaseRepository {
     return numberDocuments;
   }
 
-  async findOne(query, mongoSession = {}) {
-    let result;
-
-    if (mongoSession !== undefined || mongoSession.session !== undefined) {
-      result = await this.modelClass
-        .findOne(query)
-        .session(mongoSession.session);
-      return result;
-    }
-    result = await this.modelClass.findOne(query);
-
-    return result;
+  async $findOne(query, projection, populate = null) {
+    return this.modelClass.findOne(query, projection)
+      .populate(populate);
   }
 
   async $destroy(query) {
     const result = await this.modelClass.deleteOne(query);
     return result;
+  }
+
+  async $findOneAndUpdate(filter, update) {
+    await this.modelClass.findOneAndUpdate(filter, update);
   }
 }
 

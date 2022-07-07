@@ -1,4 +1,7 @@
+const { notificationTypesEnum } = require('../models/Notification');
 const NotificationRepository = require('../repository/NotificationRepository');
+const notify = require('../utils/Notification');
+const UserService = require('./UserService');
 
 class NotificationService {
   constructor() {
@@ -15,6 +18,38 @@ class NotificationService {
     const notificationCreated = await this.notificationRepository.create(notification);
 
     return notificationCreated;
+  }
+
+  async createAndSendNotifications(title, body) {
+    const userService = new UserService();
+    const users = await userService.getUsersWithDevice();
+
+    const messages = [];
+    const notifications = [];
+    users.forEach((user) => {
+      messages.push({
+        to: user.deviceId,
+        sound: 'default',
+        title,
+        body,
+      });
+      notifications.push({
+        userId: user._id,
+        title,
+        body,
+        notificationType: notificationTypesEnum.notificacaoManual,
+      });
+    });
+
+    try {
+      notify(messages);
+
+      notifications.forEach(async (notification) => {
+        await this.createNotification(notification);
+      });
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 }
 

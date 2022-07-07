@@ -19,6 +19,18 @@ class NotificationController {
       next();
     }
   }
+
+  async sendNotifications(req, res, next) {
+    const { title, body } = req.body;
+    try {
+      const result = await this.notificationService.createAndSendNotifications(title, body);
+      res.status(200).json(result);
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
 }
 
 module.exports = NotificationController;

@@ -8,12 +8,11 @@ exports.setupWebsocket = (server) => {
   io = socketio(server);
 
   io.on('connection', (socket) => {
-    const { currentRegion, userId } = socket.handshake.query;
-
+    const { userPosition, userId } = socket.handshake.query;
     connections.push({
       id: socket.id,
       userId,
-      currentRegion,
+      userPosition,
       categories: [],
     });
 
@@ -59,7 +58,7 @@ exports.findConnections = (category, userId) => {
 exports.sendMessage = (to, message, data) => {
   to.forEach((connection) => {
     if (typeof (data) === 'object' && message == 'new-help') {
-      const userLocation = JSON.parse(connection.currentRegion);
+      const userLocation = JSON.parse(connection.userPosition);
       const helpLocation = {
         latitude: data.user.location.coordinates[1],
         longitude: data.user.location.coordinates[0],

@@ -1,33 +1,44 @@
-const UserRepository = require('../repository/UserRepository');
-const firebase = require('../config/authFirebase');
+const UserRepository = require("../repository/UserRepository");
+const EntityRepository = require("../repository/EntityRepository");
+const firebase = require("../config/authFirebase");
+const { ObjectID } = require("mongodb");
 
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();
+    this.entityRepository = new EntityRepository();
   }
 
   async createUser(data) {
+    const isEntityRegistered = await this.entityRepository.checkEntityExistence(
+      data.email
+    );
+
+    if (isEntityRegistered) {
+      throw new Error("Email já sendo utilizado");
+    }
+
     if (data.password.length < 8) {
-      throw new Error('Senha inválida');
+      throw new Error("Senha inválida");
     }
 
     if (data.cpf.length >= 11) {
-      data.cpf = data.cpf.replace(/[-.]/g, '');
+      data.cpf = data.cpf.replace(/[-.]/g, "");
     }
+
     data.email = data.email.toLowerCase();
     try {
       const createdUser = await this.userRepository.create(data);
 
       if (!data.hasUser) {
-        console.log('Usuario Criado');
         // Cria o usuário no firebase
         await firebase
           .auth()
           .createUser({
             email: data.email,
             password: data.password,
-            displayName: data.name,
-            emailVerified: false
+            displayName: `${data.name} | PF`,
+            emailVerified: false,
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
@@ -39,13 +50,20 @@ class UserService {
     } catch (err) {
       throw err;
     }
+  }
 
-    return createdUser;
+  async getUsersWithDevice() {
+    try {
+      const users = await this.userRepository.getUsersWithDevice();
+      return users;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async getUser({ id = undefined, email = undefined }) {
     if (!id && !email) {
-      throw new Error('Nenhum identificador encontrado');
+      throw new Error("Nenhum identificador encontrado");
     }
     let user;
 
@@ -55,7 +73,23 @@ class UserService {
       user = await this.userRepository.getUserByEmail(email);
     }
     if (!user) {
-      throw new Error('Usuário não encontrado');
+      throw new Error("Usuário não encontrado");
+    }
+    return user;
+  }
+
+  async getAnyUser({ id = undefined, email = undefined }) {
+    if (!id && !email) {
+      throw new Error("Nenhum identificador encontrado");
+    }
+    let user;
+
+    if (id) {
+      user = await this.userRepository.getById(id);
+      if (!user) user = await this.entityRepository.getById(id);
+    }
+    if (!user) {
+      throw new Error("Usuário não encontrado");
     }
     return user;
   }
@@ -81,9 +115,7 @@ class UserService {
     return result;
   }
 
-  async editUserAddressById({
-    email, cep, number, city, state, complement,
-  }) {
+  async editUserAddressById({ email, cep, number, city, state, complement }) {
     const user = await this.getUser({ email });
 
     const address = {
@@ -129,14 +161,22 @@ class UserService {
     await this.userRepository.removeUser({ id: user._id, email });
   }
 
-  async checkUserExistence(identificator) {
-    const result = await this.userRepository.checkUserExistence(identificator);
+  async checkUserExistence(userIdentifier) {
+    const result = await this.userRepository.checkUserExistence(userIdentifier);
 
     if (result) {
       return true;
     }
 
     return false;
+  }
+
+  async findOneUserWithProjection(userId,projection){
+    const query = { _id: ObjectID(userId) };
+     
+    const user = await this.userRepository.findOneUserWithProjection(query,projection);
+
+    return user;
   }
 }
 

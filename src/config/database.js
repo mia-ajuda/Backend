@@ -9,12 +9,9 @@ const envType = process.env.NODE_ENV || 'development';
 
 const databaseConnect = async () => {
   try {
-    await mongoose.connect(databaseURL, { useNewUrlParser: true, useUnifiedTopology: true })
-      .then(() => console.log('Banco de dados conectado!'))
-      .catch((err) => {
-        console.log('Não foi possível se conectar ao banco de dados!');
-        console.log(err);
-      });
+    await mongoose.connect(databaseURL, { useNewUrlParser: true, useUnifiedTopology: true });
+    console.log('Banco de dados conectado!');
+    mongoose.set('useFindAndModify', false);
 
     await CategorySeed();
     // só popula usuários e ajudas falsos em desenvolvimento
