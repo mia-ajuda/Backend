@@ -7,7 +7,7 @@ const http = require('http');
 const Sentry = require('@sentry/node');
 const sentryInit = require('./src/config/sentryConfig');
 const setRoutes = require('./src/routes/BaseRoutes');
-const dailySchedule = require('./src/utils/schedule');
+// const dailySchedule = require('./src/utils/schedule');
 const { setupWebsocket } = require('./websocket');
 
 const app = express();
@@ -23,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 databaseConnect();
-dailySchedule();
+// dailySchedule();
 setRoutes(app);
 
 app.use(Sentry.Handlers.errorHandler());
