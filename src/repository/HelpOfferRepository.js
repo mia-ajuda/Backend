@@ -27,7 +27,8 @@ class OfferdHelpRepository extends BaseRepository {
       'categoryId',
       'possibleHelpedUsers',
       'possibleEntities',
-      'helpedUserId'
+      'helpedUserId',
+      'creationDate'
     ];
     const user = {
       path: 'user',
