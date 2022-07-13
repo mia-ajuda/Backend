@@ -34,8 +34,9 @@ class OfferedHelpController {
   async listHelpsOffers(req, res) {
     const userId = req.query.userId;
     const getOtherUsers = req.query.getOtherUsers == 'true' ? true : false;
+    const isUserEntity = global.isUserEntity;
     try {
-      const helpOffers = await this.HelpOfferService.listHelpsOffers(userId, null, getOtherUsers);
+      const helpOffers = await this.HelpOfferService.listHelpsOffers(userId, isUserEntity, null, getOtherUsers);
       return res.json(helpOffers);
     } catch (error) {
       return res.status(400).json({ error: error.message });

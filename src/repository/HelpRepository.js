@@ -71,20 +71,25 @@ class HelpRepository extends BaseRepository {
     await super.$update(help);
   }
 
-  async shortList(coords, id, categoryArray) {
+  async shortList(coords, id, isUserEntity, categoryArray) {
     const matchQuery = {
       active: true,
-      possibleHelpers: { $not: { $in: [ObjectID(id)] } },
-      ownerId: { $not: { $in: [ObjectID(id)] } },
+      ownerId: { $ne: ObjectID(id) },
       status: 'waiting'
     };
+
+    if(isUserEntity){
+      matchQuery.possibleEntities = { $nin: [ObjectID(id)] };
+    }else{
+      matchQuery.possibleHelpers = { $nin: [ObjectID(id)] };
+    }
 
     if (categoryArray) {
       matchQuery.categoryId = {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
-    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId'];
+    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate'];
     const user = {
       path: 'user',
       select: ['name', 'riskGroup', 'location.coordinates']

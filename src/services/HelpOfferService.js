@@ -3,7 +3,6 @@ const UserService = require("./UserService");
 const EntityService = require("./EntityService");
 const NotificationService = require("./NotificationService");
 const NotificationMixin = require("../utils/NotificationMixin");
-const isEntity = require('../utils/IsEntity');
 const { notificationTypesEnum } = require("../models/Notification");
 const saveError = require('../utils/ErrorHistory');
 const { findConnections, sendMessage } = require("../../websocket");
@@ -35,8 +34,8 @@ class OfferedHelpService {
     return help;
   }
 
-  async listHelpsOffers(userId, categoryArray, getOtherUsers) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId, categoryArray, getOtherUsers);
+  async listHelpsOffers(userId, isUserEntity, categoryArray,getOtherUsers) {
+    const helpOffers = await this.OfferedHelpRepository.list(userId, isUserEntity, categoryArray,getOtherUsers);
     return helpOffers;
   }
 
