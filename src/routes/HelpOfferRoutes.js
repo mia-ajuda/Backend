@@ -38,7 +38,7 @@ routes.put(
   isAuthenticated,
   (req, res, next) => {
     helpOfferController.chooseHelpedUsers(req, res, next);
-  }
+  },
 );
 
 routes.delete('/helpOffer/:helpOfferId', isAuthenticated, async (req, res, next) => {

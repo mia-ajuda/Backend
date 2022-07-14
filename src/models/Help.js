@@ -78,7 +78,7 @@ helpSchema.virtual('user', {
   ref: 'User',
   localField: 'ownerId',
   foreignField: '_id',
-  justOne: true
+  justOne: true,
 });
 
 helpSchema.virtual('distances')

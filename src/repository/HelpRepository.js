@@ -2,7 +2,6 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
-const sharedAgreggationInfo = require('../utils/sharedAggregationInfo');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -14,22 +13,22 @@ class HelpRepository extends BaseRepository {
     const populate = [
       {
         path: 'user',
-        select: ['name', 'riskGroup', 'location.coordinates']
+        select: ['name', 'riskGroup', 'location.coordinates'],
       },
       {
         path: 'categories',
-        select: ['name']
-      }
-    ]
-    let result = await super.$populateExistingDoc(doc, populate);
+        select: ['name'],
+      },
+    ];
+    const result = await super.$populateExistingDoc(doc, populate);
     return {
       _id: result._id,
       ownerId: result.ownerId,
       title: result.title,
       categoryId: result.categoryId,
       categories: result.categories,
-      user: result.user
-    }
+      user: result.user,
+    };
   }
 
   async getById(id) {
@@ -42,28 +41,28 @@ class HelpRepository extends BaseRepository {
     const helpFields = [
       '_id', 'ownerId', 'categoryId',
       'possibleHelpers', 'possibleEntities',
-      'description', 'helperId', 'status', 'title'
+      'description', 'helperId', 'status', 'title',
     ];
     const user = {
       path: 'user',
-      select: ['photo', 'name', 'phone', 'birthday', 'address.city', 'location.coordinates']
-    }
+      select: ['photo', 'name', 'phone', 'birthday', 'address.city', 'location.coordinates'],
+    };
     const categories = {
       path: 'categories',
-      select: ['_id', 'name']
-    }
+      select: ['_id', 'name'],
+    };
     const possibleHelpers = {
       path: 'possibleHelpers',
-      select: ['_id', 'name', 'phone', 'photo', 'birthday', 'address.city']
-    }
+      select: ['_id', 'name', 'phone', 'photo', 'birthday', 'address.city'],
+    };
     const possibleEntities = {
       path: 'possibleEntities',
-      select: ['_id', 'name', 'photo', 'address.city']
-    }
+      select: ['_id', 'name', 'photo', 'address.city'],
+    };
     return super.$findOne(
       matchQuery,
       helpFields,
-      [user, categories, possibleHelpers, possibleEntities]
+      [user, categories, possibleHelpers, possibleEntities],
     );
   }
 
@@ -75,12 +74,12 @@ class HelpRepository extends BaseRepository {
     const matchQuery = {
       active: true,
       ownerId: { $ne: ObjectID(id) },
-      status: 'waiting'
+      status: 'waiting',
     };
 
-    if(isUserEntity){
+    if (isUserEntity) {
       matchQuery.possibleEntities = { $nin: [ObjectID(id)] };
-    }else{
+    } else {
       matchQuery.possibleHelpers = { $nin: [ObjectID(id)] };
     }
 
@@ -92,15 +91,15 @@ class HelpRepository extends BaseRepository {
     const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate'];
     const user = {
       path: 'user',
-      select: ['name', 'riskGroup', 'location.coordinates']
+      select: ['name', 'riskGroup', 'location.coordinates'],
     };
     const categories = {
       path: 'categories',
-      select: ['_id', 'name']
-    }
-    const helps = await super.$list(matchQuery, helpFields, [user, categories])
-    const helpsWithDistance = helps.map(help => {
-      help.distances = { userCoords: help.user.location.coordinates, coords }
+      select: ['_id', 'name'],
+    };
+    const helps = await super.$list(matchQuery, helpFields, [user, categories]);
+    const helpsWithDistance = helps.map((help) => {
+      help.distances = { userCoords: help.user.location.coordinates, coords };
       return help.toObject();
     });
 
@@ -143,7 +142,7 @@ class HelpRepository extends BaseRepository {
       'title',
       'status',
       'ownerId',
-      'categoryId'
+      'categoryId',
     ];
 
     const user = {
@@ -168,24 +167,24 @@ class HelpRepository extends BaseRepository {
           helperId: ObjectID(userId),
         },
       ];
-     } else {
-       const possibleHelpers = {
-         path: 'possibleHelpers',
-         select: ['_id', 'photo', 'name', 'birthday', 'address.city'],
-       };
+    } else {
+      const possibleHelpers = {
+        path: 'possibleHelpers',
+        select: ['_id', 'photo', 'name', 'birthday', 'address.city'],
+      };
 
-       const possibleEntities = {
-         path: 'possibleEntities',
-         select: ['_id', 'photo', 'name', 'birthday', 'address.city'],
-       };
+      const possibleEntities = {
+        path: 'possibleEntities',
+        select: ['_id', 'photo', 'name', 'birthday', 'address.city'],
+      };
 
-       fields.push('helperId');
+      fields.push('helperId');
 
-       populate.push(possibleHelpers);
-       populate.push(possibleEntities);
+      populate.push(possibleHelpers);
+      populate.push(possibleEntities);
 
-       matchQuery.ownerId = ObjectID(userId);
-     }
+      matchQuery.ownerId = ObjectID(userId);
+    }
 
     const helpList = await super.$list(matchQuery, fields, populate);
     return helpList;
@@ -196,8 +195,8 @@ class HelpRepository extends BaseRepository {
 
     const populate = {
       path: 'user',
-      select: ['photo', 'birthday', 'address.city']
-    }
+      select: ['photo', 'birthday', 'address.city'],
+    };
 
     const projection = {
       description: 1,
@@ -207,7 +206,7 @@ class HelpRepository extends BaseRepository {
     return super.$findOne(
       matchQuery,
       projection,
-      populate
+      populate,
     );
   }
 }

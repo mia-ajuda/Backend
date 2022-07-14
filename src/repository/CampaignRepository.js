@@ -44,7 +44,7 @@ class CampaignRepository extends BaseRepository {
     const matchQuery = {
       active: true,
       ownerId: { $in: arrayUsersId },
-      status: 'waiting'
+      status: 'waiting',
     };
     const populate = ['entity', 'categories'];
 
@@ -55,10 +55,10 @@ class CampaignRepository extends BaseRepository {
     }
 
     const campaigns = await super.$list(matchQuery, {}, populate);
-    const campaignsWithDistances = campaigns.map(campaign => {
-      campaign.distances = { campaignCoords: campaign.entity.location.coordinates, coords }
+    const campaignsWithDistances = campaigns.map((campaign) => {
+      campaign.distances = { campaignCoords: campaign.entity.location.coordinates, coords };
       return campaign.toObject();
-    })
+    });
 
     campaignsWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
 
