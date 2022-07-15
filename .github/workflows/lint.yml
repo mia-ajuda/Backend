@@ -1,0 +1,32 @@
+name: lint
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+      - '**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: 📦 Install dependencies
+        run: yarn install --pure-lockfile --non-interactive
+
+      - name: 📦 Run lint  
+        run: npx eslint ./src
