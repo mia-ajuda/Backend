@@ -39,7 +39,7 @@ jobs:
       - name: 📦  Docker push image
         run:  |
               docker build . -t "$IMAGE_NAME"
-              docker push -t "$IMAGE_NAME"
+              docker push "$IMAGE_NAME"
 
       - name: 📦  Docker push image tag latest if develop
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
