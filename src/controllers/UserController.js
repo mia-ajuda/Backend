@@ -8,8 +8,15 @@ class UserController {
   }
 
   async createUser(req, res, next) {
+    const { latitude, longitude } = req.body;
+
+    const location = {
+      type: "Point",
+      coordinates: [longitude, latitude],
+    };
 
     const data = {
+      location,
       ...req.body,
       hasUser: req.query.hasUser === "true",
     };
