@@ -206,8 +206,8 @@ class OfferedHelpService {
   }
 
   async useService(service, functionName, params = []) {
-    const functionReturn = await service[functionName](...params);
-    return functionReturn;
+    const serviceReturn = await service[functionName](...params);
+    return serviceReturn;
   }
 }
 
