@@ -63,7 +63,7 @@ class OfferdHelpRepository extends BaseRepository {
       getOtherUsers,
       categoryArray,
     );
-    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId', 'helpedUserId'];
+    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId', 'helpedUserId', 'creationDate'];
     const sort = { creationDate: -1 };
     const user = {
       path: 'user',
