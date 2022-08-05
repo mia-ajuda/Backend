@@ -9,7 +9,6 @@ class UserController {
 
   async createUser(req, res, next) {
     const data = {
-      location,
       ...req.body,
       hasUser: req.query.hasUser === 'true',
     };
@@ -33,6 +32,7 @@ class UserController {
       phone: req.body.phone,
       notificationToken: req.body.notificationToken,
       deviceId: req.body.deviceId,
+      address: req.body.address
     };
     try {
       const result = await this.userService.editUserById(data);
