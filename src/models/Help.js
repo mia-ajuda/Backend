@@ -4,6 +4,7 @@ const {
   getDistance,
   calculateDistance,
 } = require('../utils/geolocation/calculateDistance');
+const Point = require('./Point');
 
 const helpSchema = new mongoose.Schema(
   {
@@ -56,6 +57,11 @@ const helpSchema = new mongoose.Schema(
     active: {
       default: true,
       type: Boolean,
+    },
+    location: {
+      type: Point,
+      index: '2dsphere',
+      required: false,
     },
   },
   {

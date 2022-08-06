@@ -42,7 +42,8 @@ class HelpRepository extends BaseRepository {
     const helpFields = [
       '_id', 'ownerId', 'categoryId',
       'possibleHelpers', 'possibleEntities',
-      'description', 'helperId', 'status', 'title'
+      'description', 'helperId', 'status', 'title',
+      'location'
     ];
     const user = {
       path: 'user',
@@ -89,7 +90,7 @@ class HelpRepository extends BaseRepository {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
-    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate'];
+    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate', 'location'];
     const user = {
       path: 'user',
       select: ['name', 'riskGroup', 'location.coordinates']

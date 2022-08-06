@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
+const Point = require('./Point');
 
 const offeredHelpSchema = new Schema(
   {
@@ -52,6 +53,11 @@ const offeredHelpSchema = new Schema(
     active: {
       default: true,
       type: Boolean,
+    },
+    location: {
+      type: Point,
+      index: '2dsphere',
+      required: false,
     },
   },
   {
