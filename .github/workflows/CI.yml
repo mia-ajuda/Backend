@@ -2,7 +2,7 @@ name: CI pipeline
 
 on:
   push :
-    branches : "**"
+    branches : [ "**" ]
   pull_request:
     types: [ opened ]
 
@@ -47,6 +47,9 @@ jobs:
       IMAGE_NAME: ${{ secrets.DOCKER_REPOSITORY }}:${{ github.sha }}
 
     steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+        
       - name: 🏗 Config files
         run:  |
               echo "$FIREBASE_CONFIG_DEV" > ./src/config/firebaseAuthConfig.js
