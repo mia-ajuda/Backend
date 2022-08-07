@@ -1,6 +1,6 @@
-const UserService = require("../services/UserService");
-const { riskGroups } = require("../models/RiskGroup");
-const saveError = require("../utils/ErrorHistory");
+const UserService = require('../services/UserService');
+const { riskGroups } = require('../models/RiskGroup');
+const saveError = require('../utils/ErrorHistory');
 
 class UserController {
   constructor() {
@@ -11,14 +11,14 @@ class UserController {
     const { latitude, longitude } = req.body;
 
     const location = {
-      type: "Point",
+      type: 'Point',
       coordinates: [longitude, latitude],
     };
 
     const data = {
       location,
       ...req.body,
-      hasUser: req.query.hasUser === "true",
+      hasUser: req.query.hasUser === 'true',
     };
 
     try {

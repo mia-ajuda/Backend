@@ -6,7 +6,8 @@
   "author": "LeoSilvaGomes <leonardodasigomes@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "start:dev": "nodemon index.js",
     "dev": "node server.js"
   },
   "dependencies": {
@@ -29,9 +30,12 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
+    "eslint": "^8.19.0",
     "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.4",
+    "eslint-plugin-promise": "^6.0.0",
     "git-commit-msg-linter": "^3.2.6",
     "nodemon": "^2.0.2"
   }

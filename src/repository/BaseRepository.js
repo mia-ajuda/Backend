@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 
 class BaseRepository {
   constructor(modelClass) {
-    this.modelClass = modelClass;
+    this.ModelClass = modelClass;
   }
 
   async $save(dataModel, mongoSession = {}) {
     if (dataModel._id) {
       dataModel.lastUpdateDate = Date.now();
     }
-    const savedModel = await new this.modelClass(dataModel).save({
+    const savedModel = await new this.ModelClass(dataModel).save({
       session: mongoSession.session,
     });
     return savedModel;
@@ -24,7 +24,7 @@ class BaseRepository {
     itemsModel.forEach((item) => {
       item.lastUpdateDate = Date.now();
     });
-    const savedModels = await this.modelClass.insertMany(itemsModel, {
+    const savedModels = await this.ModelClass.insertMany(itemsModel, {
       session: mongoSession.session,
     });
     return savedModels;
@@ -37,7 +37,7 @@ class BaseRepository {
   }
 
   async $listAggregate(aggregationPipeline) {
-    const aggregatedPipeline = await this.modelClass.aggregate(aggregationPipeline).exec();
+    const aggregatedPipeline = await this.ModelClass.aggregate(aggregationPipeline).exec();
     return aggregatedPipeline;
   }
 
@@ -65,34 +65,34 @@ class BaseRepository {
       query.active = true;
     }
 
-    const recordModel = await this.modelClass.findOne(query);
+    const recordModel = await this.ModelClass.findOne(query);
 
     return recordModel;
   }
 
   async $list(query, selectedField, populate = null, sort = null) {
-    return this.modelClass.find(query, selectedField)
+    return this.ModelClass.find(query, selectedField)
       .populate(populate)
       .sort(sort);
   }
 
   async $countDocuments(query) {
-    const numberDocuments = await this.modelClass.countDocuments(query);
+    const numberDocuments = await this.ModelClass.countDocuments(query);
     return numberDocuments;
   }
 
   async $findOne(query, projection, populate = null) {
-    return this.modelClass.findOne(query, projection)
+    return this.ModelClass.findOne(query, projection)
       .populate(populate);
   }
 
   async $destroy(query) {
-    const result = await this.modelClass.deleteOne(query);
+    const result = await this.ModelClass.deleteOne(query);
     return result;
   }
 
   async $findOneAndUpdate(filter, update) {
-    await this.modelClass.findOneAndUpdate(filter, update);
+    await this.ModelClass.findOneAndUpdate(filter, update);
   }
 }
 
