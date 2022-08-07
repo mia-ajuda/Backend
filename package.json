@@ -6,7 +6,8 @@
   "author": "LeoSilvaGomes <leonardodasigomes@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
+    "start:dev": "nodemon index.js",
     "dev": "node server.js"
   },
   "dependencies": {
