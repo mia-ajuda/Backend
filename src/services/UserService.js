@@ -62,6 +62,7 @@ class UserService {
   }
 
   async getUser({ id = undefined, email = undefined }) {
+    console.log(id);
     if (!id && !email) {
       throw new Error('Nenhum identificador encontrado');
     }
