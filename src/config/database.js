@@ -14,14 +14,14 @@ const databaseConnect = async () => {
     mongoose.set('useFindAndModify', false);
 
     await CategorySeed();
-    // sÃ³ popula usuÃ¡rios e ajudas falsos em desenvolvimento
+    // só popula usuários e ajudas falsos em desenvolvimento
     if (envType === 'development') {
       await UserSeed();
       await HelpSeed();
       await NotificationSeed();
     }
   } catch (err) {
-    console.log('NÃ£o foi possÃ­vel inicicializar corretamente a base de dados!');
+    console.log('Não foi possível inicicializar corretamente a base de dados!');
     console.log(err);
   }
 };
