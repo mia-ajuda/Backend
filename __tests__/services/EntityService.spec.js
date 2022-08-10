@@ -143,7 +143,7 @@ describe('#EntityService', () => {
     it('throw error if entity is undefined when id is invalid and email is undefined', () => {
       const callGetEntity = async () => {
         await service.getEntity({
-          id: 3
+          id: "abc"
         });
       };
 
@@ -153,7 +153,7 @@ describe('#EntityService', () => {
     it('throw error if entity is undefined when id is undefined and email is is invalid', () => {
       const callGetEntity = async () => {
         await service.getEntity({
-          email: "jorge@neves.com"
+          email: "email123"
         });
       };
 
@@ -163,8 +163,8 @@ describe('#EntityService', () => {
     it('throw error if entity is undefined when both id and email are invalid', () => {
       const callGetEntity = async () => {
         await service.getEntity({
-          id: 3,
-          email: "jorge@neves.com"
+          id: "abc",
+          email: "email123"
         });
       };
 
