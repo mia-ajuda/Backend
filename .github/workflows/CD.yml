@@ -1,0 +1,43 @@
+name: CD pipeline
+
+on:
+  push :
+    branches : [ master, develop ]
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKER_REPOSITORY }}:${{ github.sha }}
+      FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
+      FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+      RCLONE_CONFIG: ${{ secrets.RCLONE_CONFIG }}
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+        
+      - name: 🏗 Config dev files
+        if: github.ref == 'refs/heads/develop'
+        run:  |
+              echo "$FIREBASE_CONFIG_DEV" > ./src/config/firebaseAuthConfig.js
+              echo "$RCLONE_CONFIG" > ./config/rclone.conf
+              echo "TAG=latest" >> "$GITHUB_ENV"     
+
+      - name: 🏗 Config prod files
+        if: github.ref == 'refs/heads/master'
+        run:  |
+              echo "$FIREBASE_CONFIG" > ./src/config/firebaseAuthConfig.js
+              echo "$RCLONE_CONFIG" > ./config/rclone.conf
+              echo "TAG=stable" >> "$GITHUB_ENV"
+
+      - name: 📦  Docker login
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: 📦  Docker push image
+        run:  |
+              docker build . -t "$IMAGE_NAME"
+              docker push "$IMAGE_NAME"
+              docker tag "$IMAGE_NAME" ${{ secrets.DOCKER_REPOSITORY }}:"$TAG"
+              docker push ${{ secrets.DOCKER_REPOSITORY }}:"$TAG"
