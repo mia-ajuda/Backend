@@ -39,6 +39,7 @@ class EntityController {
       phone: req.body.phone,
       notificationToken: req.body.notificationToken,
       deviceId: req.body.deviceId,
+      address: req.body.address,
     };
     try {
       const result = await this.entityService.editEntityById(data);
