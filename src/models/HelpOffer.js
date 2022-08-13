@@ -39,7 +39,7 @@ const offeredHelpSchema = new Schema(
     },
     helpedUserId: [{
       type: Schema.Types.ObjectId,
-      ref: ['User' , 'Entity'],
+      ref: ['User', 'Entity'],
       required: false,
     }],
     creationDate: {
@@ -68,7 +68,7 @@ const offeredHelpSchema = new Schema(
     toJSON: {
       virtuals: true,
     },
-  }
+  },
 );
 
 offeredHelpSchema.virtual('user', {

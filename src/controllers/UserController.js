@@ -1,6 +1,6 @@
-const UserService = require("../services/UserService");
-const { riskGroups } = require("../models/RiskGroup");
-const saveError = require("../utils/ErrorHistory");
+const UserService = require('../services/UserService');
+const { riskGroups } = require('../models/RiskGroup');
+const saveError = require('../utils/ErrorHistory');
 
 class UserController {
   constructor() {
@@ -10,7 +10,7 @@ class UserController {
   async createUser(req, res, next) {
     const data = {
       ...req.body,
-      hasUser: req.query.hasUser === "true",
+      hasUser: req.query.hasUser === 'true',
     };
 
     try {
@@ -32,7 +32,7 @@ class UserController {
       phone: req.body.phone,
       notificationToken: req.body.notificationToken,
       deviceId: req.body.deviceId,
-      address: req.body.address
+      address: req.body.address,
     };
     try {
       const result = await this.userService.editUserById(data);

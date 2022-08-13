@@ -68,7 +68,6 @@ class CampaignService {
     campaign.active = false;
 
     await this.CampaignRepository.update(campaign);
-    
 
     campaign = JSON.parse(JSON.stringify(campaign));
     return { message: `Campaign ${id} deleted!` };

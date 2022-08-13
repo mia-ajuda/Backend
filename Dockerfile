@@ -1,4 +1,4 @@
-FROM node:12.2.0-alpine
+FROM node:lts-alpine
 
 # Define o diretório de trabalho como /app
 WORKDIR /app

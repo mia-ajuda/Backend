@@ -41,7 +41,7 @@ class HelpController {
 
   async getHelpList(req, res, next) {
     const { id } = req.query;
-    const isUserEntity = global.isUserEntity;
+    const { isUserEntity } = global;
     const coords = req.query.coords.split(',').map((coord) => Number(coord));
     const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
     /* A requisição do Query é feita com o formato "34312ID12312,12312ID13213",
@@ -181,7 +181,6 @@ class HelpController {
       next();
     }
   }
-
 }
 
 module.exports = HelpController;

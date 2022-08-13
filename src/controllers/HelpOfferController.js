@@ -1,5 +1,5 @@
-const HelpOfferService = require("../services/HelpOfferService");
-const saveError = require("../utils/ErrorHistory");
+const HelpOfferService = require('../services/HelpOfferService');
+const saveError = require('../utils/ErrorHistory');
 
 class OfferedHelpController {
   constructor() {
@@ -9,7 +9,7 @@ class OfferedHelpController {
   async createHelpOffer(req, res) {
     try {
       const newHelpOffer = await this.HelpOfferService.createNewHelpOffer(
-        req.body
+        req.body,
       );
       return res.json(newHelpOffer);
     } catch (error) {
@@ -32,9 +32,9 @@ class OfferedHelpController {
   }
 
   async listHelpsOffers(req, res) {
-    const userId = req.query.userId;
-    const getOtherUsers = req.query.getOtherUsers == 'true' ? true : false;
-    const isUserEntity = global.isUserEntity;
+    const { userId } = req.query;
+    const getOtherUsers = req.query.getOtherUsers === 'true';
+    const { isUserEntity } = global;
     try {
       const helpOffers = await this.HelpOfferService.listHelpsOffers(userId, isUserEntity, null, getOtherUsers);
       return res.json(helpOffers);
@@ -47,7 +47,7 @@ class OfferedHelpController {
     const { helpedUserId } = req.params;
     try {
       const helpOffers = await this.HelpOfferService.listHelpOffersByHelpedUserId(
-        helpedUserId
+        helpedUserId,
       );
       return res.json(helpOffers);
     } catch (error) {

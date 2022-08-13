@@ -53,15 +53,15 @@ const campaignSchema = new mongoose.Schema({
     required: false,
   },
 },
-  {
-    collection: 'campaign',
-    toObject: {
-      virtuals: true,
-    },
-    toJSON: {
-      virtuals: true,
-    },
-  });
+{
+  collection: 'campaign',
+  toObject: {
+    virtuals: true,
+  },
+  toJSON: {
+    virtuals: true,
+  },
+});
 
 campaignSchema.virtual('categories', {
   ref: 'Category',
@@ -87,7 +87,7 @@ campaignSchema.virtual('distances')
     };
     this.distanceValue = calculateDistance(coordinates, campaignCoords);
     this.distance = getDistance(coordinates, campaignCoords);
-  })
+  });
 
 campaignSchema.virtual('distanceValue')
   .get(() => this.distanceValue);
