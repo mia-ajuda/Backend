@@ -56,9 +56,9 @@ class CampaignRepository extends BaseRepository {
     }
 
     const campaigns = await super.$list(matchQuery, {}, populate);
-    const campaignsWithDistances = campaigns.map(campaign => {
+    const campaignsWithDistances = campaigns.map((campaign) => {
       const campaignLocation = getLocation(campaign);
-      campaign.distances = { campaignCoords: campaignLocation, coords }
+      campaign.distances = { campaignCoords: campaignLocation, coords };
       return campaign.toObject();
     });
 

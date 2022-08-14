@@ -30,7 +30,7 @@ class HelpRepository extends BaseRepository {
       categories: result.categories,
       user: result.user,
       location: result.location,
-    }
+    };
   }
 
   async getById(id) {
@@ -98,12 +98,12 @@ class HelpRepository extends BaseRepository {
     };
     const categories = {
       path: 'categories',
-      select: ['_id', 'name']
-    }
-    const helps = await super.$list(matchQuery, helpFields, [user, categories])
-    const helpsWithDistance = helps.map(help => {
+      select: ['_id', 'name'],
+    };
+    const helps = await super.$list(matchQuery, helpFields, [user, categories]);
+    const helpsWithDistance = helps.map((help) => {
       const helpLocation = getLocation(help);
-      help.distances = { userCoords: helpLocation, coords }
+      help.distances = { userCoords: helpLocation, coords };
       return help.toObject();
     });
 
