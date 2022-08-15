@@ -4,6 +4,7 @@ const {
   getDistance,
   calculateDistance,
 } = require('../utils/geolocation/calculateDistance');
+const Point = require('./Point');
 
 const campaignSchema = new mongoose.Schema({
   title: {
@@ -45,6 +46,11 @@ const campaignSchema = new mongoose.Schema({
   active: {
     default: true,
     type: Boolean,
+  },
+  location: {
+    type: Point,
+    index: '2dsphere',
+    required: false,
   },
 },
 {

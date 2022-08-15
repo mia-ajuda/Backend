@@ -2,6 +2,7 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
+const getLocation = require('../utils/getLocation');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -13,7 +14,7 @@ class HelpRepository extends BaseRepository {
     const populate = [
       {
         path: 'user',
-        select: ['name', 'riskGroup', 'location.coordinates'],
+        select: ['name', 'riskGroup'],
       },
       {
         path: 'categories',
@@ -28,6 +29,7 @@ class HelpRepository extends BaseRepository {
       categoryId: result.categoryId,
       categories: result.categories,
       user: result.user,
+      location: result.location,
     };
   }
 
@@ -42,6 +44,7 @@ class HelpRepository extends BaseRepository {
       '_id', 'ownerId', 'categoryId',
       'possibleHelpers', 'possibleEntities',
       'description', 'helperId', 'status', 'title',
+      'location',
     ];
     const user = {
       path: 'user',
@@ -88,7 +91,7 @@ class HelpRepository extends BaseRepository {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
-    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate'];
+    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate', 'location'];
     const user = {
       path: 'user',
       select: ['name', 'riskGroup', 'location.coordinates'],
@@ -99,7 +102,8 @@ class HelpRepository extends BaseRepository {
     };
     const helps = await super.$list(matchQuery, helpFields, [user, categories]);
     const helpsWithDistance = helps.map((help) => {
-      help.distances = { userCoords: help.user.location.coordinates, coords };
+      const helpLocation = getLocation(help);
+      help.distances = { userCoords: helpLocation, coords };
       return help.toObject();
     });
 
