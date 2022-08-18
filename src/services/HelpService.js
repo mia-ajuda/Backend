@@ -238,7 +238,7 @@ class HelpService {
       helper = await this.EntityService.getEntity({ id: help.helperId });
     }
 
-    if (help.ownerId !== data.ownerId) {
+    if (help.ownerId != data.ownerId) {
       throw new Error('Usuário não é o dono da ajuda');
     } else if (help.status === 'helper_finished') {
       const ownerTitle = 'Pedido de ajuda finalizado!';
