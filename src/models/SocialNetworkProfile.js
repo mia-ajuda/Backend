@@ -72,11 +72,11 @@ SocialNetworkProfileSchema.virtual('userHelps', {
 
 
 SocialNetworkProfileSchema.virtual('numberOfFollowers').get(function() {
-  return this.followers.length;
+  return this.followers? this.followers.length:null;
 });
 
 SocialNetworkProfileSchema.virtual('numberOfFollowing').get(function() {
-  return this.following.length;
+  return this.following? this.following.length:null;
 });
 
 

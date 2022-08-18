@@ -32,14 +32,26 @@ class SocialNetworkRepository extends BaseRepository {
     );
   }
 
+  async findUserProfilebyProfileId(id) {
+
+    const matchQuery = { _id: ObjectID(id) };
+    const socialNetworkProfileFields = [
+      '_id', 'userId', 'username',
+      'followers', 'following',
+    ];
+    return super.$findOne(
+      matchQuery,
+      socialNetworkProfileFields
+    );
+  }
+
   async updateProfile(socialNetworkProfile) {
     await super.$update(socialNetworkProfile);
   }
 
-  async findUsersbyName(userId,userName) {
-   
+  async findUsersbyName(userId2,userName) {
     const query = {
-      userId: {$ne:ObjectID(userId)},
+      userId: {$ne:ObjectID(userId2)},
       username: {$regex: userName,$options:'i'}
     }
 
@@ -57,32 +69,41 @@ class SocialNetworkRepository extends BaseRepository {
     
 
     const result = await super.$list(query,selectField,populate);
+
+    const result2 = result.map((temp) => {
+      const isFollowing = temp.followers.includes(userId2);    
+      const {
+              _doc:{_id,username,userId}, 
+              $$populatedVirtuals:{user:{photo}},
+              numberOfFollowers,numberOfFollowing
+            } = temp;
+      const newDoc = {
+        _id,
+        username,
+        userId,
+        photo,
+        numberOfFollowers,
+        numberOfFollowing,
+        isFollowing
+      }
+
+      return newDoc;
+    })
+
     
-    return result;
+    
+    
+    return result2;
 
   }
 
-  async getUserByIdWithHelpsAndOffers(id) {
+  async getUserActivitiesById(id) {
     const query = { userId: ObjectID(id) };
-    
     const networkProfileFields = [
       '_id',
       'userId',
       'username',
-      'followers',
-      'following',
     ];
-
-    const user = {
-      path: 'user',
-      select: ['phone', 'name', 'birthday', 'address.city']
-    };
-
-    const entity = {
-      path: 'entity',
-      select: ['phone', 'name', 'address.city']
-    };
-
 
     const userHelps = {
       path: 'userHelps',
@@ -94,14 +115,9 @@ class SocialNetworkRepository extends BaseRepository {
       select: ['title','description']
     }
 
-
-    const populate = [user,entity,userHelps,userOffers];
-    let a =  await super.$findOne(query, networkProfileFields, populate);
-    console.log(a);
-    a.number_of_followers = a.followers.length;
-    a.number_of_following = a.following.length;
-    console.log('----------------------------------------------');
-    console.log(a);
+    const populate = [userHelps,userOffers];
+    let a =  await super.$list(query, networkProfileFields, populate);
+    
     return a;
   }
 

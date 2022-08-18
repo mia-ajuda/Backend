@@ -2,10 +2,15 @@ const SocialNetworkRepository = require("../repository/SocialNetworkRepository")
 const EntityRepository = require("../repository/EntityRepository");
 const firebase = require("../config/authFirebase");
 const { ObjectID } = require("mongodb");
+const HelpRepository = require("../repository/HelpRepository");
+const OfferdHelpRepository = require("../repository/HelpOfferRepository");
+
 
 class SocialNetworkService {
   constructor() {
     this.socialNetworkRepository = new SocialNetworkRepository();
+    this.helpRepository = new HelpRepository();
+    this.offerdHelpRepository = new OfferdHelpRepository();
   }
 
   async createSocialNetworkUser(createdUser) {
@@ -32,75 +37,80 @@ class SocialNetworkService {
 
   async followUser(followerId, userId){
 
-    let a = await this.socialNetworkRepository.getUserByIdWithHelpsAndOffers(userId);    
-    console.log(a.number_of_followers);
-    console.log(a.number_of_following);
-    return true;
-
-
-
-    let followedUser = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    let followerUser = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
+    let user = await this.socialNetworkRepository.findUserProfilebyProfileId(userId);
+    let follower = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
     
-    console.log(global.isUserEntity);
-    console.log(followedUser);
-    console.log(followerUser);
-    if(!followedUser){
-      throw new Error ("Followed user profile not found");
-    } else if (!followerUser){
+    if(!user){
+      throw new Error ("User profile not found");
+    } else if (!follower){
       throw new Error ("Follower user profile not found");
     }
 
-    const followerPosition = followedUser.followers.indexOf(followerId);
-    const followingPosition = followerUser.following.indexOf(userId);
+    const followerPosition = user.followers.indexOf(followerId);
+    const followingPosition = follower.following.indexOf(userId);
     if (followerPosition > -1 || followingPosition > -1) {
       throw new Error("Usuário já é um seguidor");
     }
     
-    followedUser.followers.push(followerId);
-    followerUser.following.push(userId);
+    user.followers.push(followerId);
+    follower.following.push(userId);
 
-    await this.socialNetworkRepository.updateProfile(followedUser);
-    await this.socialNetworkRepository.updateProfile(followerUser);
+    await this.socialNetworkRepository.updateProfile(user);
+    await this.socialNetworkRepository.updateProfile(follower);
+
+    return true;
     
   }
 
   async unfollowUser(followerId, userId){
   
-    let followedUser = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    let followerUser = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
+    let user = await this.socialNetworkRepository.findUserProfilebyProfileId(userId);
+    let follower = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
     
-    console.log(followedUser);
-    console.log(followerUser);
-    if(!followedUser){
+    if(!user){
       throw new Error ("Followed user profile not found");
-    } else if (!followerUser){
+    } else if (!follower){
       throw new Error ("Follower user profile not found");
     }
 
-    const followerPosition = followedUser.followers.indexOf(followerId);
-    const followingPosition = followerUser.following.indexOf(userId);
+    const followerPosition = user.followers.indexOf(followerId);
+    const followingPosition = follower.following.indexOf(userId);
     if (followerPosition < 0  || followingPosition < 0) {
       throw new Error("Usuário não é um seguidor");
     }
     
-    followedUser.followers.splice(followerPosition,1);
-    followerUser.following.splice(followingPosition,1);
+    user.followers.splice(followerPosition,1);
+    follower.following.splice(followingPosition,1);
 
-    await this.socialNetworkRepository.updateProfile(followedUser);
-    await this.socialNetworkRepository.updateProfile(followerUser);
-
+    await this.socialNetworkRepository.updateProfile(user);
+    await this.socialNetworkRepository.updateProfile(follower);
+    return false;
   }
 
 
   async findUsers(userId,username) {
 
-    const user = await this.socialNetworkRepository.findUsersbyName(userId,username);
+    const users = await this.socialNetworkRepository.findUsersbyName(userId,username);
 
-    if(!user){
-      throw new Error("Nenhuma usuário encontrado");
+    if(!users){
+      throw new Error("Nenhum usuário encontrado");
     }
-    return user;
+    return users;
+  }
+
+  async getUserActivities(userId){
+
+    let helper = false;
+    let statusList = ['waiting','on_going','finished','owner_finished','helper_finished'];
+    let getOtherUsers = true;
+    let categoryArray = null;
+    
+    let helps = await this.helpRepository.getHelpListByStatus(userId, statusList, helper);
+    let offers = await this.offerdHelpRepository.list(userId, categoryArray, getOtherUsers);
+
+    let activities = {helps,offers};
+    console.log(activities);
+    return activities;
   }
 
 }

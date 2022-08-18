@@ -18,6 +18,10 @@ routes.get("/socialNetworkProfile/findUsers/:userId/:username",isAuthenticated, 
   socialNetworkProfileController.findUsers(req, res, next);
 });
 
+routes.get("/socialNetworkProfile/getUserActivities/:userId",isAuthenticated, async (req, res, next) => {
+  socialNetworkProfileController.getUserActivities(req, res, next);
+});
+
 
 
 
