@@ -60,6 +60,22 @@ class HelpController {
     }
   }
 
+  async getFollowers(req, res, next){
+    const { userId } = req.params;
+    try {
+      console.log("getFollowers");
+      const result = await this.socialNetworkService.getFollowers(userId);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
+
+
 }
 
 module.exports = HelpController;

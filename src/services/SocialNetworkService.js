@@ -113,6 +113,16 @@ class SocialNetworkService {
     return activities;
   }
 
+
+  async getFollowers(userId){
+    const followers = this.socialNetworkRepository.getFollowers(userId);
+    return followers;
+  }
+
+  async getFollowing(userId){
+    
+  }
+
 }
 
 module.exports = SocialNetworkService;

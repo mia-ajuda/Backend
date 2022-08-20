@@ -121,12 +121,6 @@ class SocialNetworkRepository extends BaseRepository {
     return a;
   }
 
-
-
-
-
-
-
   async getByIdWithAggregation(id) {
     const query = { userId: ObjectID(id) };
     
@@ -164,6 +158,35 @@ class SocialNetworkRepository extends BaseRepository {
     return a;
   }
 
+  async getFollowers(profileId){
+
+    console.log(profileId);
+    const query = { _id: ObjectID(profileId) };
+
+    const selectField = [
+      'followers',
+    ];
+
+    const followers  = {
+      path: 'Followers',
+      select: ['userId','username','followers','following']
+    };
+
+    const user  = {
+      path: 'user',
+      select: ['photo']
+    };
+
+
+    const populate = [followers,user];
+    
+    console.log("repository");
+    const result = await super.$list(query,selectField,populate);
+    console.log(result);
+    
+
+    return result;
+  }
 
 
 

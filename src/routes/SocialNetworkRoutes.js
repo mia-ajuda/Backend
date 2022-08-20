@@ -22,6 +22,10 @@ routes.get("/socialNetworkProfile/getUserActivities/:userId",isAuthenticated, as
   socialNetworkProfileController.getUserActivities(req, res, next);
 });
 
+routes.get("/socialNetworkProfile/getFollowers/:userId",/*isAuthenticated,*/ async (req, res, next) => {
+  socialNetworkProfileController.getFollowers(req, res, next);
+});
+
 
 
 
