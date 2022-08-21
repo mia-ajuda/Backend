@@ -49,9 +49,9 @@ class SocialNetworkRepository extends BaseRepository {
     await super.$update(socialNetworkProfile);
   }
 
-  async findUsersbyName(userId2,userName) {
+  async findUsersbyName(userProfileId,userName) {
     const query = {
-      userId: {$ne:ObjectID(userId2)},
+      _id: {$ne:ObjectID(userProfileId)},
       username: {$regex: userName,$options:'i'}
     }
 
@@ -71,7 +71,7 @@ class SocialNetworkRepository extends BaseRepository {
     const result = await super.$list(query,selectField,populate);
 
     const result2 = result.map((temp) => {
-      const isFollowing = temp.followers.includes(userId2);    
+      const isFollowing = temp.followers.includes(userProfileId);    
       const {
               _doc:{_id,username,userId}, 
               $$populatedVirtuals:{user:{photo}},
@@ -90,9 +90,6 @@ class SocialNetworkRepository extends BaseRepository {
       return newDoc;
     })
 
-    
-    
-    
     return result2;
 
   }
@@ -154,14 +151,15 @@ class SocialNetworkRepository extends BaseRepository {
 
     const populate = [user,followers,following,entity];
     let a =  await super.$findOne(query, networkProfileFields, populate);
-    console.log(a);
     return a;
   }
 
-  async getFollowers(profileId){
+  async getFollowers(userProfileId, selectedProfileId){
 
-    console.log(profileId);
-    const query = { _id: ObjectID(profileId) };
+    // console.log(userProfileId);
+    // console.log(selectedProfileId);
+
+    const query = { _id: ObjectID(selectedProfileId) };
 
     const selectField = [
       'followers',
@@ -169,23 +167,69 @@ class SocialNetworkRepository extends BaseRepository {
 
     const followers  = {
       path: 'Followers',
+      populate: {
+        path: 'user',
+        select: ['photo']
+      } ,
       select: ['userId','username','followers','following']
     };
+    const populate = [followers];
+    
+    let result = await super.$list(query,selectField,populate);
 
-    const user  = {
-      path: 'user',
-      select: ['photo']
+    // permite a adição de novos atributos no resultado
+    result = JSON.parse(JSON.stringify(result))
+
+    const result2 = result[0].Followers.map((temp) => {
+      temp.isFollowing = temp.followers.includes(userProfileId);
+      temp.photo = temp.user.photo;
+      delete temp.user;  
+      return temp;
+    })
+
+    
+    //console.log(result2);
+
+    return result2;
+  }
+
+  async getFollowing(userProfileId, selectedProfileId){
+
+    // console.log(userProfileId);
+    // console.log(selectedProfileId);
+
+    const query = { _id: ObjectID(selectedProfileId) };
+
+    const selectField = [
+      'following',
+    ];
+
+    const following  = {
+      path: 'Following',
+      populate: {
+        path: 'user',
+        select: ['photo']
+      } ,
+      select: ['userId','username','followers','following']
     };
-
-
-    const populate = [followers,user];
+    const populate = [following];
     
-    console.log("repository");
-    const result = await super.$list(query,selectField,populate);
-    console.log(result);
-    
+    let result = await super.$list(query,selectField,populate);
 
-    return result;
+    // permite a adição de novos atributos no resultado
+    result = JSON.parse(JSON.stringify(result))
+
+    const result2 = result[0].Following.map((temp) => {
+      temp.isFollowing = temp.following.includes(userProfileId);
+      temp.photo = temp.user.photo;
+      delete temp.user;  
+      return temp;
+    })
+
+    
+    //console.log(result2);
+
+    return result2;
   }
 
 

@@ -49,13 +49,13 @@ SocialNetworkProfileSchema.virtual('entity', {
 SocialNetworkProfileSchema.virtual('Followers', {
   ref: 'socialNetworkProfile',
   localField: 'followers',
-  foreignField: 'userId'
+  foreignField: '_id'
 });
 
 SocialNetworkProfileSchema.virtual('Following', {
   ref: 'socialNetworkProfile',
   localField: 'following',
-  foreignField: 'userId'
+  foreignField: '_id'
 });
 
 SocialNetworkProfileSchema.virtual('helpsOffers', {
@@ -72,11 +72,11 @@ SocialNetworkProfileSchema.virtual('userHelps', {
 
 
 SocialNetworkProfileSchema.virtual('numberOfFollowers').get(function() {
-  return this.followers? this.followers.length:null;
+  return this.followers? this.followers.length:0;
 });
 
 SocialNetworkProfileSchema.virtual('numberOfFollowing').get(function() {
-  return this.following? this.following.length:null;
+  return this.following? this.following.length:0;
 });
 
 

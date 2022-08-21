@@ -35,62 +35,63 @@ class SocialNetworkService {
   }
 
 
-  async followUser(followerId, userId){
+  async followUser(selectedProfileId, userId){
 
-    let user = await this.socialNetworkRepository.findUserProfilebyProfileId(userId);
-    let follower = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
+    let selectedProfile = await this.socialNetworkRepository.findUserProfilebyProfileId(selectedProfileId);
+    let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
     
-    if(!user){
+    if(!userProfile){
       throw new Error ("User profile not found");
-    } else if (!follower){
-      throw new Error ("Follower user profile not found");
+    } else if (!selectedProfile){
+      throw new Error ("Selected profile not found");
     }
 
-    const followerPosition = user.followers.indexOf(followerId);
-    const followingPosition = follower.following.indexOf(userId);
+    const followerPosition = selectedProfile.followers.indexOf(userProfile._id);
+    const followingPosition = userProfile.following.indexOf(selectedProfileId);
     if (followerPosition > -1 || followingPosition > -1) {
       throw new Error("Usuário já é um seguidor");
     }
     
-    user.followers.push(followerId);
-    follower.following.push(userId);
+    selectedProfile.followers.push(userProfile._id);
+    userProfile.following.push(selectedProfileId);
 
-    await this.socialNetworkRepository.updateProfile(user);
-    await this.socialNetworkRepository.updateProfile(follower);
+    await this.socialNetworkRepository.updateProfile(userProfile);
+    await this.socialNetworkRepository.updateProfile(selectedProfile);
 
     return true;
     
   }
 
-  async unfollowUser(followerId, userId){
+  async unfollowUser(selectedProfileId, userId){
   
-    let user = await this.socialNetworkRepository.findUserProfilebyProfileId(userId);
-    let follower = await this.socialNetworkRepository.findUserProfilebyUserId(followerId);
+    let selectedProfile = await this.socialNetworkRepository.findUserProfilebyProfileId(selectedProfileId);
+    let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
     
-    if(!user){
-      throw new Error ("Followed user profile not found");
-    } else if (!follower){
-      throw new Error ("Follower user profile not found");
+    if(!userProfile){
+      throw new Error ("User profile not found");
+    } else if (!selectedProfile){
+      throw new Error ("Selected profile not found");
     }
 
-    const followerPosition = user.followers.indexOf(followerId);
-    const followingPosition = follower.following.indexOf(userId);
+    const followerPosition = selectedProfile.followers.indexOf(userProfile._id);
+    const followingPosition = userProfile.following.indexOf(selectedProfileId);
     if (followerPosition < 0  || followingPosition < 0) {
       throw new Error("Usuário não é um seguidor");
     }
     
-    user.followers.splice(followerPosition,1);
-    follower.following.splice(followingPosition,1);
+    selectedProfile.followers.splice(followerPosition,1);
+    userProfile.following.splice(followingPosition,1);
 
-    await this.socialNetworkRepository.updateProfile(user);
-    await this.socialNetworkRepository.updateProfile(follower);
+    await this.socialNetworkRepository.updateProfile(selectedProfile);
+    await this.socialNetworkRepository.updateProfile(userProfile);
     return false;
   }
 
 
   async findUsers(userId,username) {
 
-    const users = await this.socialNetworkRepository.findUsersbyName(userId,username);
+    let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
+    const users = await this.socialNetworkRepository.findUsersbyName(userProfile._id,username);
 
     if(!users){
       throw new Error("Nenhum usuário encontrado");
@@ -109,18 +110,24 @@ class SocialNetworkService {
     let offers = await this.offerdHelpRepository.list(userId, categoryArray, getOtherUsers);
 
     let activities = {helps,offers};
-    console.log(activities);
+    //console.log(activities);
     return activities;
   }
 
 
-  async getFollowers(userId){
-    const followers = this.socialNetworkRepository.getFollowers(userId);
+  async getFollowers(userId, selectedProfileId){
+
+    let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
+    const followers = await this.socialNetworkRepository.getFollowers(userProfile._id, selectedProfileId);
+
     return followers;
   }
 
-  async getFollowing(userId){
-    
+  async getFollowing(userId, selectedProfileId){
+    let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
+    const following = await this.socialNetworkRepository.getFollowing(userProfile._id, selectedProfileId);
+
+    return following;
   }
 
 }

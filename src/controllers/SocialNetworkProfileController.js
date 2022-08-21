@@ -7,9 +7,9 @@ class HelpController {
   }
 
   async followUser(req, res, next) {
-    const { followerId, userId } = req.params;
+    const { selectedProfileId, userId } = req.params;
     try {
-      const result  = await this.socialNetworkService.followUser(followerId, userId);
+      const result  = await this.socialNetworkService.followUser(selectedProfileId, userId);
       res.status(200).send(result);
       next();
     } catch (err) {
@@ -20,9 +20,9 @@ class HelpController {
   }
 
   async unfollowUser(req, res, next) {
-    const { followerId, userId } = req.params;
+    const { selectedProfileId, userId } = req.params;
     try {
-      const result = await this.socialNetworkService.unfollowUser(followerId, userId);
+      const result = await this.socialNetworkService.unfollowUser(selectedProfileId, userId);
       res.status(200).send(result);
       next();
     } catch (err) {
@@ -61,10 +61,9 @@ class HelpController {
   }
 
   async getFollowers(req, res, next){
-    const { userId } = req.params;
+    const { userId, selectedProfileId } = req.params;
     try {
-      console.log("getFollowers");
-      const result = await this.socialNetworkService.getFollowers(userId);
+      const result = await this.socialNetworkService.getFollowers(userId, selectedProfileId);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -74,6 +73,18 @@ class HelpController {
     }
   }
 
+  async getFollowing(req, res, next){
+    const { userId, selectedProfileId } = req.params;
+    try {
+      const result = await this.socialNetworkService.getFollowing(userId, selectedProfileId);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
 
 
 }
