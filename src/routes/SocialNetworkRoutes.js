@@ -31,6 +31,9 @@ routes.get("/socialNetworkProfile/getFollowing/:userId/:selectedProfileId",isAut
 });
 
 
+routes.get("/socialNetworkProfile/getUserProfile/:userId",isAuthenticated, async (req, res, next) => {
+  socialNetworkProfileController.getUserProfile(req, res, next);
+});
 
 
 module.exports = routes;

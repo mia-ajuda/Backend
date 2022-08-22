@@ -91,7 +91,7 @@ class SocialNetworkService {
   async findUsers(userId,username) {
 
     let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    const users = await this.socialNetworkRepository.findUsersbyName(userProfile._id,username);
+    const users = await this.socialNetworkRepository.findUsersbyName(userProfile.id,username);
 
     if(!users){
       throw new Error("Nenhum usuário encontrado");
@@ -118,18 +118,22 @@ class SocialNetworkService {
   async getFollowers(userId, selectedProfileId){
 
     let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    const followers = await this.socialNetworkRepository.getFollowers(userProfile._id, selectedProfileId);
+    const followers = await this.socialNetworkRepository.getFollowers(userProfile.id, selectedProfileId);
 
     return followers;
   }
 
   async getFollowing(userId, selectedProfileId){
     let userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    const following = await this.socialNetworkRepository.getFollowing(userProfile._id, selectedProfileId);
+    const following = await this.socialNetworkRepository.getFollowing(userProfile.id, selectedProfileId);
 
     return following;
   }
 
+  async getUserProfile(userId){
+    const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
+    return userProfile;
+  }
 }
 
 module.exports = SocialNetworkService;

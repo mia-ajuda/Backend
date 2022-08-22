@@ -86,6 +86,19 @@ class HelpController {
     }
   }
 
+  async getUserProfile(req, res, next){
+    const { userId} = req.params;
+    try {
+      const result = await this.socialNetworkService.getUserProfile(userId);
+      res.status(200).json(result);
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
 
 }
 

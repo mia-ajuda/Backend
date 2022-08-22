@@ -195,9 +195,6 @@ class SocialNetworkRepository extends BaseRepository {
 
   async getFollowing(userProfileId, selectedProfileId){
 
-    // console.log(userProfileId);
-    // console.log(selectedProfileId);
-
     const query = { _id: ObjectID(selectedProfileId) };
 
     const selectField = [
@@ -220,14 +217,11 @@ class SocialNetworkRepository extends BaseRepository {
     result = JSON.parse(JSON.stringify(result))
 
     const result2 = result[0].Following.map((temp) => {
-      temp.isFollowing = temp.following.includes(userProfileId);
+      temp.isFollowing = temp.followers.includes(userProfileId);
       temp.photo = temp.user.photo;
       delete temp.user;  
       return temp;
     })
-
-    
-    //console.log(result2);
 
     return result2;
   }
