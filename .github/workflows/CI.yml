@@ -9,9 +9,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [ 14, 16 ]
     defaults:
       run:
         shell: bash
@@ -23,7 +20,7 @@ jobs:
       - name: 🏗 Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: lts/*
           cache: yarn
           cache-dependency-path: yarn.lock
       
