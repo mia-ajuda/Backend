@@ -10,7 +10,9 @@
     "start:dev": "nodemon index.js",
     "dev": "node server.js",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "lint": "npx eslint ./src",
+    "lint:fix": "npx eslint ./src --fix"
   },
   "dependencies": {
     "@sentry/node": "5.18.0",
