@@ -77,6 +77,7 @@ class EntityService {
     phone,
     notificationToken,
     deviceId,
+    address,
   }) {
     const entity = await this.getEntity({ email });
 
@@ -85,6 +86,7 @@ class EntityService {
     entity.phone = phone || entity.phone;
     entity.notificationToken = notificationToken || entity.notificationToken;
     entity.deviceId = deviceId || entity.deviceId;
+    entity.address = address || entity.address;
 
     const result = await this.entityRepository.update(entity);
 
