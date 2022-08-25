@@ -1,4 +1,4 @@
-name: CI pipeline
+name: build, test and lint
 
 on:
   push :
@@ -7,7 +7,7 @@ on:
     types: [ opened ]
 
 jobs:
-  test-lint:
+  build-test:
     runs-on: ubuntu-latest
     defaults:
       run:

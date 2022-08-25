@@ -1,4 +1,4 @@
-name: CD pipeline
+name: submit image to dockerhub
 
 on:
   push :
