@@ -1,0 +1,40 @@
+name: build, test and lint
+
+on:
+  push :
+    branches : [ "**" ]
+  pull_request:
+    types: [ opened ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: yarn
+          cache-dependency-path: yarn.lock
+      
+      - name: 🏗 Config files
+        run:  |
+              echo "$FIREBASE_CONFIG_DEV" > ./src/config/firebaseAuthConfig.js
+        env: 
+          FIREBASE_CONFIG_DEV: ${{ secrets.FIREBASE_CONFIG_DEV }}
+      
+      - name: 📦 Install dependencies
+        run: yarn install --pure-lockfile --non-interactive
+
+      - name: 📦 Run test  
+        run: yarn test
+
+      - name: 📦 Run lint  
+        run: yarn lint
