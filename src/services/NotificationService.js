@@ -1,7 +1,7 @@
 const { notificationTypesEnum } = require('../models/Notification');
 const NotificationRepository = require('../repository/NotificationRepository');
 const notify = require('../utils/Notification');
-const UserService = require('./UserService');
+const UserService = require('./UserService').default;
 
 class NotificationService {
   constructor() {

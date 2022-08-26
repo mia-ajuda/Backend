@@ -29,7 +29,6 @@ const entitySchema = new mongoose.Schema({
   },
   photo: {
     type: String,
-    required: true,
   },
   notificationToken: {
     type: String,
@@ -37,19 +36,15 @@ const entitySchema = new mongoose.Schema({
   address: {
     cep: {
       type: String,
-      required: true,
     },
     number: {
       type: Number,
-      required: true,
     },
     city: {
       type: String,
-      required: true,
     },
     state: {
       type: String,
-      required: true,
     },
     complement: String,
   },
@@ -59,7 +54,6 @@ const entitySchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
   },
   registerDate: {
     type: Date,

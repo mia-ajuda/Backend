@@ -4,6 +4,7 @@ const {
   getDistance,
   calculateDistance,
 } = require('../utils/geolocation/calculateDistance');
+const Point = require('./Point');
 
 const campaignSchema = new mongoose.Schema({
   title: {
@@ -46,16 +47,21 @@ const campaignSchema = new mongoose.Schema({
     default: true,
     type: Boolean,
   },
+  location: {
+    type: Point,
+    index: '2dsphere',
+    required: false,
+  },
 },
-  {
-    collection: 'campaign',
-    toObject: {
-      virtuals: true,
-    },
-    toJSON: {
-      virtuals: true,
-    },
-  });
+{
+  collection: 'campaign',
+  toObject: {
+    virtuals: true,
+  },
+  toJSON: {
+    virtuals: true,
+  },
+});
 
 campaignSchema.virtual('categories', {
   ref: 'Category',
@@ -81,7 +87,7 @@ campaignSchema.virtual('distances')
     };
     this.distanceValue = calculateDistance(coordinates, campaignCoords);
     this.distance = getDistance(coordinates, campaignCoords);
-  })
+  });
 
 campaignSchema.virtual('distanceValue')
   .get(() => this.distanceValue);

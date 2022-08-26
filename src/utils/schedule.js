@@ -19,7 +19,7 @@ function dailySchedule() {
 
     const messages = [];
     const notifications = [];
-    for (const help of helpsToDelete) {
+    helpsToDelete.forEach((help) => {
       const user = userService.getUser(help.ownerId);
       const message = {
         to: user.deviceId,
@@ -39,7 +39,7 @@ function dailySchedule() {
 
       notifications.push(notificationHistory);
       messages.push(message);
-    }
+    });
 
     let iterator = 0;
 
@@ -48,9 +48,9 @@ function dailySchedule() {
     } catch (err) {
       console.log(err);
     }
-    return await Promise.all(helpsToDelete.map(async (help) => {
+    Promise.all(helpsToDelete.map(async (help) => {
       try {
-        messageDeleted = await helpService.deleteHelpLogically(help.id);
+        const messageDeleted = await helpService.deleteHelpLogically(help.id);
         await notificationService.createNotification(notifications[iterator]);
         iterator += 1;
 
