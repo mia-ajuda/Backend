@@ -1,5 +1,4 @@
 {
-  "name": "Backend",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/mia-ajuda/Backend.git",
@@ -9,10 +8,15 @@
     "start": "node index.js",
     "start:dev": "nodemon index.js",
     "dev": "node server.js",
+<<<<<<< Updated upstream:package.json
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "npx eslint ./src",
     "lint:fix": "npx eslint ./src --fix"
+=======
+    "test": "mocha test/OngTest.js",
+    "test:coverage": "jest --coverage"
+>>>>>>> Stashed changes:Backend-MiaAjuda/package.json
   },
   "dependencies": {
     "@sentry/node": "5.18.0",
@@ -35,13 +39,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "eslint": "^8.19.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.2.4",
-    "eslint-plugin-promise": "^6.0.0",
-    "git-commit-msg-linter": "^3.2.6",
-    "nodemon": "^2.0.2"
+    "mocha": "^10.0.0",
+    "should": "^13.2.3"
   }
 }
