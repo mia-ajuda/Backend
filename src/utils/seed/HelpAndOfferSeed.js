@@ -3,8 +3,6 @@ const faker = require('faker/locale/pt_BR');
 const Category = require('../../models/Category');
 const Help = require('../../models/Help');
 const User = require('../../models/User');
-const Entity = require('../../models/Entity');
-const Campaign = require('../../models/Campaign');
 const HelpOffer = require('../../models/HelpOffer');
 
 const status = [
@@ -19,24 +17,21 @@ const seedHelp = async () => {
   try {
     const categoryCollection = await Category.find();
     const userCollection = await User.find();
-    const entityCollection = await Entity.find();
     const helpCollection = await Help.find();
     const helpOfferCollection = await HelpOffer.find();
 
     // this condition avoid populate duplicate users
-    if (helpCollection.length > 0 || helpOfferCollection.length > 0) {
+    if (helpCollection.length > 0 || helpOfferCollection.length >0) {
       return;
     }
 
     const quantity = 100;
     const requests = [];
     const offers = [];
-    const campaigns = [];
     for (let i = 0; i < quantity; i += 1) {
       const sampleStatus = lodash.sample(status);
       const sampleCategory = lodash.sample(categoryCollection);
       const sampleUsers = lodash.sampleSize(userCollection, 2);
-      const sampleEntities = lodash.sampleSize(entityCollection, 2);
       const samplePossibleHelpers = lodash.sampleSize(
         userCollection,
         faker.random.number(5),
@@ -53,27 +48,19 @@ const seedHelp = async () => {
         ownerId: sampleUsers[0]._id,
         finishedDate: faker.date.future(),
       };
-
       requests.push(
         new Help({
           ...sharedInfo,
           possibleHelpers: samplePossibleHelpsID,
         }),
       );
-
+      
       offers.push(
         new HelpOffer({
           ...sharedInfo,
           possibleHelpedUsers: samplePossibleHelpsID,
-        }),
-      );
-
-      campaigns.push(
-        new Campaign({
-          ...sharedInfo,
-          ownerId: sampleEntities[0]._id,
-        }),
-      );
+        })
+      )
     }
 
     await Help.deleteMany({});
@@ -87,9 +74,9 @@ const seedHelp = async () => {
       HelpOffer.create(offer);
     });
 
-    console.log('Pedidos, ofertas e campanhas populados com sucesso!');
+    console.log('Pedidos e ofertas populados com sucesso!');
   } catch (error) {
-    console.log('Não foi possível criar pedidos, ofertas e campanhas na base de dados!');
+    console.log('Não foi possível pedidos e ofertas na base de dados!');
     console.log(error);
   }
 };

@@ -44,7 +44,7 @@ const seedUser = async () => {
         },
         phone: faker.phone.phoneNumber('+55######-####'),
         active: true,
-      };
+      }
 
       users.push(
         new User({
