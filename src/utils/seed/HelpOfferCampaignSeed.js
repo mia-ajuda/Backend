@@ -22,9 +22,10 @@ const seedHelp = async () => {
     const entityCollection = await Entity.find();
     const helpCollection = await Help.find();
     const helpOfferCollection = await HelpOffer.find();
+    const campaignCollection = await Campaign.find();
 
     // this condition avoid populate duplicate users
-    if (helpCollection.length > 0 || helpOfferCollection.length > 0) {
+    if (helpCollection.length > 0 || helpOfferCollection.length > 0 || campaignCollection.length  > 0) {
       return;
     }
 
@@ -78,6 +79,7 @@ const seedHelp = async () => {
 
     await Help.deleteMany({});
     await HelpOffer.deleteMany({});
+    await Campaign.deleteMany({});
 
     requests.forEach((request) => {
       Help.create(request);
@@ -85,6 +87,10 @@ const seedHelp = async () => {
 
     offers.forEach((offer) => {
       HelpOffer.create(offer);
+    });
+
+    campaigns.forEach((campaign) => {
+      Campaign.create(campaign);
     });
 
     console.log('Pedidos, ofertas e campanhas populados com sucesso!');
