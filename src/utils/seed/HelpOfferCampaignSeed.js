@@ -25,7 +25,7 @@ const seedHelp = async () => {
     const campaignCollection = await Campaign.find();
 
     // this condition avoid populate duplicate users
-    if (helpCollection.length > 0 || helpOfferCollection.length > 0 || campaignCollection.length  > 0) {
+    if (helpCollection.length > 0 || helpOfferCollection.length > 0 || campaignCollection.length > 0) {
       return;
     }
 
