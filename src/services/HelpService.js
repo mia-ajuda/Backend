@@ -8,6 +8,7 @@ const { findConnections, sendMessage } = require("../../websocket");
 const NotificationMixin = require("../utils/NotificationMixin");
 const helpStatusEnum = require("../utils/enums/helpStatusEnum");
 const saveError = require("../utils/ErrorHistory");
+const SocialNetworkService = require("../services/SocialNetworkService");
 
 class HelpService {
   constructor() {
@@ -17,6 +18,7 @@ class HelpService {
     this.CategoryService = new CategoryService();
     this.NotificationService = new NotificationService();
     this.NotificationMixin = new NotificationMixin();
+    this.socialNetworkService = new SocialNetworkService();
   }
 
   async createHelp(data) {
@@ -34,6 +36,43 @@ class HelpService {
       JSON.parse(JSON.stringify(createdHelp.ownerId))
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
+
+    notificationToFollowers(createdHelp.ownerId, createdHelp.id)
+  }
+
+  async notificationToFollowers(profileId,help_id){
+
+    
+
+    followers = await this.socialNetworkService.getFollowers(profileId,profileId);
+   
+    if (followers) {
+      const ownerTitle = "Pedido de ajuda criado por uma pessoa que você segue.";
+      const ownerBody = `Uma das pessoas que você está seguindo, criou uma ajuda.`;
+
+      for(let i=0;i<followers.length;i++){
+        const followersNotificationHistory = {
+          userId: followers[i].id,
+          helpId: help_id,
+          title: ownerTitle,
+          body: ownerBody,
+          notificationType: notificationTypesEnum.outros,
+        };
+        try {
+          await this.NotificationMixin.sendNotification(
+            followers.deviceId,
+            ownerTitle,
+            ownerBody
+          );
+          await this.NotificationService.createNotification(
+            ownerNotificationHistory
+          );
+        } catch (err) {
+          console.log("Não foi possível enviar a notificação!");
+          saveError(err);
+        }
+      }  
+    }
   }
 
   async getHelpByid(id) {

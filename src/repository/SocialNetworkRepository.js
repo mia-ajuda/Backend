@@ -169,7 +169,7 @@ class SocialNetworkRepository extends BaseRepository {
       path: 'Followers',
       populate: {
         path: 'user',
-        select: ['photo']
+        select: ['photo','deviceId']
       } ,
       select: ['userId','username','followers','following']
     };
