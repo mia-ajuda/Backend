@@ -1,15 +1,14 @@
-const UserRepository = require("../repository/UserRepository");
-const EntityRepository = require("../repository/EntityRepository");
-const SocialNetworkService = require("../services/SocialNetworkService");
-const firebase = require("../config/authFirebase");
-const { ObjectID } = require("mongodb");
+const { ObjectID } = require('mongodb');
+const UserRepository = require('../repository/UserRepository');
+const EntityRepository = require('../repository/EntityRepository');
+const SocialNetworkService = require('./SocialNetworkService');
+const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();
     this.entityRepository = new EntityRepository();
     this.socialNetworkService = new SocialNetworkService();
-
   }
 
   async createUser(data) {

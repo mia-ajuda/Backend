@@ -70,12 +70,11 @@ class BaseRepository {
     return recordModel;
   }
 
-  async $list(query, selectedField = null, populate = null, sort = null,limit = null) {
+  async $list(query, selectedField = null, populate = null, sort = null, limit = null) {
     return this.ModelClass.find(query, selectedField)
       .populate(populate)
       .sort(sort)
-      .limit(limit)
-      ;
+      .limit(limit);
   }
 
   async $countDocuments(query) {

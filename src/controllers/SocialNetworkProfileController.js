@@ -9,7 +9,7 @@ class HelpController {
   async followUser(req, res, next) {
     const { selectedProfileId, userId } = req.params;
     try {
-      const result  = await this.socialNetworkService.followUser(selectedProfileId, userId);
+      const result = await this.socialNetworkService.followUser(selectedProfileId, userId);
       res.status(200).send(result);
       next();
     } catch (err) {
@@ -33,7 +33,6 @@ class HelpController {
   }
 
 
-
   async findUsers(req, res, next) {
     const { userId, username } = req.params;
     try {
@@ -47,7 +46,7 @@ class HelpController {
     }
   }
 
-  async getUserActivities(req, res, next){
+  async getUserActivities(req, res, next) {
     const { userId } = req.params;
     try {
       const result = await this.socialNetworkService.getUserActivities(userId);
@@ -60,7 +59,7 @@ class HelpController {
     }
   }
 
-  async getFollowers(req, res, next){
+  async getFollowers(req, res, next) {
     const { userId, selectedProfileId } = req.params;
     try {
       const result = await this.socialNetworkService.getFollowers(userId, selectedProfileId);
@@ -73,7 +72,7 @@ class HelpController {
     }
   }
 
-  async getFollowing(req, res, next){
+  async getFollowing(req, res, next) {
     const { userId, selectedProfileId } = req.params;
     try {
       const result = await this.socialNetworkService.getFollowing(userId, selectedProfileId);
@@ -86,8 +85,8 @@ class HelpController {
     }
   }
 
-  async getUserProfile(req, res, next){
-    const { userId} = req.params;
+  async getUserProfile(req, res, next) {
+    const { userId } = req.params;
     try {
       const result = await this.socialNetworkService.getUserProfile(userId);
       res.status(200).json(result);
@@ -98,8 +97,6 @@ class HelpController {
       next();
     }
   }
-
-
 }
 
 module.exports = HelpController;
