@@ -43,7 +43,7 @@ class HelpService {
   async notificationToFollowers(profileId,help_id){
 
 
-    followers = await this.socialNetworkService.getFollowers(profileId,profileId);
+    const followers = await this.socialNetworkService.getFollowers(profileId,profileId);
 
     if (followers) {
       const ownerTitle = "Pedido de ajuda criado por uma pessoa que você segue.";

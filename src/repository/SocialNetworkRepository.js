@@ -15,7 +15,7 @@ class SocialNetworkRepository extends BaseRepository {
   async destroy(id) {
     const query = {};
     query._id = id;
-    
+
     await super.$destroy(query);
   }
 
@@ -66,14 +66,14 @@ class SocialNetworkRepository extends BaseRepository {
       path: 'user',
       select: ['photo']
     };
-    
+
 
     const result = await super.$list(query,selectField,populate);
-
+    console.log(result)
     const result2 = result.map((temp) => {
-      const isFollowing = temp.followers.includes(userProfileId);    
+      const isFollowing = temp.followers.includes(userProfileId);
       const {
-              _doc:{_id,username,userId}, 
+              _doc:{_id,username,userId},
               $$populatedVirtuals:{user:{photo}},
               numberOfFollowers,numberOfFollowing
             } = temp;
@@ -114,13 +114,13 @@ class SocialNetworkRepository extends BaseRepository {
 
     const populate = [userHelps,userOffers];
     let a =  await super.$list(query, networkProfileFields, populate);
-    
+
     return a;
   }
 
   async getByIdWithAggregation(id) {
     const query = { userId: ObjectID(id) };
-    
+
     const networkProfileFields = [
       '_id',
       'userId',
@@ -174,21 +174,20 @@ class SocialNetworkRepository extends BaseRepository {
       select: ['userId','username','followers','following']
     };
     const populate = [followers];
-    
+
     let result = await super.$list(query,selectField,populate);
 
     // permite a adição de novos atributos no resultado
     result = JSON.parse(JSON.stringify(result))
-
-    const result2 = result[0].Followers.map((temp) => {
-      temp.isFollowing = temp.followers.includes(userProfileId);
-      temp.photo = temp.user.photo;
-      delete temp.user;  
-      return temp;
-    })
-
-    
-    //console.log(result2);
+    let result2 = 0;
+    if(result.length > 0){
+        result2 = result[0].Followers.map((temp) => {
+        temp.isFollowing = temp.followers.includes(userProfileId);
+        temp.photo = temp.user.photo;
+        delete temp.user;
+        return temp;
+      })
+    }
 
     return result2;
   }
@@ -210,7 +209,7 @@ class SocialNetworkRepository extends BaseRepository {
       select: ['userId','username','followers','following']
     };
     const populate = [following];
-    
+
     let result = await super.$list(query,selectField,populate);
 
     // permite a adição de novos atributos no resultado
@@ -219,7 +218,7 @@ class SocialNetworkRepository extends BaseRepository {
     const result2 = result[0].Following.map((temp) => {
       temp.isFollowing = temp.followers.includes(userProfileId);
       temp.photo = temp.user.photo;
-      delete temp.user;  
+      delete temp.user;
       return temp;
     })
 
