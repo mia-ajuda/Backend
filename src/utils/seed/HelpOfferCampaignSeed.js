@@ -6,6 +6,8 @@ const User = require('../../models/User');
 const Entity = require('../../models/Entity');
 const Campaign = require('../../models/Campaign');
 const HelpOffer = require('../../models/HelpOffer');
+const mockedOfferInfo = require('./mockedInfos/mockedOfferInfo');
+const mockedHelpInfo = require('./mockedInfos/mockedHelpInfo');
 
 const status = [
   'waiting',
@@ -29,7 +31,7 @@ const seedHelp = async () => {
       return;
     }
 
-    const quantity = 100;
+    const quantity = 10;
     const requests = [];
     const offers = [];
     const campaigns = [];
@@ -38,17 +40,18 @@ const seedHelp = async () => {
       const sampleCategory = lodash.sample(categoryCollection);
       const sampleUsers = lodash.sampleSize(userCollection, 2);
       const sampleEntities = lodash.sampleSize(entityCollection, 2);
+      const randomNum = faker.random.number(5);
       const samplePossibleHelpers = lodash.sampleSize(
         userCollection,
-        faker.random.number(5),
+        randomNum,
       );
       const samplePossibleHelpsID = [];
       samplePossibleHelpers.forEach((item) => {
         samplePossibleHelpsID.push(item._id);
       });
       const sharedInfo = {
-        title: faker.lorem.lines(1),
-        description: faker.lorem.lines(1),
+        title: mockedOfferInfo.titles[randomNum],
+        description: mockedOfferInfo.descriptions[randomNum],
         status: sampleStatus,
         categoryId: [sampleCategory._id],
         ownerId: sampleUsers[0]._id,
@@ -59,6 +62,8 @@ const seedHelp = async () => {
         new Help({
           ...sharedInfo,
           possibleHelpers: samplePossibleHelpsID,
+          title: mockedHelpInfo.titles[randomNum],
+          description: mockedHelpInfo.descriptions[randomNum],
         }),
       );
 
