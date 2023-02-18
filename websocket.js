@@ -1,5 +1,6 @@
 const socketio = require('socket.io');
 const { calculateDistance } = require('./src/utils/geolocation/calculateDistance');
+const getLocation = require('./src/utils/getLocation');
 
 let io;
 const connections = [];
@@ -59,10 +60,7 @@ exports.sendMessage = (to, message, data) => {
   to.forEach((connection) => {
     if (typeof (data) === 'object' && message == 'new-help') {
       const userLocation = JSON.parse(connection.userPosition);
-      const helpLocation = {
-        latitude: data.user.location.coordinates[1],
-        longitude: data.user.location.coordinates[0],
-      };
+      const helpLocation = getLocation(data);
       data.distanceValue = calculateDistance(helpLocation, userLocation);
     }
 

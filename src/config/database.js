@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const CategorySeed = require('../utils/seed/CategorySeed');
 const UserSeed = require('../utils/seed/UserSeed');
-const HelpSeed = require('../utils/seed/HelpSeed');
+const HelpSeed = require('../utils/seed/HelpOfferCampaignSeed');
 const NotificationSeed = require('../utils/seed/NotificationSeed');
 
 const databaseURL = process.env.DATABASE_URL || 'mongodb://mongo:27017/miaAjudaDB';

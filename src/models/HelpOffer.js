@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
+const Point = require('./Point');
 
 const offeredHelpSchema = new Schema(
   {
@@ -38,7 +39,7 @@ const offeredHelpSchema = new Schema(
     },
     helpedUserId: [{
       type: Schema.Types.ObjectId,
-      ref: ['User' , 'Entity'],
+      ref: ['User', 'Entity'],
       required: false,
     }],
     creationDate: {
@@ -53,6 +54,11 @@ const offeredHelpSchema = new Schema(
       default: true,
       type: Boolean,
     },
+    location: {
+      type: Point,
+      index: '2dsphere',
+      required: false,
+    },
   },
   {
     collection: 'helpOffer',
@@ -62,7 +68,7 @@ const offeredHelpSchema = new Schema(
     toJSON: {
       virtuals: true,
     },
-  }
+  },
 );
 
 offeredHelpSchema.virtual('user', {

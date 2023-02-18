@@ -13,19 +13,19 @@ class EntityService {
 
   async createEntity(data) {
     const isUserRegistered = await this.userRepository.getUserByEmail(
-      data.email
+      data.email,
     );
 
     if (isUserRegistered) {
-      throw new Error("Email já sendo utilizado");
+      throw new Error('Email já sendo utilizado');
     }
 
     if (data.password.length < 8) {
-      throw new Error("Senha inválida");
+      throw new Error('Senha inválida');
     }
 
     if (data.cnpj.length >= 14) {
-      data.cnpj = data.cnpj.replace(/([^0-9])+/g, "");
+      data.cnpj = data.cnpj.replace(/([^0-9])+/g, '');
     }
 
     data.email = data.email.toLowerCase();
@@ -33,7 +33,7 @@ class EntityService {
       const createdEntity = await this.entityRepository.create(data);
       const createdSocialNetworkUser = await this.socialNetworkService.createSocialNetworkUser(createdEntity);
       if (!data.hasUser) {
-        console.log("Usuario Criado");
+        console.log('Usuario Criado');
         // Cria o usuário no firebase
         await firebase
           .auth()
@@ -58,7 +58,7 @@ class EntityService {
 
   async getEntity({ id = undefined, email = undefined }) {
     if (!id && !email) {
-      throw new Error("Nenhum identificador encontrado");
+      throw new Error('Nenhum identificador encontrado');
     }
     let entity;
 
@@ -68,7 +68,7 @@ class EntityService {
       entity = await this.entityRepository.getEntityByEmail(email);
     }
     if (!entity) {
-      throw new Error("Usuário não encontrado");
+      throw new Error('Usuário não encontrado');
     }
     return entity;
   }
@@ -80,6 +80,7 @@ class EntityService {
     phone,
     notificationToken,
     deviceId,
+    address,
   }) {
     const entity = await this.getEntity({ email });
 
@@ -88,13 +89,16 @@ class EntityService {
     entity.phone = phone || entity.phone;
     entity.notificationToken = notificationToken || entity.notificationToken;
     entity.deviceId = deviceId || entity.deviceId;
+    entity.address = address || entity.address;
 
     const result = await this.entityRepository.update(entity);
 
     return result;
   }
 
-  async editEntityAddressById({ email, cep, number, city, state, complement }) {
+  async editEntityAddressById({
+    email, cep, number, city, state, complement,
+  }) {
     const entity = await this.getEntity({ email });
 
     const address = {
@@ -116,10 +120,8 @@ class EntityService {
     const entity = await this.getEntity({ email });
 
     if (longitude || latitude) {
-      entity.location.coordinates[0] =
-        longitude || entity.location.coordinates[0];
-      entity.location.coordinates[1] =
-        latitude || entity.location.coordinates[1];
+      entity.location.coordinates[0] = longitude || entity.location.coordinates[0];
+      entity.location.coordinates[1] = latitude || entity.location.coordinates[1];
     }
 
     const result = await this.entityRepository.update(entity);
@@ -144,7 +146,7 @@ class EntityService {
 
   async checkEntityExistence(entityIdentifier) {
     const result = await this.entityRepository.checkEntityExistence(
-      entityIdentifier
+      entityIdentifier,
     );
 
     if (result) {
@@ -153,9 +155,10 @@ class EntityService {
 
     return false;
   }
-  async findOneEntityWithProjection(entityId,projection){
+
+  async findOneEntityWithProjection(entityId, projection) {
     const query = { _id: ObjectID(entityId) };
-    const entity = await this.entityRepository.findOneEntityWithProjection(query,projection);
+    const entity = await this.entityRepository.findOneEntityWithProjection(query, projection);
 
     return entity;
   }

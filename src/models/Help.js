@@ -4,6 +4,7 @@ const {
   getDistance,
   calculateDistance,
 } = require('../utils/geolocation/calculateDistance');
+const Point = require('./Point');
 
 const helpSchema = new mongoose.Schema(
   {
@@ -57,6 +58,11 @@ const helpSchema = new mongoose.Schema(
       default: true,
       type: Boolean,
     },
+    location: {
+      type: Point,
+      index: '2dsphere',
+      required: false,
+    },
   },
   {
     collection: 'userHelp',
@@ -78,7 +84,7 @@ helpSchema.virtual('user', {
   ref: 'User',
   localField: 'ownerId',
   foreignField: '_id',
-  justOne: true
+  justOne: true,
 });
 
 helpSchema.virtual('distances')

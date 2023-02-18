@@ -7,15 +7,7 @@ class EntityController {
   }
 
   async createEntity(req, res, next) {
-    const { latitude, longitude } = req.body;
-
-    const location = {
-      type: 'Point',
-      coordinates: [longitude, latitude],
-    };
-
     const data = {
-      location,
       ...req.body,
       hasEntity: req.query.hasEntity === 'true',
     };
@@ -39,6 +31,7 @@ class EntityController {
       phone: req.body.phone,
       notificationToken: req.body.notificationToken,
       deviceId: req.body.deviceId,
+      address: req.body.address,
     };
     try {
       const result = await this.entityService.editEntityById(data);
