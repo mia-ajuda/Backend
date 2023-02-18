@@ -40,35 +40,37 @@ class HelpService {
     this.notificationToFollowers(createdHelp.ownerId, createdHelp.id);
   }
 
-  async notificationToFollowers(profileId, help_id) {
+  async notificationToFollowers(profileId, helpId) {
     const followers = await this.socialNetworkService.getFollowers(profileId, profileId);
 
     if (followers) {
       const ownerTitle = 'Pedido de ajuda criado por uma pessoa que você segue.';
       const ownerBody = 'Uma das pessoas que você está seguindo, criou uma ajuda.';
 
-      for (let i = 0; i < followers.length; i++) {
-        const followersNotificationHistory = {
-          userId: followers[i].id,
-          helpId: help_id,
-          title: ownerTitle,
-          body: ownerBody,
-          notificationType: notificationTypesEnum.outros,
-        };
-        try {
-          await this.NotificationMixin.sendNotification(
-            followers.deviceId,
-            ownerTitle,
-            ownerBody,
-          );
-          await this.NotificationService.createNotification(
-            ownerNotificationHistory,
-          );
-        } catch (err) {
-          console.log('Não foi possível enviar a notificação!');
-          saveError(err);
-        }
-      }
+      /* eslint-disable no-await-in-loop */
+      // for (let i = 0; i < followers.length; i++) {
+      //   const followersNotificationHistory = {
+      //     userId: followers[i].id,
+      //     helpId: helpId,
+      //     title: ownerTitle,
+      //     body: ownerBody,
+      //     notificationType: notificationTypesEnum.outros,
+      //   };
+      //   console.log(followersNotificationHistory)
+      //   try {
+      //     await this.NotificationMixin.sendNotification(
+      //       followers.deviceId,
+      //       ownerTitle,
+      //       ownerBody,
+      //     );
+      //     await this.NotificationService.createNotification(
+      //       ownerNotificationHistory,
+      //     );
+      //   } catch (err) {
+      //     console.log('Não foi possível enviar a notificação!');
+      //     saveError(err);
+      //   }
+      // }
     }
   }
 

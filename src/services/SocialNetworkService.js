@@ -1,7 +1,4 @@
-const { ObjectID } = require('mongodb');
 const SocialNetworkRepository = require('../repository/SocialNetworkRepository');
-const EntityRepository = require('../repository/EntityRepository');
-const firebase = require('../config/authFirebase');
 const HelpRepository = require('../repository/HelpRepository');
 const OfferdHelpRepository = require('../repository/HelpOfferRepository');
 
