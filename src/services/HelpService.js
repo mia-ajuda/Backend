@@ -48,7 +48,7 @@ class HelpService {
       const ownerBody = 'Uma das pessoas que você está seguindo, criou uma ajuda.';
 
       /* eslint-disable no-await-in-loop */
-      for (let i = 0; i < followers.length; i++) {
+      for (let i = 0; i < followers.length; i+=1) {
         const followersNotificationHistory = {
           userId: followers[i].id,
           helpId,
