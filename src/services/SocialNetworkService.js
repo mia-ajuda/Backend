@@ -17,7 +17,6 @@ class SocialNetworkService {
     };
 
     const createdSocialNetworkUser = await this.socialNetworkRepository.create(socialProfileData);
-    console.log(createdSocialNetworkUser);
     return createdSocialNetworkUser;
   }
 
@@ -97,7 +96,6 @@ class SocialNetworkService {
     const offers = await this.offerdHelpRepository.list(userId, categoryArray, getOtherUsers);
 
     const activities = { helps, offers };
-    // console.log(activities);
     return activities;
   }
 

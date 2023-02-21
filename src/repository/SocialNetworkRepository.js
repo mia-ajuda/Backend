@@ -67,7 +67,6 @@ class SocialNetworkRepository extends BaseRepository {
 
 
     const result = await super.$list(query, selectField, populate);
-    console.log(result);
     const result2 = result.map((temp) => {
       const isFollowing = temp.followers.includes(userProfileId);
       const {
@@ -152,8 +151,6 @@ class SocialNetworkRepository extends BaseRepository {
   }
 
   async getFollowers(userProfileId, selectedProfileId) {
-    // console.log(userProfileId);
-    // console.log(selectedProfileId);
 
     const query = { _id: ObjectID(selectedProfileId) };
 

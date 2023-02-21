@@ -37,9 +37,10 @@ class HelpService {
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
 
-    this.notificationToFollowers(createdHelp.ownerId, createdHelp.id);
+    // this.notificationToFollowers(createdHelp.ownerId, createdHelp.id);
   }
 
+  /* TODO: Create logic to notificate the followers
   async notificationToFollowers(profileId, helpId) {
     const followers = await this.socialNetworkService.getFollowers(profileId, profileId);
 
@@ -47,7 +48,7 @@ class HelpService {
       const ownerTitle = 'Pedido de ajuda criado por uma pessoa que você segue.';
       const ownerBody = 'Uma das pessoas que você está seguindo, criou uma ajuda.';
 
-      /* eslint-disable no-await-in-loop */
+       eslint-disable no-await-in-loop
       for (let i = 0; i < followers.length; i += 1) {
         const followersNotificationHistory = {
           userId: followers[i].id,
@@ -57,22 +58,24 @@ class HelpService {
           notificationType: notificationTypesEnum.outros,
         };
         console.log(followersNotificationHistory);
-        // try {
-        //   await this.NotificationMixin.sendNotification(
-        //     followers.deviceId,
-        //     ownerTitle,
-        //     ownerBody,
-        //   );
-        //   await this.NotificationService.createNotification(
-        //     ownerNotificationHistory,
-        //   );
-        // } catch (err) {
-        //   console.log('Não foi possível enviar a notificação!');
-        //   saveError(err);
-        // }
+        try {
+          await this.NotificationMixin.sendNotification(
+            followers.deviceId,
+            ownerTitle,
+            ownerBody,
+          );
+          await this.NotificationService.createNotification(
+            ownerNotificationHistory,
+          );
+        } catch (err) {
+          console.log('Não foi possível enviar a notificação!');
+          saveError(err);
+        }
       }
     }
   }
+  */
+
 
   async getHelpByid(id) {
     const Help = await this.HelpRepository.getById(id);
