@@ -151,7 +151,6 @@ class SocialNetworkRepository extends BaseRepository {
   }
 
   async getFollowers(userProfileId, selectedProfileId) {
-
     const query = { _id: ObjectID(selectedProfileId) };
 
     const selectField = [
