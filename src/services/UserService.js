@@ -1,12 +1,14 @@
 const { ObjectID } = require('mongodb');
 const UserRepository = require('../repository/UserRepository');
 const EntityRepository = require('../repository/EntityRepository');
+const SocialNetworkService = require('./SocialNetworkService');
 const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();
     this.entityRepository = new EntityRepository();
+    this.socialNetworkService = new SocialNetworkService();
   }
 
   async createUser(data) {
@@ -29,7 +31,7 @@ class UserService {
     data.email = data.email.toLowerCase();
     try {
       const createdUser = await this.userRepository.create(data);
-
+      const createdSocialNetworkUser = await this.socialNetworkService.createSocialNetworkUser(createdUser);
       if (!data.hasUser) {
         // Cria o usuário no firebase
         await firebase
@@ -42,6 +44,7 @@ class UserService {
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
+            await this.socialNetworkService.removeSocialNetworkUser(createdSocialNetworkUser._id);
             throw err;
           });
       }
