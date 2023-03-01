@@ -17,6 +17,7 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
+    const commomUserFields = ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city', 'address.state']
     const query = { _id: ObjectID(id) };
     const helpOfferFields = [
       '_id',
@@ -33,7 +34,7 @@ class OfferdHelpRepository extends BaseRepository {
     ];
     const user = {
       path: 'user',
-      select: ['photo', 'phone', 'name', 'birthday', 'address.city'],
+      select: commomUserFields,
     };
     const categories = {
       path: 'categories',
@@ -41,15 +42,15 @@ class OfferdHelpRepository extends BaseRepository {
     };
     const possibleHelpedUsers = {
       path: 'possibleHelpedUsers',
-      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city'],
+      select: commomUserFields
     };
     const possibleEntities = {
       path: 'possibleEntities',
-      select: ['_id', 'name', 'photo', 'birthday', 'address.city'],
+      select: commomUserFields,
     };
     const helpedUsers = {
       path: 'helpedUsers',
-      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city'],
+      select: commomUserFields
     };
 
     const populate = [user, categories, possibleHelpedUsers, possibleEntities, helpedUsers];
