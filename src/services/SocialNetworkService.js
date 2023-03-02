@@ -93,7 +93,7 @@ class SocialNetworkService {
     const categoryArray = null;
 
     const helps = await this.helpRepository.getHelpListByStatus(userId, statusList, helper);
-    const offers = await this.offerdHelpRepository.list(userId, categoryArray, getOtherUsers);
+    const offers = await this.offerdHelpRepository.list(userId, false, categoryArray, getOtherUsers);
 
     const activities = { helps, offers };
     return activities;
