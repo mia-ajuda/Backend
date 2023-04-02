@@ -9,7 +9,10 @@ class HelpController {
   async followUser(req, res, next) {
     const { selectedProfileId, userId } = req.params;
     try {
-      const result = await this.socialNetworkService.followUser(selectedProfileId, userId);
+      const result = await this.socialNetworkService.followUser(
+        selectedProfileId,
+        userId,
+      );
       res.status(200).send(result);
       next();
     } catch (err) {
@@ -22,7 +25,10 @@ class HelpController {
   async unfollowUser(req, res, next) {
     const { selectedProfileId, userId } = req.params;
     try {
-      const result = await this.socialNetworkService.unfollowUser(selectedProfileId, userId);
+      const result = await this.socialNetworkService.unfollowUser(
+        selectedProfileId,
+        userId,
+      );
       res.status(200).send(result);
       next();
     } catch (err) {
@@ -32,11 +38,11 @@ class HelpController {
     }
   }
 
-
   async findUsers(req, res, next) {
-    const { userId, username } = req.params;
+    const { userId } = req.params;
+    const { name } = req.query;
     try {
-      const result = await this.socialNetworkService.findUsers(userId, username);
+      const result = await this.socialNetworkService.findUsers(userId, name);
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -62,7 +68,10 @@ class HelpController {
   async getFollowers(req, res, next) {
     const { userId, selectedProfileId } = req.params;
     try {
-      const result = await this.socialNetworkService.getFollowers(userId, selectedProfileId);
+      const result = await this.socialNetworkService.getFollowers(
+        userId,
+        selectedProfileId,
+      );
       res.status(200).json(result);
       next();
     } catch (err) {
@@ -75,7 +84,10 @@ class HelpController {
   async getFollowing(req, res, next) {
     const { userId, selectedProfileId } = req.params;
     try {
-      const result = await this.socialNetworkService.getFollowing(userId, selectedProfileId);
+      const result = await this.socialNetworkService.getFollowing(
+        userId,
+        selectedProfileId,
+      );
       res.status(200).json(result);
       next();
     } catch (err) {
