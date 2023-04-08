@@ -28,7 +28,12 @@ class SocialNetworkRepository extends BaseRepository {
       "followers",
       "following",
     ];
-    return super.$findOne(matchQuery, socialNetworkProfileFields);
+
+    const populate = {
+      path: "user",
+      select: ["photo"],
+    };
+    return super.$findOne(matchQuery, socialNetworkProfileFields, populate);
   }
 
   async findUserProfilebyProfileId(id) {
