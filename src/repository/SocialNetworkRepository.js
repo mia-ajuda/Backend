@@ -62,7 +62,7 @@ class SocialNetworkRepository extends BaseRepository {
 
     const populate = {
       path: "user",
-      select: ["photo"],
+      select: ["photo", "cnpj", "cpf"],
     };
 
     const users = await super.$list(query, selectField, populate);
@@ -75,6 +75,8 @@ class SocialNetworkRepository extends BaseRepository {
         username: queryUser.username,
         userId: queryUser.userId,
         photo: queryUser.user?.photo,
+        cpf: queryUser.user?.cpf,
+        cnpj: queryUser.user?.cnpj,
         numberOfFollowers,
         numberOfFollowing,
         isFollowing,
