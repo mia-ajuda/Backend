@@ -1,6 +1,7 @@
 const { ObjectID } = require("mongodb");
 const BaseRepository = require("./BaseRepository");
 const SocialNetworkProfileSchema = require("../models/SocialNetworkProfile");
+const mapSocialNetworkUser = require("../utils/mapSocialNetworkUser");
 
 class SocialNetworkRepository extends BaseRepository {
   constructor() {
@@ -67,22 +68,9 @@ class SocialNetworkRepository extends BaseRepository {
 
     const users = await super.$list(query, selectField, populate);
 
-    const mappedUsers = users.map((queryUser) => {
-      const isFollowing = queryUser.followers.includes(userProfileId);
-      const { numberOfFollowers, numberOfFollowing } = queryUser;
-      const mappedUser = {
-        _id: queryUser._id,
-        username: queryUser.username,
-        userId: queryUser.userId,
-        photo: queryUser.user?.photo,
-        cpf: queryUser.user?.cpf,
-        cnpj: queryUser.user?.cnpj,
-        numberOfFollowers,
-        numberOfFollowing,
-        isFollowing,
-      };
-      return mappedUser;
-    });
+    const mappedUsers = users.map((user) =>
+      mapSocialNetworkUser(user, userProfileId)
+    );
 
     return mappedUsers;
   }
@@ -154,25 +142,16 @@ class SocialNetworkRepository extends BaseRepository {
         path: "user",
         select: ["photo", "deviceId"],
       },
-      select: ["userId", "username", "followers", "following"],
+      select: ["userId", "username", "followers", "following", "cpf"],
     };
     const populate = [followers];
 
-    let result = await super.$list(query, selectField, populate);
-
-    // permite a adição de novos atributos no resultado
-    result = JSON.parse(JSON.stringify(result));
-    let result2 = 0;
-    if (result.length > 0) {
-      result2 = result[0].Followers.map((temp) => {
-        temp.isFollowing = temp.followers.includes(userProfileId);
-        temp.photo = temp.user.photo;
-        delete temp.user;
-        return temp;
-      });
-    }
-
-    return result2;
+    const userInfo = await super.$findOne(query, selectField, populate);
+    if (!userInfo.Followers) return [];
+    const followersInfo = userInfo.Followers.map((follower) =>
+      mapSocialNetworkUser(follower, userProfileId)
+    );
+    return followersInfo;
   }
 
   async getFollowing(userProfileId, selectedProfileId) {
@@ -190,19 +169,14 @@ class SocialNetworkRepository extends BaseRepository {
     };
     const populate = [following];
 
-    let result = await super.$list(query, selectField, populate);
+    const userInfo = await super.$findOne(query, selectField, populate);
 
-    // permite a adição de novos atributos no resultado
-    result = JSON.parse(JSON.stringify(result));
-
-    const result2 = result[0].Following.map((temp) => {
-      temp.isFollowing = temp.followers.includes(userProfileId);
-      temp.photo = temp.user.photo;
-      delete temp.user;
-      return temp;
-    });
-
-    return result2;
+    console.log(userInfo.Following);
+    if (!userInfo.Following) return [];
+    const followingInfo = userInfo.Following.map((followed) =>
+      mapSocialNetworkUser(followed, userProfileId)
+    );
+    return followingInfo;
   }
 }
 
