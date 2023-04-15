@@ -1,5 +1,5 @@
-const SocialNetworkService = require("../services/SocialNetworkService");
-const saveError = require("../utils/ErrorHistory");
+const SocialNetworkService = require('../services/SocialNetworkService');
+const saveError = require('../utils/ErrorHistory');
 
 class HelpController {
   constructor() {
@@ -11,7 +11,7 @@ class HelpController {
     try {
       const result = await this.socialNetworkService.followUser(
         selectedProfileId,
-        userId
+        userId,
       );
       res.status(200).send(result);
       next();
@@ -27,7 +27,7 @@ class HelpController {
     try {
       const result = await this.socialNetworkService.unfollowUser(
         selectedProfileId,
-        userId
+        userId,
       );
       res.status(200).send(result);
       next();
@@ -70,7 +70,7 @@ class HelpController {
     try {
       const result = await this.socialNetworkService.getFollowers(
         userId,
-        selectedProfileId
+        selectedProfileId,
       );
       res.status(200).json(result);
       next();
@@ -86,7 +86,7 @@ class HelpController {
     try {
       const result = await this.socialNetworkService.getFollowing(
         userId,
-        selectedProfileId
+        selectedProfileId,
       );
       res.status(200).json(result);
       next();
@@ -103,7 +103,7 @@ class HelpController {
     try {
       const result = await this.socialNetworkService.getUserProfile(
         userId,
-        senderEmail
+        senderEmail,
       );
       res.status(200).json(result);
       next();

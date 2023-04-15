@@ -1,7 +1,7 @@
-const { ObjectID } = require("mongodb");
-const BaseRepository = require("./BaseRepository");
-const SocialNetworkProfileSchema = require("../models/SocialNetworkProfile");
-const mapSocialNetworkUser = require("../utils/mapSocialNetworkUser");
+const { ObjectID } = require('mongodb');
+const BaseRepository = require('./BaseRepository');
+const SocialNetworkProfileSchema = require('../models/SocialNetworkProfile');
+const mapSocialNetworkUser = require('../utils/mapSocialNetworkUser');
 
 class SocialNetworkRepository extends BaseRepository {
   constructor() {
@@ -23,16 +23,16 @@ class SocialNetworkRepository extends BaseRepository {
   async findUserProfilebyUserId(id) {
     const matchQuery = { userId: ObjectID(id) };
     const socialNetworkProfileFields = [
-      "_id",
-      "userId",
-      "username",
-      "followers",
-      "following",
+      '_id',
+      'userId',
+      'username',
+      'followers',
+      'following',
     ];
 
     const populate = {
-      path: "user",
-      select: ["photo"],
+      path: 'user',
+      select: ['photo'],
     };
     return super.$findOne(matchQuery, socialNetworkProfileFields, populate);
   }
@@ -40,11 +40,11 @@ class SocialNetworkRepository extends BaseRepository {
   async findUserProfilebyProfileId(id) {
     const matchQuery = { _id: ObjectID(id) };
     const socialNetworkProfileFields = [
-      "_id",
-      "userId",
-      "username",
-      "followers",
-      "following",
+      '_id',
+      'userId',
+      'username',
+      'followers',
+      'following',
     ];
     return super.$findOne(matchQuery, socialNetworkProfileFields);
   }
@@ -56,37 +56,35 @@ class SocialNetworkRepository extends BaseRepository {
   async findUsersbyName(userProfileId, userName) {
     const query = {
       _id: { $ne: ObjectID(userProfileId) },
-      username: { $regex: userName, $options: "i" },
+      username: { $regex: userName, $options: 'i' },
     };
 
-    const selectField = ["userId", "username", "followers", "following"];
+    const selectField = ['userId', 'username', 'followers', 'following'];
 
     const populate = {
-      path: "user",
-      select: ["photo", "cnpj", "cpf"],
+      path: 'user',
+      select: ['photo', 'cnpj', 'cpf'],
     };
 
     const users = await super.$list(query, selectField, populate);
 
-    const mappedUsers = users.map((user) =>
-      mapSocialNetworkUser(user, userProfileId)
-    );
+    const mappedUsers = users.map((user) => mapSocialNetworkUser(user, userProfileId));
 
     return mappedUsers;
   }
 
   async getUserActivitiesById(id) {
     const query = { userId: ObjectID(id) };
-    const networkProfileFields = ["_id", "userId", "username"];
+    const networkProfileFields = ['_id', 'userId', 'username'];
 
     const userHelps = {
-      path: "userHelps",
-      select: ["title", "description"],
+      path: 'userHelps',
+      select: ['title', 'description'],
     };
 
     const userOffers = {
-      path: "helpsOffers",
-      select: ["title", "description"],
+      path: 'helpsOffers',
+      select: ['title', 'description'],
     };
 
     const populate = [userHelps, userOffers];
@@ -99,31 +97,31 @@ class SocialNetworkRepository extends BaseRepository {
     const query = { userId: ObjectID(id) };
 
     const networkProfileFields = [
-      "_id",
-      "userId",
-      "username",
-      "followers",
-      "following",
+      '_id',
+      'userId',
+      'username',
+      'followers',
+      'following',
     ];
 
     const user = {
-      path: "user",
-      select: ["phone", "name", "birthday", "address.city"],
+      path: 'user',
+      select: ['phone', 'name', 'birthday', 'address.city'],
     };
 
     const entity = {
-      path: "entity",
-      select: ["phone", "name", "address.city"],
+      path: 'entity',
+      select: ['phone', 'name', 'address.city'],
     };
 
     const followers = {
-      path: "Followers",
-      select: ["_id", "userId", "username", "followers", "following"],
+      path: 'Followers',
+      select: ['_id', 'userId', 'username', 'followers', 'following'],
     };
 
     const following = {
-      path: "Following",
-      select: ["_id", "userId", "username", "followers", "following"],
+      path: 'Following',
+      select: ['_id', 'userId', 'username', 'followers', 'following'],
     };
 
     const populate = [user, followers, following, entity];
@@ -134,38 +132,36 @@ class SocialNetworkRepository extends BaseRepository {
   async getFollowers(userProfileId, selectedProfileId) {
     const query = { _id: ObjectID(selectedProfileId) };
 
-    const selectField = ["followers"];
+    const selectField = ['followers'];
 
     const followers = {
-      path: "Followers",
+      path: 'Followers',
       populate: {
-        path: "user",
-        select: ["photo", "deviceId"],
+        path: 'user',
+        select: ['photo', 'deviceId'],
       },
-      select: ["userId", "username", "followers", "following", "cpf"],
+      select: ['userId', 'username', 'followers', 'following', 'cpf'],
     };
     const populate = [followers];
 
     const userInfo = await super.$findOne(query, selectField, populate);
     if (!userInfo.Followers) return [];
-    const followersInfo = userInfo.Followers.map((follower) =>
-      mapSocialNetworkUser(follower, userProfileId)
-    );
+    const followersInfo = userInfo.Followers.map((follower) => mapSocialNetworkUser(follower, userProfileId));
     return followersInfo;
   }
 
   async getFollowing(userProfileId, selectedProfileId) {
     const query = { _id: ObjectID(selectedProfileId) };
 
-    const selectField = ["following"];
+    const selectField = ['following'];
 
     const following = {
-      path: "Following",
+      path: 'Following',
       populate: {
-        path: "user",
-        select: ["photo"],
+        path: 'user',
+        select: ['photo'],
       },
-      select: ["userId", "username", "followers", "following"],
+      select: ['userId', 'username', 'followers', 'following'],
     };
     const populate = [following];
 
@@ -173,9 +169,7 @@ class SocialNetworkRepository extends BaseRepository {
 
     console.log(userInfo.Following);
     if (!userInfo.Following) return [];
-    const followingInfo = userInfo.Following.map((followed) =>
-      mapSocialNetworkUser(followed, userProfileId)
-    );
+    const followingInfo = userInfo.Following.map((followed) => mapSocialNetworkUser(followed, userProfileId));
     return followingInfo;
   }
 }
