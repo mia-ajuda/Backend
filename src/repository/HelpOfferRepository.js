@@ -17,6 +17,7 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
+    const commomUserFields = ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city', 'address.state']
     const query = { _id: ObjectID(id) };
     const helpOfferFields = [
       '_id',
@@ -31,28 +32,22 @@ class OfferdHelpRepository extends BaseRepository {
       'creationDate',
       'location',
     ];
-    const user = {
-      path: 'user',
-      select: ['photo', 'phone', 'name', 'birthday', 'address.city'],
-    };
+
+    const userInfo = {user: null, possibleHelpedUsers : null, possibleEntities: null, helpedUsers: null}
+
+    Object.keys(userInfo).forEach(key=> {
+      userInfo[key] =  {
+        path: key,
+        select: commomUserFields,
+      }
+   })
+
     const categories = {
       path: 'categories',
       select: ['_id', 'name'],
     };
-    const possibleHelpedUsers = {
-      path: 'possibleHelpedUsers',
-      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city'],
-    };
-    const possibleEntities = {
-      path: 'possibleEntities',
-      select: ['_id', 'name', 'photo', 'birthday', 'address.city'],
-    };
-    const helpedUsers = {
-      path: 'helpedUsers',
-      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city'],
-    };
 
-    const populate = [user, categories, possibleHelpedUsers, possibleEntities, helpedUsers];
+    const populate = [userInfo["user"], categories, userInfo["possibleHelpedUsers"], userInfo["possibleEntities"], userInfo["helpedUsers"]];
     return super.$findOne(query, helpOfferFields, populate);
   }
 
