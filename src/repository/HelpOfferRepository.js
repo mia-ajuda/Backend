@@ -32,28 +32,22 @@ class OfferdHelpRepository extends BaseRepository {
       'creationDate',
       'location',
     ];
-    const user = {
-      path: 'user',
-      select: commomUserFields,
-    };
+
+    const userInfo = {user: null, possibleHelpedUsers : null, possibleEntities: null, helpedUsers: null}
+
+    Object.keys(userInfo).forEach(key=> {
+      userInfo[key] =  {
+        path: key,
+        select: commomUserFields,
+      }
+   })
+
     const categories = {
       path: 'categories',
       select: ['_id', 'name'],
     };
-    const possibleHelpedUsers = {
-      path: 'possibleHelpedUsers',
-      select: commomUserFields
-    };
-    const possibleEntities = {
-      path: 'possibleEntities',
-      select: commomUserFields,
-    };
-    const helpedUsers = {
-      path: 'helpedUsers',
-      select: commomUserFields
-    };
 
-    const populate = [user, categories, possibleHelpedUsers, possibleEntities, helpedUsers];
+    const populate = [userInfo["user"], categories, userInfo["possibleHelpedUsers"], userInfo["possibleEntities"], userInfo["helpedUsers"]];
     return super.$findOne(query, helpOfferFields, populate);
   }
 
