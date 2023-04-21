@@ -41,14 +41,28 @@ class HelpRepository extends BaseRepository {
   async getByIdWithAggregation(id) {
     const matchQuery = { _id: ObjectID(id) };
     const helpFields = [
-      '_id', 'ownerId', 'categoryId',
-      'possibleHelpers', 'possibleEntities',
-      'description', 'helperId', 'status', 'title',
+      '_id',
+      'ownerId',
+      'categoryId',
+      'possibleHelpers',
+      'possibleEntities',
+      'description',
+      'helperId',
+      'status',
+      'title',
       'location',
+      'creationDate',
     ];
     const user = {
       path: 'user',
-      select: ['photo', 'name', 'phone', 'birthday', 'address.city', 'location.coordinates'],
+      select: [
+        'photo',
+        'name',
+        'phone',
+        'birthday',
+        'address.city',
+        'location.coordinates',
+      ],
     };
     const categories = {
       path: 'categories',
@@ -62,11 +76,12 @@ class HelpRepository extends BaseRepository {
       path: 'possibleEntities',
       select: ['_id', 'name', 'photo', 'address.city'],
     };
-    return super.$findOne(
-      matchQuery,
-      helpFields,
-      [user, categories, possibleHelpers, possibleEntities],
-    );
+    return super.$findOne(matchQuery, helpFields, [
+      user,
+      categories,
+      possibleHelpers,
+      possibleEntities,
+    ]);
   }
 
   async update(help) {
@@ -91,7 +106,15 @@ class HelpRepository extends BaseRepository {
         $in: categoryArray.map((categoryString) => ObjectID(categoryString)),
       };
     }
-    const helpFields = ['_id', 'title', 'description', 'categoryId', 'ownerId', 'creationDate', 'location'];
+    const helpFields = [
+      '_id',
+      'title',
+      'description',
+      'categoryId',
+      'ownerId',
+      'creationDate',
+      'location',
+    ];
     const user = {
       path: 'user',
       select: ['name', 'riskGroup', 'location.coordinates'],
@@ -207,11 +230,7 @@ class HelpRepository extends BaseRepository {
       _id: 0,
     };
 
-    return super.$findOne(
-      matchQuery,
-      projection,
-      populate,
-    );
+    return super.$findOne(matchQuery, projection, populate);
   }
 }
 

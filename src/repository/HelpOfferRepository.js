@@ -17,7 +17,15 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
-    const commomUserFields = ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city', 'address.state']
+    const commomUserFields = [
+      '_id',
+      'name',
+      'photo',
+      'birthday',
+      'phone',
+      'address.city',
+      'address.state',
+    ];
     const query = { _id: ObjectID(id) };
     const helpOfferFields = [
       '_id',
@@ -33,21 +41,32 @@ class OfferdHelpRepository extends BaseRepository {
       'location',
     ];
 
-    const userInfo = {user: null, possibleHelpedUsers : null, possibleEntities: null, helpedUsers: null}
+    const userInfo = {
+      user: null,
+      possibleHelpedUsers: null,
+      possibleEntities: null,
+      helpedUsers: null,
+    };
 
-    Object.keys(userInfo).forEach(key=> {
-      userInfo[key] =  {
+    Object.keys(userInfo).forEach((key) => {
+      userInfo[key] = {
         path: key,
         select: commomUserFields,
-      }
-   })
+      };
+    });
 
     const categories = {
       path: 'categories',
       select: ['_id', 'name'],
     };
 
-    const populate = [userInfo["user"], categories, userInfo["possibleHelpedUsers"], userInfo["possibleEntities"], userInfo["helpedUsers"]];
+    const populate = [
+      userInfo.user,
+      categories,
+      userInfo.possibleHelpedUsers,
+      userInfo.possibleEntities,
+      userInfo.helpedUsers,
+    ];
     return super.$findOne(query, helpOfferFields, populate);
   }
 
@@ -59,7 +78,15 @@ class OfferdHelpRepository extends BaseRepository {
       getOtherUsers,
       categoryArray,
     );
-    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId', 'helpedUserId', 'creationDate', 'location'];
+    const helpOfferFields = [
+      '_id',
+      'title',
+      'categoryId',
+      'ownerId',
+      'helpedUserId',
+      'creationDate',
+      'location',
+    ];
     const sort = { creationDate: -1 };
     const user = {
       path: 'user',
@@ -83,7 +110,13 @@ class OfferdHelpRepository extends BaseRepository {
     return super.$list(matchQuery, helpOfferFields, populate, sort);
   }
 
-  getHelpOfferListQuery(userId, isUserEntity, active, getOtherUsers, categoryArray) {
+  getHelpOfferListQuery(
+    userId,
+    isUserEntity,
+    active,
+    getOtherUsers,
+    categoryArray,
+  ) {
     const matchQuery = { active };
     if (!getOtherUsers) {
       matchQuery.ownerId = { $ne: ObjectID(userId) };

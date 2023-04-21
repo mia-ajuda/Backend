@@ -99,8 +99,12 @@ class HelpController {
 
   async getUserProfile(req, res, next) {
     const { userId } = req.params;
+    const senderEmail = req.decodedToken.email;
     try {
-      const result = await this.socialNetworkService.getUserProfile(userId);
+      const result = await this.socialNetworkService.getUserProfile(
+        userId,
+        senderEmail,
+      );
       res.status(200).json(result);
       next();
     } catch (err) {

@@ -1,7 +1,8 @@
 const SocialNetworkRepository = require('../repository/SocialNetworkRepository');
 const HelpRepository = require('../repository/HelpRepository');
 const OfferdHelpRepository = require('../repository/HelpOfferRepository');
-
+const UserRepository = require('../repository/UserRepository');
+const mapSocialNetworkUser = require('../utils/mapSocialNetworkUser');
 
 class SocialNetworkService {
   constructor() {
@@ -16,18 +17,20 @@ class SocialNetworkService {
       userId: createdUser._id,
     };
 
-    const createdSocialNetworkUser = await this.socialNetworkRepository.create(socialProfileData);
+    const createdSocialNetworkUser = await this.socialNetworkRepository.create(
+      socialProfileData,
+    );
     return createdSocialNetworkUser;
   }
-
 
   async removeSocialNetworkUser(id) {
     await this.socialNetworkRepository.destroy(id);
   }
 
-
   async followUser(selectedProfileId, userId) {
-    const selectedProfile = await this.socialNetworkRepository.findUserProfilebyProfileId(selectedProfileId);
+    const selectedProfile = await this.socialNetworkRepository.findUserProfilebyProfileId(
+      selectedProfileId,
+    );
     const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
 
     if (!userProfile) {
@@ -52,7 +55,9 @@ class SocialNetworkService {
   }
 
   async unfollowUser(selectedProfileId, userId) {
-    const selectedProfile = await this.socialNetworkRepository.findUserProfilebyProfileId(selectedProfileId);
+    const selectedProfile = await this.socialNetworkRepository.findUserProfilebyProfileId(
+      selectedProfileId,
+    );
     const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
 
     if (!userProfile) {
@@ -75,10 +80,12 @@ class SocialNetworkService {
     return false;
   }
 
-
   async findUsers(userId, username) {
     const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    const users = await this.socialNetworkRepository.findUsersbyName(userProfile.id, username);
+    const users = await this.socialNetworkRepository.findUsersbyName(
+      userProfile.id,
+      username,
+    );
 
     if (!users) {
       throw new Error('Nenhum usuário encontrado');
@@ -88,35 +95,60 @@ class SocialNetworkService {
 
   async getUserActivities(userId) {
     const helper = false;
-    const statusList = ['waiting', 'on_going', 'finished', 'owner_finished', 'helper_finished'];
+    const statusList = [
+      'waiting',
+      'on_going',
+      'finished',
+      'owner_finished',
+      'helper_finished',
+    ];
     const getOtherUsers = true;
     const categoryArray = null;
 
-    const helps = await this.helpRepository.getHelpListByStatus(userId, statusList, helper);
-    const offers = await this.offerdHelpRepository.list(userId, false, categoryArray, getOtherUsers);
+    const helps = await this.helpRepository.getHelpListByStatus(
+      userId,
+      statusList,
+      helper,
+    );
+    const offers = await this.offerdHelpRepository.list(
+      userId,
+      false,
+      categoryArray,
+      getOtherUsers,
+    );
 
     const activities = { helps, offers };
     return activities;
   }
 
-
   async getFollowers(userId, selectedProfileId) {
     const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    const followers = await this.socialNetworkRepository.getFollowers(userProfile.id, selectedProfileId);
+    const followers = await this.socialNetworkRepository.getFollowers(
+      userProfile.id,
+      selectedProfileId,
+    );
 
     return followers;
   }
 
   async getFollowing(userId, selectedProfileId) {
     const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    const following = await this.socialNetworkRepository.getFollowing(userProfile.id, selectedProfileId);
+    const following = await this.socialNetworkRepository.getFollowing(
+      userProfile.id,
+      selectedProfileId,
+    );
 
     return following;
   }
 
-  async getUserProfile(userId) {
+  async getUserProfile(userId, senderEmail) {
+    const userRepository = new UserRepository();
+    const senderUser = await userRepository.getUserByEmail(senderEmail);
+    const senderProfile = await this.socialNetworkRepository.findUserProfilebyUserId(
+      senderUser._id,
+    );
     const userProfile = await this.socialNetworkRepository.findUserProfilebyUserId(userId);
-    return userProfile;
+    return mapSocialNetworkUser(userProfile, senderProfile.id);
   }
 }
 
