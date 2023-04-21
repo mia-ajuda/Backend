@@ -3,8 +3,6 @@ const mockedBadges = require('./mockedInfos/mockedBadgesInfo');
 
 const seedBadges = async () => {
   try {
-    await BadgeTemplate.deleteMany({});
-
     const badgeCollection = await BadgeTemplate.find();
 
     if (badgeCollection.length > 0) {

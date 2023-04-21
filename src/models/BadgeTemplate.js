@@ -28,7 +28,7 @@ const badgeTemplateSchema = new mongoose.Schema(
       enum: ['help', 'offer', 'share'],
     },
     nextBadge: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'BadgeTemplate',
     },
   },

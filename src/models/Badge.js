@@ -4,15 +4,15 @@ const badgeSchema = new mongoose.Schema(
   {
     currentValue: {
       type: Number,
-      default: 1,
+      default: 0,
     },
     template: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'BadgeTemplate',
       required: true,
     },
     user: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },

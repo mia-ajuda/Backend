@@ -12,7 +12,7 @@ class BadgeRepository extends BaseRepository {
   }
 
   async getByUserId(userId) {
-    const result = await super.$findOne({ user: userId });
+    const result = await super.$findOne({ user: userId }, null, 'template');
     return result;
   }
 
