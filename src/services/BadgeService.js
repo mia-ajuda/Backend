@@ -1,5 +1,5 @@
-const BadgeRepository = require("../repository/BadgeRepository");
-const BadgeTemplateRepository = require("../repository/BadgeTemplateRepository");
+const BadgeRepository = require('../repository/BadgeRepository');
+const BadgeTemplateRepository = require('../repository/BadgeTemplateRepository');
 
 class BadgeService {
   constructor() {
@@ -8,8 +8,7 @@ class BadgeService {
   }
 
   async createBadge(userId, category) {
-    const referenceBadge =
-      await this.BadgeTemplateRepository.getFirstRankByCategory(category);
+    const referenceBadge = await this.BadgeTemplateRepository.getFirstRankByCategory(category);
     const badge = await this.BadgeRepository.create({
       user: userId,
       template: referenceBadge._id,

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const badgeSchema = new mongoose.Schema(
   {
@@ -8,16 +8,16 @@ const badgeSchema = new mongoose.Schema(
     },
     template: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "BadgeTemplate",
+      ref: 'BadgeTemplate',
       required: true,
     },
     user: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      ref: 'User',
       required: true,
     },
   },
-  { collection: "badge" }
+  { collection: 'badge' },
 );
 
-module.exports = mongoose.model("Badge", badgeSchema);
+module.exports = mongoose.model('Badge', badgeSchema);

@@ -1,5 +1,5 @@
-const BaseRepository = require("./BaseRepository");
-const BadgeSchema = require("../models/Badge");
+const BaseRepository = require('./BaseRepository');
+const BadgeSchema = require('../models/Badge');
 
 class BadgeRepository extends BaseRepository {
   constructor() {
@@ -17,7 +17,7 @@ class BadgeRepository extends BaseRepository {
   }
 
   async listByUserId(userId) {
-    const result = await super.$list({ user: userId }, null, "template");
+    const result = await super.$list({ user: userId }, null, 'template');
     return result;
   }
 

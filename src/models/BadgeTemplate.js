@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const badgeTemplateSchema = new mongoose.Schema(
   {
@@ -14,10 +14,6 @@ const badgeTemplateSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    title: {
-      type: String,
-      required: true,
-    },
     neededValue: {
       type: Number,
       required: true,
@@ -29,14 +25,14 @@ const badgeTemplateSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["help", "offer", "share"],
+      enum: ['help', 'offer', 'share'],
     },
     nextBadge: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "BadgeTemplate",
+      ref: 'BadgeTemplate',
     },
   },
-  { collection: "badgeTemplate" }
+  { collection: 'badgeTemplate' },
 );
 
-module.exports = mongoose.model("BadgeTemplate", badgeTemplateSchema);
+module.exports = mongoose.model('BadgeTemplate', badgeTemplateSchema);
