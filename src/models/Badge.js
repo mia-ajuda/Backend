@@ -1,41 +1,23 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const badgeSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    iconName: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    neededValue: {
+    currentValue: {
       type: Number,
-      required: true,
+      default: 1,
     },
-    rank: {
-      type: Number,
-      required: true,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    nextBadge: {
+    template: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Badge',
+      ref: "BadgeTemplate",
+      required: true,
+    },
+    user: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      required: true,
     },
   },
-  { collection: 'badge' },
+  { collection: "badge" }
 );
 
-module.exports = mongoose.model('Badge', badgeSchema);
+module.exports = mongoose.model("Badge", badgeSchema);
