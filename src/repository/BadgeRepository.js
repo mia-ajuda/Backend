@@ -4,6 +4,13 @@ const BadgeSchema = require('../models/Badge');
 class BadgeRepository extends BaseRepository {
   constructor() {
     super(BadgeSchema);
+    this.populateData = {
+      path: 'template',
+      populate: {
+        path: 'nextBadge',
+        model: 'BadgeTemplate',
+      },
+    };
   }
 
   async create(badge) {
@@ -12,12 +19,16 @@ class BadgeRepository extends BaseRepository {
   }
 
   async getByUserId(userId) {
-    const result = await super.$findOne({ user: userId }, null, 'template');
+    const result = await super.$findOne(
+      { user: userId },
+      null,
+      this.populateData,
+    );
     return result;
   }
 
   async listByUserId(userId) {
-    const result = await super.$list({ user: userId }, null, 'template');
+    const result = await super.$list({ user: userId }, null, this.populateData);
     return result;
   }
 

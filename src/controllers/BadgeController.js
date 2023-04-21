@@ -10,10 +10,16 @@ class BadgeController {
     const { userId, category } = req.body;
 
     try {
-      const result = await this.BadgeService.createOrUpdateBadge(
+      let result = await this.BadgeService.createOrUpdateBadge(
         userId,
         category,
       );
+      if (
+        result.template.nextBadge
+        && result.currentValue >= result.template.nextBadge.neededValue
+      ) {
+        result = await this.BadgeService.updateBadgeReference(result);
+      }
       res.status(201).json(result);
       next();
     } catch (err) {
