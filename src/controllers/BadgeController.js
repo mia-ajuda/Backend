@@ -41,6 +41,20 @@ class BadgeController {
       next();
     }
   }
+
+  async getBadgeHistory(req, res, next) {
+    const userId = req.query.userId || null;
+    try {
+      const userBadges = await this.BadgeService.getBadgeList(userId);
+      const allBadges = await this.BadgeService.getAllBadges();
+      res.status(200).json({ userBadges, allBadges });
+      next();
+    } catch (err) {
+      saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
 }
 
 module.exports = BadgeController;

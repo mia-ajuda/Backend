@@ -20,6 +20,15 @@ class BadgeTemplateRepository extends BaseRepository {
     const result = await super.$findOne({ category, rank: 1 });
     return result;
   }
+
+  async listAllSorted() {
+    const sort = {
+      category: 1,
+      rank: 1,
+    };
+    const result = await super.$list({}, null, null, sort);
+    return result;
+  }
 }
 
 module.exports = BadgeTemplateRepository;

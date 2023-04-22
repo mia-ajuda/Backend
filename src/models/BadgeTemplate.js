@@ -25,7 +25,7 @@ const badgeTemplateSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ['help', 'offer', 'share'],
+      enum: ['help', 'offer', 'share', 'tester'],
     },
     nextBadge: {
       type: mongoose.Schema.Types.ObjectId,

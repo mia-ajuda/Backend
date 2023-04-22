@@ -32,6 +32,11 @@ class BadgeService {
     const badgeList = await this.BadgeRepository.listByUserId(userId);
     return badgeList;
   }
+
+  async getAllBadges() {
+    const badges = this.BadgeTemplateRepository.listAllSorted();
+    return badges;
+  }
 }
 
 module.exports = BadgeService;
