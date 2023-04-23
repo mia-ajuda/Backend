@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const badgeTemplateSchema = new mongoose.Schema(
   {
+    _id: {
+      type: Number,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -28,7 +32,7 @@ const badgeTemplateSchema = new mongoose.Schema(
       enum: ['help', 'offer', 'share', 'tester'],
     },
     nextBadge: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: 'BadgeTemplate',
     },
   },

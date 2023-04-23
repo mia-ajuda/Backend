@@ -7,7 +7,7 @@ const badgeSchema = new mongoose.Schema(
       default: 0,
     },
     template: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: 'BadgeTemplate',
       required: true,
     },
