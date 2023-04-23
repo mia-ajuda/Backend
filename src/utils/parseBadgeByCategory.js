@@ -1,7 +1,6 @@
 const parseBadgeByCategory = (badgeList) => {
   const parsedBadges = badgeList.reduce((obj, current) => {
     const { category } = current;
-    console.log(Object.keys(obj));
     if (!Object.keys(obj).includes(category)) {
       obj[category] = {
         badges: [],
