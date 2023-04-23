@@ -1,6 +1,6 @@
 const BadgeRepository = require('../repository/BadgeRepository');
 const BadgeTemplateRepository = require('../repository/BadgeTemplateRepository');
-const parseBadgeByCategory = require('../utils/parseBadgeByCategory');
+const parseBadgeTemplateByCategory = require('../utils/parseBadgeTemplateByCategory');
 
 class BadgeService {
   constructor() {
@@ -36,7 +36,7 @@ class BadgeService {
 
   async getAllBadges() {
     const badges = await this.BadgeTemplateRepository.listAllSorted();
-    return parseBadgeByCategory(badges);
+    return parseBadgeTemplateByCategory(badges);
   }
 }
 

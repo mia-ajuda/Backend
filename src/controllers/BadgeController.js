@@ -1,5 +1,6 @@
 const BadgeService = require('../services/BadgeService');
 const saveError = require('../utils/ErrorHistory');
+const parseBadgeByCategory = require('../utils/parseBadgeByCategory');
 
 class BadgeController {
   constructor() {
@@ -47,7 +48,8 @@ class BadgeController {
     try {
       const userBadges = await this.BadgeService.getBadgeList(userId);
       const allBadges = await this.BadgeService.getAllBadges();
-      res.status(200).json({ userBadges, allBadges });
+      const parsedUserBadges = parseBadgeByCategory(userBadges);
+      res.status(200).json({ userBadges: parsedUserBadges, allBadges });
       next();
     } catch (err) {
       saveError(err);
