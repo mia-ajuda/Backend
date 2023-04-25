@@ -3,13 +3,17 @@ const CategorySeed = require('../utils/seed/CategorySeed');
 const UserSeed = require('../utils/seed/UserSeed');
 const HelpSeed = require('../utils/seed/HelpOfferCampaignSeed');
 const NotificationSeed = require('../utils/seed/NotificationSeed');
+const BadgeSeed = require('../utils/seed/BadgeTemplateSeed');
 
 const databaseURL = process.env.DATABASE_URL || 'mongodb://mongo:27017/miaAjudaDB';
 const envType = process.env.NODE_ENV || 'development';
 
 const databaseConnect = async () => {
   try {
-    await mongoose.connect(databaseURL, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(databaseURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log('Banco de dados conectado!');
     mongoose.set('useFindAndModify', false);
 
@@ -19,6 +23,7 @@ const databaseConnect = async () => {
       await UserSeed();
       await HelpSeed();
       await NotificationSeed();
+      await BadgeSeed();
     }
   } catch (err) {
     console.log('Não foi possível inicicializar corretamente a base de dados!');
