@@ -10,6 +10,7 @@ const mapSocialNetworkUser = (socialNetworkUser, userProfileId) => {
     photo: socialNetworkUser.user?.photo,
     cpf: socialNetworkUser.user?.cpf,
     cnpj: socialNetworkUser.user?.cnpj,
+    biography: socialNetworkUser.user?.biography,
     followers: socialNetworkUser.followers,
     following: socialNetworkUser.following,
     numberOfFollowers,

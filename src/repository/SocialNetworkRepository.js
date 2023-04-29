@@ -32,7 +32,7 @@ class SocialNetworkRepository extends BaseRepository {
 
     const populate = {
       path: 'user',
-      select: ['photo'],
+      select: ['photo', 'biography'],
     };
     return super.$findOne(matchQuery, socialNetworkProfileFields, populate);
   }

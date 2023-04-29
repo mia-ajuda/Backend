@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema(
       default: true,
       type: Boolean,
     },
+    biography: {
+      type: String,
+      default: '-',
+    },
   },
   { collection: 'user' },
 );

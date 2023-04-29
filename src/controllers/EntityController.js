@@ -32,6 +32,7 @@ class EntityController {
       notificationToken: req.body.notificationToken,
       deviceId: req.body.deviceId,
       address: req.body.address,
+      biography: req.body.biography,
     };
     try {
       const result = await this.entityService.editEntityById(data);
@@ -122,7 +123,9 @@ class EntityController {
     }
 
     try {
-      const result = await this.entityService.checkEntityExistence(entityIdentifier);
+      const result = await this.entityService.checkEntityExistence(
+        entityIdentifier,
+      );
       res.status(200).json(result);
       next();
     } catch (err) {

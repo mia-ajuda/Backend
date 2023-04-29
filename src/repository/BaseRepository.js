@@ -37,7 +37,9 @@ class BaseRepository {
   }
 
   async $listAggregate(aggregationPipeline) {
-    const aggregatedPipeline = await this.ModelClass.aggregate(aggregationPipeline).exec();
+    const aggregatedPipeline = await this.ModelClass.aggregate(
+      aggregationPipeline,
+    ).exec();
     return aggregatedPipeline;
   }
 
@@ -46,7 +48,7 @@ class BaseRepository {
    * @param {Boolean} [active = true] se vou pegar ou não elementos deletados,
    * Se for false, mesmo elementos removidos serão exibidos.
    */
-  async $getById(id, active = true) {
+  async $getById(id, active = true, populate = null) {
     let finalIdFormat = id;
 
     if (typeof id === 'string') {
@@ -65,12 +67,18 @@ class BaseRepository {
       query.active = true;
     }
 
-    const recordModel = await this.ModelClass.findOne(query);
+    const recordModel = await this.ModelClass.findOne(query).populate(populate);
 
     return recordModel;
   }
 
-  async $list(query, selectedField = null, populate = null, sort = null, limit = null) {
+  async $list(
+    query,
+    selectedField = null,
+    populate = null,
+    sort = null,
+    limit = null,
+  ) {
     return this.ModelClass.find(query, selectedField)
       .populate(populate)
       .sort(sort)
@@ -83,8 +91,7 @@ class BaseRepository {
   }
 
   async $findOne(query, projection, populate = null) {
-    return this.ModelClass.findOne(query, projection)
-      .populate(populate);
+    return this.ModelClass.findOne(query, projection).populate(populate);
   }
 
   async $destroy(query) {

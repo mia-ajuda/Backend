@@ -33,6 +33,7 @@ class UserController {
       notificationToken: req.body.notificationToken,
       deviceId: req.body.deviceId,
       address: req.body.address,
+      biography: req.body.biography,
     };
     try {
       const result = await this.userService.editUserById(data);

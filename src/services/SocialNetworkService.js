@@ -3,12 +3,14 @@ const HelpRepository = require('../repository/HelpRepository');
 const OfferdHelpRepository = require('../repository/HelpOfferRepository');
 const UserRepository = require('../repository/UserRepository');
 const mapSocialNetworkUser = require('../utils/mapSocialNetworkUser');
+const CampaignRepository = require('../repository/CampaignRepository');
 
 class SocialNetworkService {
   constructor() {
     this.socialNetworkRepository = new SocialNetworkRepository();
     this.helpRepository = new HelpRepository();
     this.offerdHelpRepository = new OfferdHelpRepository();
+    this.campaignRepository = new CampaignRepository();
   }
 
   async createSocialNetworkUser(createdUser) {
@@ -110,6 +112,7 @@ class SocialNetworkService {
       statusList,
       helper,
     );
+
     const offers = await this.offerdHelpRepository.list(
       userId,
       false,
@@ -117,7 +120,9 @@ class SocialNetworkService {
       getOtherUsers,
     );
 
-    const activities = { helps, offers };
+    const campaigns = await this.campaignRepository.listByOwnerId(userId);
+
+    const activities = { helps, offers, campaigns };
     return activities;
   }
 
