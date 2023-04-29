@@ -44,7 +44,9 @@ class UserService {
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
-            await this.socialNetworkService.removeSocialNetworkUser(createdSocialNetworkUser._id);
+            await this.socialNetworkService.removeSocialNetworkUser(
+              createdSocialNetworkUser._id,
+            );
             throw err;
           });
       }
@@ -105,6 +107,7 @@ class UserService {
     notificationToken,
     address,
     deviceId,
+    biography,
   }) {
     const user = await this.getUser({ email });
 
@@ -113,6 +116,7 @@ class UserService {
     user.phone = phone || user.phone;
     user.notificationToken = notificationToken || user.notificationToken;
     user.address = address || user.address;
+    user.biography = biography || user.biography;
     user.deviceId = deviceId || user.deviceId;
 
     const result = await this.userRepository.update(user);
@@ -181,7 +185,10 @@ class UserService {
   async findOneUserWithProjection(userId, projection) {
     const query = { _id: ObjectID(userId) };
 
-    const user = await this.userRepository.findOneUserWithProjection(query, projection);
+    const user = await this.userRepository.findOneUserWithProjection(
+      query,
+      projection,
+    );
 
     return user;
   }
