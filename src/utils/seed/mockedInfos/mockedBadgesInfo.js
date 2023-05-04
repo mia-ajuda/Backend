@@ -42,7 +42,7 @@ const mockedBadges = [
     name: 'Testador Beta 2',
     description: 'Paritcipou do beta do app',
     iconName: 'home',
-    neededValue: 3,
+    neededValue: 2,
     rank: 2,
     category: 'tester',
     nextBadge: 6,

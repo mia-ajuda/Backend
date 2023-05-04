@@ -27,15 +27,25 @@ const seedHelp = async () => {
     const campaignCollection = await Campaign.find();
 
     // this condition avoid populate duplicate users
-    if (helpCollection.length > 0 || helpOfferCollection.length > 0 || campaignCollection.length > 0) {
+    if (
+      helpCollection.length > 0
+      || helpOfferCollection.length > 0
+      || campaignCollection.length > 0
+    ) {
       return;
     }
 
-    const quantity = 10;
+    const quantity = 40;
     const requests = [];
     const offers = [];
     const campaigns = [];
     for (let i = 0; i < quantity; i += 1) {
+      let latitude = process.env.LATITUDE_ENV || -15.824544;
+      let longitude = process.env.LONGITUDE_ENV || -48.060878;
+      longitude = Number(longitude)
+        + faker.random.number({ min: -999, max: 999 }) / 100000;
+      latitude = Number(latitude)
+        + faker.random.number({ min: -999, max: 999 }) / 100000;
       const sampleStatus = lodash.sample(status);
       const sampleCategory = lodash.sample(categoryCollection);
       const sampleUsers = lodash.sampleSize(userCollection, 2);
@@ -56,6 +66,10 @@ const seedHelp = async () => {
         categoryId: [sampleCategory._id],
         ownerId: sampleUsers[0]._id,
         finishedDate: faker.date.future(),
+        location: {
+          type: 'Point',
+          coordinates: [longitude, latitude],
+        },
       };
 
       requests.push(
@@ -100,7 +114,9 @@ const seedHelp = async () => {
 
     console.log('Pedidos, ofertas e campanhas populados com sucesso!');
   } catch (error) {
-    console.log('Não foi possível criar pedidos, ofertas e campanhas na base de dados!');
+    console.log(
+      'Não foi possível criar pedidos, ofertas e campanhas na base de dados!',
+    );
     console.log(error);
   }
 };
