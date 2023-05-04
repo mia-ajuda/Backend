@@ -24,7 +24,7 @@ class BadgeController {
       res.status(201).json(result);
       next();
     } catch (err) {
-      saveError(err);
+      await saveError(err);
       res.status(400).json({ error: err.message });
       next();
     }
@@ -37,7 +37,7 @@ class BadgeController {
       res.status(200).json(result);
       next();
     } catch (err) {
-      saveError(err);
+      await saveError(err);
       res.status(400).json({ error: err.message });
       next();
     }
@@ -52,7 +52,7 @@ class BadgeController {
       res.status(200).json({ userBadges: parsedUserBadges, allBadges });
       next();
     } catch (err) {
-      saveError(err);
+      await saveError(err);
       res.status(400).json({ error: err.message });
       next();
     }
