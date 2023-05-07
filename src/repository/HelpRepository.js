@@ -170,6 +170,7 @@ class HelpRepository extends BaseRepository {
       'status',
       'ownerId',
       'categoryId',
+      'creationDate',
     ];
 
     const user = {
