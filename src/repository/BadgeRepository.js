@@ -14,7 +14,7 @@ class BadgeRepository extends BaseRepository {
   }
 
   async create(badge) {
-    const result = await super.$save(badge);
+    const result = await super.$save(badge, {}, ['template']);
     return result;
   }
 
@@ -33,7 +33,12 @@ class BadgeRepository extends BaseRepository {
   }
 
   async update(badge) {
-    const result = await super.$update(badge);
+    const savedBadge = await super.$update(badge);
+    const result = await super.$getById(
+      savedBadge._id,
+      null,
+      this.populateData,
+    );
     return result;
   }
 }
