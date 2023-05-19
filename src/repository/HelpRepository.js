@@ -70,11 +70,11 @@ class HelpRepository extends BaseRepository {
     };
     const possibleHelpers = {
       path: 'possibleHelpers',
-      select: ['_id', 'name', 'phone', 'photo', 'birthday', 'address.city'],
+      select: ['_id', 'name', 'phone', 'photo', 'birthday', 'address.city', 'address.state'],
     };
     const possibleEntities = {
       path: 'possibleEntities',
-      select: ['_id', 'name', 'photo', 'address.city'],
+      select: ['_id', 'name', 'photo', 'address.city', 'address.state'],
     };
     return super.$findOne(matchQuery, helpFields, [
       user,
