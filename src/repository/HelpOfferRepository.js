@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
+const getLocation = require('../utils/getLocation');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
@@ -70,7 +71,7 @@ class OfferdHelpRepository extends BaseRepository {
     return super.$findOne(query, helpOfferFields, populate);
   }
 
-  async list(userId, isUserEntity, categoryArray, getOtherUsers) {
+  async list(coords, userId, isUserEntity, categoryArray, getOtherUsers) {
     const matchQuery = this.getHelpOfferListQuery(
       userId,
       isUserEntity,
@@ -86,6 +87,7 @@ class OfferdHelpRepository extends BaseRepository {
       'helpedUserId',
       'creationDate',
       'location',
+      'description',
     ];
     const sort = { creationDate: -1 };
     const user = {
@@ -107,7 +109,17 @@ class OfferdHelpRepository extends BaseRepository {
 
     const populate = [user, categories, possibleHelpedUsers, possibleEntities];
 
-    return super.$list(matchQuery, helpOfferFields, populate, sort);
+    const helpOffer = await super.$list(matchQuery, helpOfferFields, populate, sort);
+
+    const helpOffersWithDistances = helpOffer.map((offer) => {
+      const offerLocation = getLocation(offer);
+      offer.distances = { userCoords: offerLocation, coords };
+      return offer.toObject();
+    });
+
+    helpOffersWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
+
+    return helpOffersWithDistances;
   }
 
   getHelpOfferListQuery(
