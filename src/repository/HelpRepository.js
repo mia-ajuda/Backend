@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-unresolved
-const { ObjectID } = require("mongodb");
-const BaseRepository = require("./BaseRepository");
-const HelpSchema = require("../models/Help");
-const getLocation = require("../utils/getLocation");
+const { ObjectID } = require('mongodb');
+const BaseRepository = require('./BaseRepository');
+const HelpSchema = require('../models/Help');
+const getLocation = require('../utils/getLocation');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -13,12 +13,12 @@ class HelpRepository extends BaseRepository {
     const doc = await super.$save(help);
     const populate = [
       {
-        path: "user",
-        select: ["name", "riskGroup"],
+        path: 'user',
+        select: ['name', 'riskGroup'],
       },
       {
-        path: "categories",
-        select: ["name"],
+        path: 'categories',
+        select: ['name'],
       },
     ];
     const result = await super.$populateExistingDoc(doc, populate);
@@ -41,40 +41,40 @@ class HelpRepository extends BaseRepository {
   async getByIdWithAggregation(id) {
     const matchQuery = { _id: ObjectID(id) };
     const helpFields = [
-      "_id",
-      "ownerId",
-      "categoryId",
-      "possibleHelpers",
-      "possibleEntities",
-      "description",
-      "helperId",
-      "status",
-      "title",
-      "location",
-      "creationDate",
+      '_id',
+      'ownerId',
+      'categoryId',
+      'possibleHelpers',
+      'possibleEntities',
+      'description',
+      'helperId',
+      'status',
+      'title',
+      'location',
+      'creationDate',
     ];
     const user = {
-      path: "user",
+      path: 'user',
       select: [
-        "photo",
-        "name",
-        "phone",
-        "birthday",
-        "address.city",
-        "location.coordinates",
+        'photo',
+        'name',
+        'phone',
+        'birthday',
+        'address.city',
+        'location.coordinates',
       ],
     };
     const categories = {
-      path: "categories",
-      select: ["_id", "name"],
+      path: 'categories',
+      select: ['_id', 'name'],
     };
     const possibleHelpers = {
-      path: "possibleHelpers",
-      select: ["_id", "name", "phone", "photo", "birthday", "address.city", "address.state"],
+      path: 'possibleHelpers',
+      select: ['_id', 'name', 'phone', 'photo', 'birthday', 'address.city', 'address.state'],
     };
     const possibleEntities = {
-      path: "possibleEntities",
-      select: ["_id", "name", "photo", "address.city", "address.state"],
+      path: 'possibleEntities',
+      select: ['_id', 'name', 'photo', 'address.city', 'address.state'],
     };
     return super.$findOne(matchQuery, helpFields, [
       user,
@@ -92,7 +92,7 @@ class HelpRepository extends BaseRepository {
     const matchQuery = {
       active: true,
       ownerId: { $ne: ObjectID(id) },
-      status: "waiting",
+      status: 'waiting',
     };
 
     if (isUserEntity) {
@@ -107,21 +107,21 @@ class HelpRepository extends BaseRepository {
       };
     }
     const helpFields = [
-      "_id",
-      "title",
-      "description",
-      "categoryId",
-      "ownerId",
-      "creationDate",
-      "location",
+      '_id',
+      'title',
+      'description',
+      'categoryId',
+      'ownerId',
+      'creationDate',
+      'location',
     ];
     const user = {
-      path: "user",
-      select: ["name", "riskGroup", "location.coordinates"],
+      path: 'user',
+      select: ['name', 'riskGroup', 'location.coordinates'],
     };
     const categories = {
-      path: "categories",
-      select: ["_id", "name"],
+      path: 'categories',
+      select: ['_id', 'name'],
     };
     const helps = await super.$list(matchQuery, helpFields, [user, categories]);
     const helpsWithDistance = helps.map((help) => {
@@ -139,7 +139,7 @@ class HelpRepository extends BaseRepository {
     const query = {};
     query.ownerId = id;
     query.active = true;
-    query.status = { $ne: "finished" };
+    query.status = { $ne: 'finished' };
     const result = await super.$countDocuments(query);
 
     return result;
@@ -164,28 +164,28 @@ class HelpRepository extends BaseRepository {
     };
 
     const fields = [
-      "_id",
-      "description",
-      "title",
-      "status",
-      "ownerId",
-      "categoryId",
+      '_id',
+      'description',
+      'title',
+      'status',
+      'ownerId',
+      'categoryId',
     ];
 
     const user = {
-      path: "user",
-      select: ["photo", "phone", "name", "birthday", "address.city"],
+      path: 'user',
+      select: ['photo', 'phone', 'name', 'birthday', 'address.city'],
     };
 
     const categories = {
-      path: "categories",
-      select: ["_id", "name"],
+      path: 'categories',
+      select: ['_id', 'name'],
     };
 
     const populate = [user, categories];
 
     if (helper) {
-      user.select.push("location.coordinates");
+      user.select.push('location.coordinates');
       matchQuery.$or = [
         {
           possibleHelpers: { $in: [ObjectID(userId)] },
@@ -196,16 +196,16 @@ class HelpRepository extends BaseRepository {
       ];
     } else {
       const possibleHelpers = {
-        path: "possibleHelpers",
-        select: ["_id", "photo", "name", "birthday", "address.city"],
+        path: 'possibleHelpers',
+        select: ['_id', 'photo', 'name', 'birthday', 'address.city'],
       };
 
       const possibleEntities = {
-        path: "possibleEntities",
-        select: ["_id", "photo", "name", "birthday", "address.city"],
+        path: 'possibleEntities',
+        select: ['_id', 'photo', 'name', 'birthday', 'address.city'],
       };
 
-      fields.push("helperId");
+      fields.push('helperId');
 
       populate.push(possibleHelpers);
       populate.push(possibleEntities);
@@ -221,8 +221,8 @@ class HelpRepository extends BaseRepository {
     const matchQuery = { _id: ObjectID(helpId) };
 
     const populate = {
-      path: "user",
-      select: ["photo", "birthday", "address.city"],
+      path: 'user',
+      select: ['photo', 'birthday', 'address.city'],
     };
 
     const projection = {
