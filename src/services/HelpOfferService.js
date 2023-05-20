@@ -7,6 +7,7 @@ const NotificationMixin = require('../utils/NotificationMixin');
 const { notificationTypesEnum } = require('../models/Notification');
 const saveError = require('../utils/ErrorHistory');
 const { findConnections, sendMessage } = require('../../websocket');
+const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class OfferedHelpService {
   constructor() {
@@ -34,9 +35,16 @@ class OfferedHelpService {
     return help;
   }
 
-  async listHelpsOffers(userId, isUserEntity, categoryArray, getOtherUsers) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId, isUserEntity, categoryArray, getOtherUsers);
-    return helpOffers;
+  async listHelpsOffers(coords, userId, isUserEntity, categoryArray, getOtherUsers) {
+    const helpOffers = await this.OfferedHelpRepository.list(
+      coords,
+      userId,
+      isUserEntity,
+      categoryArray,
+      getOtherUsers,
+    );
+    const helpOffersList = addHelpTypeToList(helpOffers, 'offer');
+    return helpOffersList;
   }
 
   async listHelpsOffersByOwnerId(ownerId) {

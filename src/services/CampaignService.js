@@ -1,6 +1,7 @@
 const CampaignRepository = require('../repository/CampaignRepository');
 const CategoryService = require('./CategoryService');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
+const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class CampaignService {
   constructor() {
@@ -49,7 +50,7 @@ class CampaignService {
       );
     }
 
-    return CampaignList;
+    return addHelpTypeToList(CampaignList, 'campaign');
   }
 
   async getCampaignById(id) {

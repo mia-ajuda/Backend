@@ -9,6 +9,7 @@ const NotificationMixin = require('../utils/NotificationMixin');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 const saveError = require('../utils/ErrorHistory');
 const SocialNetworkService = require('./SocialNetworkService');
+const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class HelpService {
   constructor() {
@@ -110,7 +111,7 @@ class HelpService {
       );
     }
 
-    return Helplist;
+    return addHelpTypeToList(Helplist, 'help');
   }
 
   async deleteHelpLogically(id) {
