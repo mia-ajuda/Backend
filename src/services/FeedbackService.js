@@ -10,8 +10,8 @@ class FeedbackService {
     return newFeedback;
   }
 
-  async listByReceiver(receiverId) {
-    const result = await this.FeedbackRepository.listByReceiver(receiverId);
+  async listByReceiver(receiver) {
+    const result = await this.FeedbackRepository.listByReceiver(receiver);
     return result;
   }
 }

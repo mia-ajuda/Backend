@@ -12,7 +12,7 @@ class FeedbackRepository extends BaseRepository {
   }
 
   async listByReceiver(receiverId) {
-    const result = await super.$list({ receiverId });
+    const result = await super.$list({ receiverId }, null, ['sender', 'photo', 'name']);
     return result;
   }
 }

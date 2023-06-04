@@ -2,17 +2,21 @@ const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema(
   {
-    senderId: {
+    sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    receiverId: {
+    receiver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    body: {
+    creationDate: {
+      type: Date,
+      default: Date.now,
+    },
+    message: {
       type: String,
       required: true,
     },

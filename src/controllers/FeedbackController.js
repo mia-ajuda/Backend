@@ -8,11 +8,11 @@ class FeedbackController {
 
   async create(req, res) {
     try {
-      const { body, senderId, receiverId } = req.body;
+      const { message, sender, receiver } = req.body;
       const feedback = {
-        senderId,
-        receiverId,
-        body,
+        sender,
+        receiver,
+        message,
       };
       const newFeedback = await this.FeedbackService.create(feedback);
       res.status(200).json(newFeedback);
@@ -24,9 +24,9 @@ class FeedbackController {
 
   async listByReceiver(req, res) {
     try {
-      const { receiverId } = req.params;
+      const { receiver } = req.params;
       const feedbacks = await this.FeedbackService.listByReceiver(
-        receiverId,
+        receiver,
       );
       res.status(200).json(feedbacks);
     } catch (error) {
