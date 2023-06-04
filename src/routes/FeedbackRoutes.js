@@ -8,7 +8,7 @@ routes.post('/feedback', (req, res) => {
   badgeController.create(req, res);
 });
 
-routes.get('/feedback/:receiverId', (req, res) => {
+routes.get('/feedback/:receiver', (req, res) => {
   badgeController.listByReceiver(req, res);
 });
 
