@@ -57,9 +57,14 @@ class UserRepository extends BaseRepository {
     await super.$destroy(query);
   }
 
-  async getUsersWithDevice() {
-    const users = await super.$list({ deviceId: { $ne: null } });
+  async getUsersWithDevice({ query = {}, fields = '' }) {
+    const users = await super.$list({ ...query, deviceId: { $ne: null } }, fields);
 
+    return users;
+  }
+
+  async listUsers({ query = {}, fields = '' }) {
+    const users = await super.$list(query, fields);
     return users;
   }
 

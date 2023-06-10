@@ -9,6 +9,7 @@ const NotificationMixin = require('../utils/NotificationMixin');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 const saveError = require('../utils/ErrorHistory');
 const SocialNetworkService = require('./SocialNetworkService');
+const { getDistance } = require('../utils/geolocation/calculateDistance');
 
 class HelpService {
   constructor() {
@@ -23,7 +24,7 @@ class HelpService {
 
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
-    if (countHelp >= 5) {
+    if (countHelp >= 20) {
       throw new Error('Limite máximo de pedidos atingido');
     }
 
@@ -36,8 +37,45 @@ class HelpService {
       JSON.parse(JSON.stringify(createdHelp.ownerId)),
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
-
+    this.notifyNearUsers(createdHelp);
     // this.notificationToFollowers(createdHelp.ownerId, createdHelp.id);
+  }
+
+  async notifyNearUsers(helpInfo) {
+    const users = await this.UserService.getUsersWithDevice({ fields: 'location deviceId' });
+    const currentUser = await this.UserService.getUser({ id: helpInfo.ownerId });
+    const usersWithLocation = users.filter((user) => !!user.location?.coordinates);
+    const nearUsers = usersWithLocation.filter((user) => {
+      const distance = getDistance(
+        this.buildLatlongObject(currentUser.location.coordinates),
+        this.buildLatlongObject(user.location.coordinates),
+        false,
+      );
+      return distance < 5000000;
+    });
+    nearUsers.forEach((user) => this.notifyUser(user));
+  }
+
+  async notifyUser(user) {
+    const title = 'Pedido criado próxima a você';
+    const body = 'Entre no aplicativo para conferir.';
+    try {
+      await this.NotificationMixin.sendNotification(
+        user.deviceId,
+        title,
+        body,
+      );
+    } catch (err) {
+      console.log('Não foi possível enviar a notificação!');
+      saveError(err);
+    }
+  }
+
+  buildLatlongObject(coords) {
+    return {
+      longitude: coords[0],
+      latitude: coords[1],
+    };
   }
 
   /* TODO: Create logic to notificate the followers

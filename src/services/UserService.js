@@ -57,9 +57,9 @@ class UserService {
     }
   }
 
-  async getUsersWithDevice() {
+  async getUsersWithDevice({ query = {}, fields = '' }) {
     try {
-      const users = await this.userRepository.getUsersWithDevice();
+      const users = await this.userRepository.getUsersWithDevice({ query, fields });
       return users;
     } catch (err) {
       throw err;
@@ -193,6 +193,12 @@ class UserService {
     );
 
     return user;
+  }
+
+  async listUsers({ query = {}, fields = '' }) {
+    const users = await this.userRepository.listUsers({ query, fields });
+
+    return users;
   }
 }
 
