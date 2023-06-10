@@ -39,7 +39,6 @@ class NotificationService {
       return distance < 5000000;
     });
     nearUsers.forEach((user) => {
-      console.log(user._id.toString(), ownerId.toString());
       if (user._id.toString() !== ownerId.toString()) {
         this.notifyUser(user, title, body);
       }
