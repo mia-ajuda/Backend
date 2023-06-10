@@ -4,12 +4,14 @@ const saveError = require('../utils/ErrorHistory');
 const notify = require('../utils/Notification');
 const buildLatLong = require('../utils/geolocation/buildLatLng');
 const { getDistance } = require('../utils/geolocation/calculateDistance');
-const UserService = require('./UserService').default;
+const UserService = require('./UserService');
+const NotificationMixin = require('../utils/NotificationMixin');
 
 class NotificationService {
   constructor() {
     this.notificationRepository = new NotificationRepository();
     this.UserService = new UserService();
+    this.NotificationMixin = new NotificationMixin();
   }
 
   async getUserNotificationsById(id) {
@@ -36,7 +38,12 @@ class NotificationService {
       );
       return distance < 5000000;
     });
-    nearUsers.forEach((user) => this.notifyUser(user, title, body));
+    nearUsers.forEach((user) => {
+      console.log(user._id.toString(), ownerId.toString());
+      if (user._id.toString() !== ownerId.toString()) {
+        this.notifyUser(user, title, body);
+      }
+    });
   }
 
   async notifyUser(user, title, body) {
