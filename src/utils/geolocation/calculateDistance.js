@@ -13,9 +13,9 @@ function calculateDistance(centerCoordinates, pointCoordinates) {
 
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
     + Math.cos(deg2rad(lat1))
-      * Math.cos(deg2rad(lat2))
-      * Math.sin(dLon / 2)
-      * Math.sin(dLon / 2);
+    * Math.cos(deg2rad(lat2))
+    * Math.sin(dLon / 2)
+    * Math.sin(dLon / 2);
 
   const center = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = radius * center;
@@ -24,15 +24,20 @@ function calculateDistance(centerCoordinates, pointCoordinates) {
 }
 
 function convertDistance(distance) {
+  return distance.toFixed(2);
+}
+
+function convertDistanceToString(distance) {
   return distance > 1
     ? `${distance.toFixed(2)} km`
     : `${(distance * 1000).toFixed(0)} m`;
 }
 
-function getDistance(centerCoordinates, pointCoordinates) {
+
+function getDistance(centerCoordinates, pointCoordinates, convertToString = true) {
   let distance = calculateDistance(centerCoordinates, pointCoordinates);
 
-  distance = convertDistance(distance);
+  distance = convertToString ? convertDistanceToString(distance) : convertDistance(distance);
 
   return distance;
 }

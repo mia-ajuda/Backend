@@ -38,6 +38,9 @@ class HelpService {
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
 
+    const title = 'Pedido criado próximo a você';
+    const body = 'Entre no aplicativo para conferir.';
+    this.NotificationService.notifyNearUsers(title, body, createdHelp.ownerId);
     // this.notificationToFollowers(createdHelp.ownerId, createdHelp.id);
   }
 

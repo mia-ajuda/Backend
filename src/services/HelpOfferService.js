@@ -22,6 +22,9 @@ class OfferedHelpService {
     const newOfferdHelp = await this.OfferedHelpRepository.create(
       offeredHelpInfo,
     );
+    const title = 'Oferta criada próximo a você';
+    const body = 'Entre no aplicativo para conferir.';
+    this.NotificationService.notifyNearUsers(title, body, newOfferdHelp.ownerId);
     return newOfferdHelp;
   }
 
