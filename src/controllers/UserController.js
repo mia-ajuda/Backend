@@ -34,6 +34,7 @@ class UserController {
       deviceId: req.body.deviceId,
       address: req.body.address,
       biography: req.body.biography,
+      location: req.body.location,
     };
     try {
       const result = await this.userService.editUserById(data);

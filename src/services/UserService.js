@@ -57,9 +57,9 @@ class UserService {
     }
   }
 
-  async getUsersWithDevice() {
+  async getUsersWithDevice({ query = {}, fields = '' }) {
     try {
-      const users = await this.userRepository.getUsersWithDevice();
+      const users = await this.userRepository.getUsersWithDevice({ query, fields });
       return users;
     } catch (err) {
       throw err;
@@ -107,6 +107,7 @@ class UserService {
     notificationToken,
     address,
     deviceId,
+    location,
     biography,
   }) {
     const user = await this.getUser({ email });
@@ -118,6 +119,7 @@ class UserService {
     user.address = address || user.address;
     user.biography = biography || user.biography;
     user.deviceId = deviceId || user.deviceId;
+    user.location = location || user.location;
 
     const result = await this.userRepository.update(user);
 
@@ -191,6 +193,12 @@ class UserService {
     );
 
     return user;
+  }
+
+  async listUsers({ query = {}, fields = '' }) {
+    const users = await this.userRepository.listUsers({ query, fields });
+
+    return users;
   }
 }
 
