@@ -41,6 +41,11 @@ class BadgeRepository extends BaseRepository {
     );
     return result;
   }
+
+  async getById(id) {
+    const result = await super.$getById(id, null, this.populateData);
+    return result;
+  }
 }
 
 module.exports = BadgeRepository;

@@ -16,4 +16,12 @@ routes.get('/badges/history', async (req, res, next) => {
   badgeController.getBadgeHistory(req, res, next);
 });
 
+routes.put('/badges/:badgeId', async (req, res, next) => {
+  badgeController.markBadgeAsViewed(req, res, next);
+});
+
+routes.get('/badges/list', async (req, res, next) => {
+  badgeController.getBadgeList(req, res, next);
+});
+
 module.exports = routes;

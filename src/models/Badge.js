@@ -16,6 +16,13 @@ const badgeSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    visualizedAt: {
+      type: Date,
+    },
   },
   { collection: 'badge' },
 );
