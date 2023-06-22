@@ -42,8 +42,6 @@ class BadgeService {
 
   async markBadgeAsViewed(badgeId) {
     const badge = await this.BadgeRepository.getById(badgeId);
-    console.log(badge);
-    console.log(Date.now());
     badge.visualizedAt = Date.now();
     await this.BadgeRepository.update(badge);
   }
