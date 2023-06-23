@@ -36,8 +36,15 @@ class OfferedHelpController {
     const getOtherUsers = req.query.getOtherUsers === 'true';
     const { isUserEntity } = global;
     const coords = req.query.coords.split(',').map((coord) => Number(coord));
+    const categoryArray = req.query.categoryId ? req.query.categoryId.split(',') : null;
     try {
-      const helpOffers = await this.HelpOfferService.listHelpsOffers(coords, userId, isUserEntity, null, getOtherUsers);
+      const helpOffers = await this.HelpOfferService.listHelpsOffers(
+        coords,
+        userId,
+        isUserEntity,
+        categoryArray,
+        getOtherUsers,
+      );
       return res.json(helpOffers);
     } catch (error) {
       return res.status(400).json({ error: error.message });
