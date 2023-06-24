@@ -17,7 +17,7 @@ class HelpController {
     };
     try {
       await this.HelpService.createHelp(data);
-      await this.TimelineEventService.create({user: data.ownerId, template: timelineEnum.createRequest})
+      await this.TimelineEventService.create({ user: data.ownerId, template: timelineEnum.createRequest });
       res.status(201).send();
       next();
     } catch (err) {
@@ -122,7 +122,7 @@ class HelpController {
 
     try {
       await this.HelpService.ownerConfirmation(data);
-      await this.TimelineEventService.create({user: data.ownerId, template: timelineEnum.finishRequest})
+      await this.TimelineEventService.create({ user: data.ownerId, template: timelineEnum.finishRequest });
       res.status(204).send();
       next();
     } catch (err) {

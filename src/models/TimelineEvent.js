@@ -15,7 +15,7 @@ const timelineEventSchema = new mongoose.Schema(
       type: String,
       ref: 'User',
       required: true,
-    }
+    },
   },
   { collection: 'timelineEvent' },
 );
