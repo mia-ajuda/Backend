@@ -151,6 +151,7 @@ class HelpController {
 
     try {
       await this.HelpService.addPossibleHelpers(id, idHelper);
+      await this.TimelineEventService.create({ user: idHelper, template: timelineEnum.offerHelp });
       res.status(204).send();
       next();
     } catch (err) {
