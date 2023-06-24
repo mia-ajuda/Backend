@@ -1,20 +1,23 @@
 const HelpService = require('../services/HelpService');
 const UserService = require('../services/UserService');
+const TimelineEventService = require('../services/TimelineEventService');
 const saveError = require('../utils/ErrorHistory');
+const timelineEnum = require('../utils/enums/timelineEnum');
 
 class HelpController {
   constructor() {
     this.HelpService = new HelpService();
     this.UserService = new UserService();
+    this.TimelineEventService = new TimelineEventService();
   }
 
   async createHelp(req, res, next) {
     const data = {
       ...req.body,
     };
-
     try {
       await this.HelpService.createHelp(data);
+      await this.TimelineEventService.create({user: data.ownerId, template: timelineEnum.createRequest})
       res.status(201).send();
       next();
     } catch (err) {
@@ -119,6 +122,7 @@ class HelpController {
 
     try {
       await this.HelpService.ownerConfirmation(data);
+      await this.TimelineEventService.create({user: data.ownerId, template: timelineEnum.finishRequest})
       res.status(204).send();
       next();
     } catch (err) {
