@@ -38,7 +38,7 @@ class OfferedHelpService {
   }
 
   async listHelpsOffers(userId, isUserEntity, categoryArray, getOtherUsers) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId, isUserEntity, categoryArray, getOtherUsers);
+    const helpOffers = await this.OfferedHelpRepository.list(null, userId, isUserEntity, categoryArray, getOtherUsers);
     return helpOffers;
   }
 
