@@ -2,10 +2,12 @@ const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
 const getLocation = require('../utils/getLocation');
+const UserRepository = require('./UserRepository');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
     super(OfferedHelp);
+    this.userRepository = new UserRepository();
   }
 
   async create(offeredHelp) {
@@ -72,6 +74,11 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async list(coords, userId, isUserEntity, categoryArray, getOtherUsers) {
+    if (!coords) {
+      const user = await this.userRepository.$getById(userId);
+      coords = user.location.coordinates;
+    }
+
     const matchQuery = this.getHelpOfferListQuery(
       userId,
       isUserEntity,
