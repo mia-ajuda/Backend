@@ -1,4 +1,4 @@
-const ActivityService = require("../services/ActivityService");
+const ActivityService = require('../services/ActivityService');
 
 class ActivityController {
   constructor() {
@@ -8,14 +8,14 @@ class ActivityController {
   async fetchActivityList(req, res) {
     const { id } = req.query;
     const { isUserEntity } = global;
-    const coords = req.query.coords.split(",").map((coord) => Number(coord));
+    const coords = req.query.coords.split(',').map((coord) => Number(coord));
     const categoryArray = req.query.categoryId
-      ? req.query.categoryId.split(",")
+      ? req.query.categoryId.split(',')
       : null;
     const activitiesArray = req.query.activityId
-      ? req.query.activityId.split(",")
-      : ["getAll"];
-    const getOtherUsers = req.query.getOtherUsers === "true";
+      ? req.query.activityId.split(',')
+      : ['getAll'];
+    const getOtherUsers = req.query.getOtherUsers === 'true';
 
     try {
       const activityList = await this.ActivityService.fetchActivityList(
@@ -24,7 +24,7 @@ class ActivityController {
         isUserEntity,
         categoryArray,
         activitiesArray,
-        getOtherUsers
+        getOtherUsers,
       );
       return res.json(activityList);
     } catch (error) {

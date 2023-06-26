@@ -1,8 +1,8 @@
-const CampaignRepository = require("../repository/CampaignRepository");
-const OfferdHelpRepository = require("../repository/HelpOfferRepository");
-const HelpRepository = require("../repository/HelpRepository");
-const addHelpTypeToList = require("../utils/addHelpTypeToList");
-const sortActivitiesByDistance = require("../utils/sortActivitiesByDistance");
+const CampaignRepository = require('../repository/CampaignRepository');
+const OfferdHelpRepository = require('../repository/HelpOfferRepository');
+const HelpRepository = require('../repository/HelpRepository');
+const addHelpTypeToList = require('../utils/addHelpTypeToList');
+const sortActivitiesByDistance = require('../utils/sortActivitiesByDistance');
 
 class ActivityService {
   constructor() {
@@ -16,15 +16,15 @@ class ActivityService {
       coords,
       id,
       isUserEntity,
-      categoryArray
+      categoryArray,
     );
     if (!Helplist) {
       throw new Error(
-        "Pedidos de ajuda não encontrados no seu raio de distância"
+        'Pedidos de ajuda não encontrados no seu raio de distância',
       );
     }
 
-    return addHelpTypeToList(Helplist, "help");
+    return addHelpTypeToList(Helplist, 'help');
   }
 
   async getHelpOfferList(
@@ -32,16 +32,16 @@ class ActivityService {
     id,
     isUserEntity,
     categoryArray,
-    getOtherUsers
+    getOtherUsers,
   ) {
     const helpOffers = await this.OfferedHelpRepository.list(
       coords,
       id,
       isUserEntity,
       categoryArray,
-      getOtherUsers
+      getOtherUsers,
     );
-    const helpOffersList = addHelpTypeToList(helpOffers, "offer");
+    const helpOffersList = addHelpTypeToList(helpOffers, 'offer');
     return helpOffersList;
   }
 
@@ -50,15 +50,15 @@ class ActivityService {
       coords,
       except,
       id,
-      categoryArray
+      categoryArray,
     );
     if (!CampaignList) {
       throw new Error(
-        "Nenhuma campanha foi encontrada no seu raio de distância"
+        'Nenhuma campanha foi encontrada no seu raio de distância',
       );
     }
 
-    return addHelpTypeToList(CampaignList, "campaign");
+    return addHelpTypeToList(CampaignList, 'campaign');
   }
 
   async fetchActivityList(
@@ -67,53 +67,58 @@ class ActivityService {
     isUserEntity,
     categoryArray,
     activitiesArray,
-    getOtherUsers
+    getOtherUsers,
   ) {
-    const activitiesList = [];
+    const promises = [];
 
-    for (const activity of activitiesArray) {
+    activitiesArray.forEach((activity) => {
       switch (activity) {
-        case "help":
-          activitiesList.push(
-            await this.getHelpList(coords, id, isUserEntity, categoryArray)
-          );
-          break;
-
-        case "helpOffer":
-          activitiesList.push(
-            await this.getHelpOfferList(
-              coords,
-              id,
-              isUserEntity,
-              categoryArray,
-              getOtherUsers
-            )
-          );
-          break;
-
-        case "campaign":
-          activitiesList.push(
-            await this.getCampaignList(coords, null, id, categoryArray)
-          );
-          break;
-
-        default:
-          const [campaignList, helpOfferList, helpList] = await Promise.all([
-            this.getCampaignList(coords, true, id, categoryArray),
-            this.getHelpOfferList(
-              coords,
-              id,
-              isUserEntity,
-              categoryArray,
-              getOtherUsers
-            ),
-            this.getHelpList(coords, id, isUserEntity, categoryArray),
-          ]);
-          activitiesList.push(...campaignList, ...helpOfferList, ...helpList);
+      case 'help': {
+        promises.push(
+          this.getHelpList(coords, id, isUserEntity, categoryArray),
+        );
+        break;
       }
-    }
 
-    const flattedList = activitiesList.flat();
+      case 'helpOffer': {
+        promises.push(
+          this.getHelpOfferList(
+            coords,
+            id,
+            isUserEntity,
+            categoryArray,
+            getOtherUsers,
+          ),
+        );
+        break;
+      }
+
+      case 'campaign': {
+        promises.push(
+          this.getCampaignList(coords, null, id, categoryArray),
+        );
+        break;
+      }
+
+      default: {
+        const promisesList = Promise.all([
+          this.getCampaignList(coords, true, id, categoryArray),
+          this.getHelpOfferList(
+            coords,
+            id,
+            isUserEntity,
+            categoryArray,
+            getOtherUsers,
+          ),
+          this.getHelpList(coords, id, isUserEntity, categoryArray),
+        ]);
+        promises.push(promisesList);
+      }
+      }
+    });
+    const activitiesList = await Promise.all(promises);
+
+    const flattedList = activitiesList.flat(2);
 
     return sortActivitiesByDistance({ helpList: flattedList });
   }

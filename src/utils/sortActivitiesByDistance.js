@@ -9,6 +9,6 @@ const sortActivitiesByDistance = ({
   list = list.sort((a, b) => a.distanceValue - b.distanceValue);
 
   return limit ? list.slice(0, 15) : list;
-}
+};
 
 module.exports = sortActivitiesByDistance;
