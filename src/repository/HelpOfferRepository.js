@@ -74,11 +74,6 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async list(coords, userId, isUserEntity, categoryArray, getOtherUsers) {
-    if (!coords) {
-      const user = await this.userRepository.$getById(userId);
-      coords = user.location.coordinates;
-    }
-
     const matchQuery = this.getHelpOfferListQuery(
       userId,
       isUserEntity,
@@ -118,15 +113,19 @@ class OfferdHelpRepository extends BaseRepository {
 
     const helpOffer = await super.$list(matchQuery, helpOfferFields, populate, sort);
 
-    const helpOffersWithDistances = helpOffer.map((offer) => {
-      const offerLocation = getLocation(offer);
-      offer.distances = { userCoords: offerLocation, coords };
-      return offer.toObject();
-    });
+    if (coords) {
+      const helpOffersWithDistances = helpOffer.map((offer) => {
+        const offerLocation = getLocation(offer);
+        offer.distances = { userCoords: offerLocation, coords };
+        return offer.toObject();
+      });
 
-    helpOffersWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
+      helpOffersWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
 
-    return helpOffersWithDistances;
+      return helpOffersWithDistances;
+    }
+
+    return helpOffer;
   }
 
   getHelpOfferListQuery(
