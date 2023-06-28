@@ -8,10 +8,10 @@ class ActivityController {
   async fetchActivityList(req, res) {
     const { id } = req.query;
     const { isUserEntity } = global;
-    const coords = req.query.coords.split(",").map((coord) => Number(coord));
-    const categoryArray = req.query.categoryId?.split(',')
-    const activitiesArray = req.query.activityId?.split(",") || ["getAll"];
-    const getOtherUsers = req.query.getOtherUsers === "true";
+    const coords = req.query.coords.split(',').map((coord) => Number(coord));
+    const categoryArray = req.query.categoryId?.split(',');
+    const activitiesArray = req.query.activityId?.split(',') || ['getAll'];
+    const getOtherUsers = req.query.getOtherUsers === 'true';
 
     try {
       const activityList = await this.ActivityService.fetchActivityList(

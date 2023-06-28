@@ -26,9 +26,9 @@ class ActivityService {
       campaign: this.CampaignRepository.listNear(coords, null, id, categoryArray),
     };
 
-    for (const activity in activitiesArray) {
+    activitiesArray.forEach((activity) => {
       if (mappedActivitiesRepositories[activity]) promises.push(mappedActivitiesRepositories[activity]);
-    };
+    });
 
     if (!promises.length) {
       const promisesList = Promise.all([
@@ -37,8 +37,8 @@ class ActivityService {
         this.CampaignRepository.listNear(coords, null, id, categoryArray),
       ]);
       promises.push(promisesList);
-    };
-    
+    }
+
     const activitiesList = await Promise.all(promises);
 
     const flattedList = activitiesList.flat(2);
