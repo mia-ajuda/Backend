@@ -32,9 +32,9 @@ class ActivityService {
 
     if (!promises.length) {
       const promisesList = Promise.all([
-        this.HelpRepository.shortList(coords, id, isUserEntity, categoryArray),
-        this.OfferedHelpRepository.list(id, isUserEntity, categoryArray, getOtherUsers, coords),
-        this.CampaignRepository.listNear(coords, null, id, categoryArray),
+        mappedActivitiesRepositories.help,
+        mappedActivitiesRepositories.helpOffer,
+        mappedActivitiesRepositories.campaign,
       ]);
       promises.push(promisesList);
     }
