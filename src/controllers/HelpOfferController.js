@@ -1,9 +1,12 @@
 const HelpOfferService = require('../services/HelpOfferService');
+const TimelineEventService = require('../services/TimelineEventService');
 const saveError = require('../utils/ErrorHistory');
+const timelineEnum = require('../utils/enums/timelineEnum');
 
 class OfferedHelpController {
   constructor() {
     this.HelpOfferService = new HelpOfferService();
+    this.TimelineEventService = new TimelineEventService();
   }
 
   async createHelpOffer(req, res) {
@@ -11,6 +14,7 @@ class OfferedHelpController {
       const newHelpOffer = await this.HelpOfferService.createNewHelpOffer(
         req.body,
       );
+      await this.TimelineEventService.create({ user: req.body.ownerId, template: timelineEnum.offer });
       return res.json(newHelpOffer);
     } catch (error) {
       return res.status(400).json({ error: error.message });
