@@ -21,20 +21,20 @@ class ActivityService {
     const promises = [];
 
     const mappedActivitiesRepositories = {
-      help: this.HelpRepository.shortList(coords, id, isUserEntity, categoryArray),
-      helpOffer: this.OfferedHelpRepository.list(id, isUserEntity, categoryArray, getOtherUsers, coords),
-      campaign: this.CampaignRepository.listNear(coords, null, id, categoryArray),
+      help: () => this.HelpRepository.shortList(coords, id, isUserEntity, categoryArray),
+      helpOffer: () => this.OfferedHelpRepository.list(id, isUserEntity, categoryArray, getOtherUsers, coords),
+      campaign: () => this.CampaignRepository.listNear(coords, null, id, categoryArray),
     };
 
     activitiesArray.forEach((activity) => {
-      if (mappedActivitiesRepositories[activity]) promises.push(mappedActivitiesRepositories[activity]);
+      if (mappedActivitiesRepositories[activity]) promises.push(mappedActivitiesRepositories[activity]());
     });
 
     if (!promises.length) {
       const promisesList = Promise.all([
-        mappedActivitiesRepositories.help,
-        mappedActivitiesRepositories.helpOffer,
-        mappedActivitiesRepositories.campaign,
+        mappedActivitiesRepositories.help(),
+        mappedActivitiesRepositories.helpOffer(),
+        mappedActivitiesRepositories.campaign(),
       ]);
       promises.push(promisesList);
     }
