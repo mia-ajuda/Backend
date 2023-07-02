@@ -23,7 +23,7 @@ class ActivityService {
     const mappedActivitiesRepositories = {
       help: () => this.HelpRepository.shortList(coords, id, isUserEntity, categoryArray),
       helpOffer: () => this.OfferedHelpRepository.list(id, isUserEntity, categoryArray, getOtherUsers, coords),
-      campaign: () => this.CampaignRepository.listNear(coords, null, id, categoryArray),
+      campaign: () => this.CampaignRepository.listNear(coords, true, id, categoryArray),
     };
 
     activitiesArray.forEach((activity) => {
