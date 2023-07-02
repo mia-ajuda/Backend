@@ -110,7 +110,7 @@ class OfferdHelpRepository extends BaseRepository {
 
     const populate = [user, categories, possibleHelpedUsers, possibleEntities];
 
-    let helpOffers = await super.$list(matchQuery, helpOfferFields, populate, sort);
+    const helpOffers = await super.$list(matchQuery, helpOfferFields, populate, sort);
 
     if (coords) {
       const helpOffersWithDistances = helpOffers.map((offer) => {
@@ -121,10 +121,9 @@ class OfferdHelpRepository extends BaseRepository {
 
       helpOffersWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
 
-      helpOffers = helpOffersWithDistances;
+      return addHelpTypeToList(helpOffersWithDistances, 'offer');
     }
-
-    return addHelpTypeToList(helpOffers, 'offer');
+    return helpOffers;
   }
 
   getHelpOfferListQuery(
