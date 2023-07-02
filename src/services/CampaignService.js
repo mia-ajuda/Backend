@@ -1,7 +1,6 @@
 const CampaignRepository = require('../repository/CampaignRepository');
 const CategoryService = require('./CategoryService');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
-const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class CampaignService {
   constructor() {
@@ -38,19 +37,19 @@ class CampaignService {
   }
 
   async getNearCampaignList(coords, except, id, categoryArray) {
-    const CampaignList = await this.CampaignRepository.listNear(
+    const campaignList = await this.CampaignRepository.listNear(
       coords,
       except,
       id,
       categoryArray,
     );
-    if (!CampaignList) {
+    if (!campaignList) {
       throw new Error(
         'Nenhuma campanha foi encontrada no seu raio de distância',
       );
     }
 
-    return addHelpTypeToList(CampaignList, 'campaign');
+    return campaignList;
   }
 
   async getCampaignById(id) {
