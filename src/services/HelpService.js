@@ -101,19 +101,19 @@ class HelpService {
   }
 
   async getHelpList(coords, id, isUserEntity, categoryArray) {
-    const Helplist = await this.HelpRepository.shortList(
+    const helplist = await this.HelpRepository.shortList(
       coords,
       id,
       isUserEntity,
       categoryArray,
     );
-    if (!Helplist) {
+    if (!helplist) {
       throw new Error(
         'Pedidos de ajuda não encontrados no seu raio de distância',
       );
     }
 
-    return Helplist;
+    return helplist;
   }
 
   async deleteHelpLogically(id) {
