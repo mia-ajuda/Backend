@@ -114,7 +114,6 @@ class SocialNetworkService {
     );
 
     const offers = await this.offerdHelpRepository.list(
-      null,
       userId,
       false,
       categoryArray,
