@@ -8,6 +8,7 @@ const Campaign = require('../../models/Campaign');
 const HelpOffer = require('../../models/HelpOffer');
 const mockedOfferInfo = require('./mockedInfos/mockedOfferInfo');
 const mockedHelpInfo = require('./mockedInfos/mockedHelpInfo');
+const addIndexToOldActivities = require('./addIndexToOldActivities');
 
 const status = [
   'waiting',
@@ -32,6 +33,10 @@ const seedHelp = async () => {
       || helpOfferCollection.length > 0
       || campaignCollection.length > 0
     ) {
+      // this will be removed after first run in production
+      addIndexToOldActivities(helpCollection);
+      addIndexToOldActivities(helpOfferCollection);
+      addIndexToOldActivities(campaignCollection);
       return;
     }
 

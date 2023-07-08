@@ -52,6 +52,11 @@ const campaignSchema = new mongoose.Schema({
     index: '2dsphere',
     required: false,
   },
+  index: {
+    type: Number,
+    default: 1,
+    unique: true,
+  },
 },
 {
   collection: 'campaign',
@@ -91,7 +96,11 @@ campaignSchema.virtual('distances')
 
 campaignSchema.virtual('distanceValue')
   .get(() => this.distanceValue);
+
 campaignSchema.virtual('distance')
   .get(() => this.distance);
+
+campaignSchema.virtual('type')
+  .get(() => 'campaign');
 
 module.exports = mongoose.model('Campaign', campaignSchema);

@@ -2,7 +2,6 @@ const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
 const getLocation = require('../utils/getLocation');
-const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
@@ -89,6 +88,7 @@ class OfferdHelpRepository extends BaseRepository {
       'creationDate',
       'location',
       'description',
+      'index',
     ];
     const sort = { creationDate: -1 };
     const user = {
@@ -110,7 +110,7 @@ class OfferdHelpRepository extends BaseRepository {
 
     const populate = [user, categories, possibleHelpedUsers, possibleEntities];
 
-    let helpOffers = await super.$list(matchQuery, helpOfferFields, populate, sort);
+    const helpOffers = await super.$list(matchQuery, helpOfferFields, populate, sort);
 
     if (coords) {
       const helpOffersWithDistances = helpOffers.map((offer) => {
@@ -121,10 +121,9 @@ class OfferdHelpRepository extends BaseRepository {
 
       helpOffersWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
 
-      helpOffers = helpOffersWithDistances;
+      return helpOffersWithDistances;
     }
-
-    return addHelpTypeToList(helpOffers, 'offer');
+    return helpOffers;
   }
 
   getHelpOfferListQuery(

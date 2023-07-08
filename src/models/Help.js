@@ -63,6 +63,11 @@ const helpSchema = new mongoose.Schema(
       index: '2dsphere',
       required: false,
     },
+    index: {
+      type: Number,
+      default: 1,
+      unique: true,
+    },
   },
   {
     collection: 'userHelp',
@@ -103,7 +108,11 @@ helpSchema.virtual('distances')
 
 helpSchema.virtual('distanceValue')
   .get(() => this.distanceValue);
+
 helpSchema.virtual('distance')
   .get(() => this.distance);
+
+helpSchema.virtual('type')
+  .get(() => 'help');
 
 module.exports = mongoose.model('Help', helpSchema);

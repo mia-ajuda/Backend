@@ -60,6 +60,11 @@ const offeredHelpSchema = new Schema(
       index: '2dsphere',
       required: false,
     },
+    index: {
+      type: Number,
+      default: 1,
+      unique: true,
+    },
   },
   {
     collection: 'helpOffer',
@@ -110,5 +115,7 @@ offeredHelpSchema.virtual('distanceValue')
 
 offeredHelpSchema.virtual('distance')
   .get(() => this.distance);
+
+offeredHelpSchema.virtual('type').get(() => 'offer');
 
 module.exports = model('OfferedHelp', offeredHelpSchema);
