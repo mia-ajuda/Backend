@@ -62,8 +62,8 @@ const offeredHelpSchema = new Schema(
     },
     index: {
       type: Number,
-      default: 0,
-      unique: false,
+      default: 1,
+      unique: true,
     },
   },
   {
