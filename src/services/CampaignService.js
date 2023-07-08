@@ -37,19 +37,19 @@ class CampaignService {
   }
 
   async getNearCampaignList(coords, except, id, categoryArray) {
-    const CampaignList = await this.CampaignRepository.listNear(
+    const campaignList = await this.CampaignRepository.listNear(
       coords,
       except,
       id,
       categoryArray,
     );
-    if (!CampaignList) {
+    if (!campaignList) {
       throw new Error(
         'Nenhuma campanha foi encontrada no seu raio de distância',
       );
     }
 
-    return CampaignList;
+    return campaignList;
   }
 
   async getCampaignById(id) {
