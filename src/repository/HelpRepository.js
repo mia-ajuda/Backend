@@ -3,7 +3,6 @@ const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const HelpSchema = require('../models/Help');
 const getLocation = require('../utils/getLocation');
-const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class HelpRepository extends BaseRepository {
   constructor() {
@@ -133,7 +132,7 @@ class HelpRepository extends BaseRepository {
 
     helpsWithDistance.sort((a, b) => a.distanceValue - b.distanceValue);
 
-    return addHelpTypeToList(helpsWithDistance, 'help');
+    return helpsWithDistance;
   }
 
   async countDocuments(id) {

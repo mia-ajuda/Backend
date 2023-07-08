@@ -111,4 +111,6 @@ offeredHelpSchema.virtual('distanceValue')
 offeredHelpSchema.virtual('distance')
   .get(() => this.distance);
 
+offeredHelpSchema.virtual('type').get(() => 'offer');
+
 module.exports = model('OfferedHelp', offeredHelpSchema);

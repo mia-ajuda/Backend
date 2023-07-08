@@ -91,7 +91,11 @@ campaignSchema.virtual('distances')
 
 campaignSchema.virtual('distanceValue')
   .get(() => this.distanceValue);
+
 campaignSchema.virtual('distance')
   .get(() => this.distance);
+
+campaignSchema.virtual('type')
+  .get(() => 'campaign');
 
 module.exports = mongoose.model('Campaign', campaignSchema);

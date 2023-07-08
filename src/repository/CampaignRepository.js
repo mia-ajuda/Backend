@@ -3,7 +3,6 @@ const BaseRepository = require('./BaseRepository');
 const Campaign = require('../models/Campaign');
 const EntitySchema = require('../models/Entity');
 const getLocation = require('../utils/getLocation');
-const addHelpTypeToList = require('../utils/addHelpTypeToList');
 
 class CampaignRepository extends BaseRepository {
   constructor() {
@@ -67,7 +66,7 @@ class CampaignRepository extends BaseRepository {
 
     campaignsWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
 
-    return addHelpTypeToList(campaignsWithDistances, 'campaign');
+    return campaignsWithDistances;
   }
 
   async getCampaignListByStatus(userId, statusList) {
