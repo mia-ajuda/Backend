@@ -63,6 +63,11 @@ const helpSchema = new mongoose.Schema(
       index: '2dsphere',
       required: false,
     },
+    index: {
+      type: Number,
+      default: 0,
+      unique: false,
+    },
   },
   {
     collection: 'userHelp',

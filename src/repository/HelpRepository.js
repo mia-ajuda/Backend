@@ -114,6 +114,7 @@ class HelpRepository extends BaseRepository {
       'ownerId',
       'creationDate',
       'location',
+      'index',
     ];
     const user = {
       path: 'user',

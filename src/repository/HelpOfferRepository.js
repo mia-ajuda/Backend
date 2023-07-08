@@ -88,6 +88,7 @@ class OfferdHelpRepository extends BaseRepository {
       'creationDate',
       'location',
       'description',
+      'index',
     ];
     const sort = { creationDate: -1 };
     const user = {
