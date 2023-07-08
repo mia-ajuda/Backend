@@ -1,10 +1,13 @@
 const UserService = require('../services/UserService');
 const { riskGroups } = require('../models/RiskGroup');
 const saveError = require('../utils/ErrorHistory');
+const TimelineEventService = require('../services/TimelineEventService');
+const timelineEnum = require('../utils/enums/timelineEnum');
 
 class UserController {
   constructor() {
     this.userService = new UserService();
+    this.TimelineEventService = new TimelineEventService();
   }
 
   async createUser(req, res, next) {
@@ -15,6 +18,7 @@ class UserController {
 
     try {
       const result = await this.userService.createUser(data);
+      await this.TimelineEventService.create({ user: result._id, template: timelineEnum.register });
       res.status(201).json(result);
       next();
     } catch (err) {
