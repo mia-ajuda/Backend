@@ -10,6 +10,7 @@ const campaignRoutes = require('./CampaignRoutes');
 const socialNetworkRoutes = require('./SocialNetworkRoutes');
 const badgeRoutes = require('./BadgeRoutes');
 const feedbackRoutes = require('./FeedbackRoutes');
+const timelineEventRoutes = require('./TimelineEventRoutes');
 const activityRoutes = require('./ActivityRoutes');
 
 const swaggerDocument = YAML.load('docs/swagger.yaml');
@@ -27,6 +28,7 @@ module.exports = (app) => {
     socialNetworkRoutes,
     badgeRoutes,
     feedbackRoutes,
+    timelineEventRoutes,
     activityRoutes,
   ]);
 };
