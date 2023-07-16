@@ -30,6 +30,21 @@ class BadgeController {
     }
   }
 
+  async getBadgeHistory(req, res, next) {
+    const userId = req.query.userId || null;
+    try {
+      const userBadges = await this.BadgeService.getBadgeList(userId);
+      const allBadges = await this.BadgeService.getAllBadges();
+      const parsedUserBadges = parseBadgeByCategory(userBadges);
+      res.status(200).json({ userBadges: parsedUserBadges, allBadges });
+      next();
+    } catch (err) {
+      await saveError(err);
+      res.status(400).json({ error: err.message });
+      next();
+    }
+  }
+
   async getBadgeList(req, res, next) {
     const userId = req.query.userId || null;
     try {
@@ -43,13 +58,11 @@ class BadgeController {
     }
   }
 
-  async getBadgeHistory(req, res, next) {
-    const userId = req.query.userId || null;
+  async markBadgeAsViewed(req, res, next) {
+    const { badgeId } = req.params;
     try {
-      const userBadges = await this.BadgeService.getBadgeList(userId);
-      const allBadges = await this.BadgeService.getAllBadges();
-      const parsedUserBadges = parseBadgeByCategory(userBadges);
-      res.status(200).json({ userBadges: parsedUserBadges, allBadges });
+      await this.BadgeService.markBadgeAsViewed(badgeId);
+      res.status(200).json({ message: 'Badge visualized' });
       next();
     } catch (err) {
       await saveError(err);
