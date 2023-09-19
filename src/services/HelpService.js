@@ -8,6 +8,7 @@ const { findConnections, sendMessage } = require('../../websocket');
 const NotificationMixin = require('../utils/NotificationMixin');
 const helpStatusEnum = require('../utils/enums/helpStatusEnum');
 const saveError = require('../utils/ErrorHistory');
+const SocialNetworkService = require('./SocialNetworkService');
 
 class HelpService {
   constructor() {
@@ -17,11 +18,12 @@ class HelpService {
     this.CategoryService = new CategoryService();
     this.NotificationService = new NotificationService();
     this.NotificationMixin = new NotificationMixin();
+    this.socialNetworkService = new SocialNetworkService();
   }
 
   async createHelp(data) {
     const countHelp = await this.HelpRepository.countDocuments(data.ownerId);
-    if (countHelp >= 5) {
+    if (countHelp >= 15) {
       throw new Error('Limite máximo de pedidos atingido');
     }
 
@@ -34,7 +36,49 @@ class HelpService {
       JSON.parse(JSON.stringify(createdHelp.ownerId)),
     );
     sendMessage(sendSocketMessageTo, 'new-help', createdHelp);
+
+    const title = 'Pedido criado próximo a você';
+    const body = 'Entre no aplicativo para conferir.';
+    this.NotificationService.notifyNearUsers(title, body, createdHelp.ownerId);
+    // this.notificationToFollowers(createdHelp.ownerId, createdHelp.id);
   }
+
+  /* TODO: Create logic to notificate the followers
+  async notificationToFollowers(profileId, helpId) {
+    const followers = await this.socialNetworkService.getFollowers(profileId, profileId);
+
+    if (followers) {
+      const ownerTitle = 'Pedido de ajuda criado por uma pessoa que você segue.';
+      const ownerBody = 'Uma das pessoas que você está seguindo, criou uma ajuda.';
+
+       eslint-disable no-await-in-loop
+      for (let i = 0; i < followers.length; i += 1) {
+        const followersNotificationHistory = {
+          userId: followers[i].id,
+          helpId,
+          title: ownerTitle,
+          body: ownerBody,
+          notificationType: notificationTypesEnum.outros,
+        };
+        console.log(followersNotificationHistory);
+        try {
+          await this.NotificationMixin.sendNotification(
+            followers.deviceId,
+            ownerTitle,
+            ownerBody,
+          );
+          await this.NotificationService.createNotification(
+            ownerNotificationHistory,
+          );
+        } catch (err) {
+          console.log('Não foi possível enviar a notificação!');
+          saveError(err);
+        }
+      }
+    }
+  }
+  */
+
 
   async getHelpByid(id) {
     const Help = await this.HelpRepository.getById(id);
@@ -57,19 +101,19 @@ class HelpService {
   }
 
   async getHelpList(coords, id, isUserEntity, categoryArray) {
-    const Helplist = await this.HelpRepository.shortList(
+    const helplist = await this.HelpRepository.shortList(
       coords,
       id,
       isUserEntity,
       categoryArray,
     );
-    if (!Helplist) {
+    if (!helplist) {
       throw new Error(
         'Pedidos de ajuda não encontrados no seu raio de distância',
       );
     }
 
-    return Helplist;
+    return helplist;
   }
 
   async deleteHelpLogically(id) {

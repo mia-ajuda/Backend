@@ -1,11 +1,17 @@
 const { notificationTypesEnum } = require('../models/Notification');
 const NotificationRepository = require('../repository/NotificationRepository');
+const saveError = require('../utils/ErrorHistory');
 const notify = require('../utils/Notification');
-const UserService = require('./UserService').default;
+const buildLatLong = require('../utils/geolocation/buildLatLng');
+const { getDistance } = require('../utils/geolocation/calculateDistance');
+const UserService = require('./UserService');
+const NotificationMixin = require('../utils/NotificationMixin');
 
 class NotificationService {
   constructor() {
     this.notificationRepository = new NotificationRepository();
+    this.UserService = new UserService();
+    this.NotificationMixin = new NotificationMixin();
   }
 
   async getUserNotificationsById(id) {
@@ -18,6 +24,38 @@ class NotificationService {
     const notificationCreated = await this.notificationRepository.create(notification);
 
     return notificationCreated;
+  }
+
+  async notifyNearUsers(title, body, ownerId) {
+    const users = await this.UserService.getUsersWithDevice({ fields: 'location deviceId' });
+    const currentUser = await this.UserService.getUser({ id: ownerId });
+    const usersWithLocation = users.filter((user) => !!user.location?.coordinates);
+    const nearUsers = usersWithLocation.filter((user) => {
+      const distance = getDistance(
+        buildLatLong(currentUser.location.coordinates),
+        buildLatLong(user.location.coordinates),
+        false,
+      );
+      return distance < 5000000;
+    });
+    nearUsers.forEach((user) => {
+      if (user._id.toString() !== ownerId.toString()) {
+        this.notifyUser(user, title, body);
+      }
+    });
+  }
+
+  async notifyUser(user, title, body) {
+    try {
+      await this.NotificationMixin.sendNotification(
+        user.deviceId,
+        title,
+        body,
+      );
+    } catch (err) {
+      console.log('Não foi possível enviar a notificação!');
+      saveError(err);
+    }
   }
 
   async createAndSendNotifications(title, body) {

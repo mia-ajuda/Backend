@@ -21,6 +21,9 @@ class OfferedHelpService {
     const newOfferdHelp = await this.OfferedHelpRepository.create(
       offeredHelpInfo,
     );
+    const title = 'Oferta criada próximo a você';
+    const body = 'Entre no aplicativo para conferir.';
+    this.NotificationService.notifyNearUsers(title, body, newOfferdHelp.ownerId);
     return newOfferdHelp;
   }
 
@@ -34,8 +37,14 @@ class OfferedHelpService {
     return help;
   }
 
-  async listHelpsOffers(userId, isUserEntity, categoryArray, getOtherUsers) {
-    const helpOffers = await this.OfferedHelpRepository.list(userId, isUserEntity, categoryArray, getOtherUsers);
+  async listHelpsOffers(userId, isUserEntity, categoryArray, getOtherUsers, coords) {
+    const helpOffers = await this.OfferedHelpRepository.list(
+      userId,
+      isUserEntity,
+      categoryArray,
+      getOtherUsers,
+      coords,
+    );
     return helpOffers;
   }
 

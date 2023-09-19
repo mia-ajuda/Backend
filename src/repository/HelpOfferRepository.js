@@ -1,6 +1,7 @@
 const { ObjectID } = require('mongodb');
 const BaseRepository = require('./BaseRepository');
 const OfferedHelp = require('../models/HelpOffer');
+const getLocation = require('../utils/getLocation');
 
 class OfferdHelpRepository extends BaseRepository {
   constructor() {
@@ -17,6 +18,15 @@ class OfferdHelpRepository extends BaseRepository {
   }
 
   async getByIdWithAggregation(id) {
+    const commomUserFields = [
+      '_id',
+      'name',
+      'photo',
+      'birthday',
+      'phone',
+      'address.city',
+      'address.state',
+    ];
     const query = { _id: ObjectID(id) };
     const helpOfferFields = [
       '_id',
@@ -31,32 +41,37 @@ class OfferdHelpRepository extends BaseRepository {
       'creationDate',
       'location',
     ];
-    const user = {
-      path: 'user',
-      select: ['photo', 'phone', 'name', 'birthday', 'address.city'],
+
+    const userInfo = {
+      user: null,
+      possibleHelpedUsers: null,
+      possibleEntities: null,
+      helpedUsers: null,
     };
+
+    Object.keys(userInfo).forEach((key) => {
+      userInfo[key] = {
+        path: key,
+        select: commomUserFields,
+      };
+    });
+
     const categories = {
       path: 'categories',
       select: ['_id', 'name'],
     };
-    const possibleHelpedUsers = {
-      path: 'possibleHelpedUsers',
-      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city'],
-    };
-    const possibleEntities = {
-      path: 'possibleEntities',
-      select: ['_id', 'name', 'photo', 'birthday', 'address.city'],
-    };
-    const helpedUsers = {
-      path: 'helpedUsers',
-      select: ['_id', 'name', 'photo', 'birthday', 'phone', 'address.city'],
-    };
 
-    const populate = [user, categories, possibleHelpedUsers, possibleEntities, helpedUsers];
+    const populate = [
+      userInfo.user,
+      categories,
+      userInfo.possibleHelpedUsers,
+      userInfo.possibleEntities,
+      userInfo.helpedUsers,
+    ];
     return super.$findOne(query, helpOfferFields, populate);
   }
 
-  async list(userId, isUserEntity, categoryArray, getOtherUsers) {
+  async list(userId, isUserEntity, categoryArray, getOtherUsers, coords) {
     const matchQuery = this.getHelpOfferListQuery(
       userId,
       isUserEntity,
@@ -64,7 +79,17 @@ class OfferdHelpRepository extends BaseRepository {
       getOtherUsers,
       categoryArray,
     );
-    const helpOfferFields = ['_id', 'title', 'categoryId', 'ownerId', 'helpedUserId', 'creationDate', 'location'];
+    const helpOfferFields = [
+      '_id',
+      'title',
+      'categoryId',
+      'ownerId',
+      'helpedUserId',
+      'creationDate',
+      'location',
+      'description',
+      'index',
+    ];
     const sort = { creationDate: -1 };
     const user = {
       path: 'user',
@@ -85,10 +110,29 @@ class OfferdHelpRepository extends BaseRepository {
 
     const populate = [user, categories, possibleHelpedUsers, possibleEntities];
 
-    return super.$list(matchQuery, helpOfferFields, populate, sort);
+    const helpOffers = await super.$list(matchQuery, helpOfferFields, populate, sort);
+
+    if (coords) {
+      const helpOffersWithDistances = helpOffers.map((offer) => {
+        const offerLocation = getLocation(offer);
+        offer.distances = { userCoords: offerLocation, coords };
+        return offer.toObject();
+      });
+
+      helpOffersWithDistances.sort((a, b) => a.distanceValue - b.distanceValue);
+
+      return helpOffersWithDistances;
+    }
+    return helpOffers;
   }
 
-  getHelpOfferListQuery(userId, isUserEntity, active, getOtherUsers, categoryArray) {
+  getHelpOfferListQuery(
+    userId,
+    isUserEntity,
+    active,
+    getOtherUsers,
+    categoryArray,
+  ) {
     const matchQuery = { active };
     if (!getOtherUsers) {
       matchQuery.ownerId = { $ne: ObjectID(userId) };

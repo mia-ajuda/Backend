@@ -1,12 +1,14 @@
 const { ObjectID } = require('mongodb');
 const UserRepository = require('../repository/UserRepository');
 const EntityRepository = require('../repository/EntityRepository');
+const SocialNetworkService = require('./SocialNetworkService');
 const firebase = require('../config/authFirebase');
 
 class UserService {
   constructor() {
     this.userRepository = new UserRepository();
     this.entityRepository = new EntityRepository();
+    this.socialNetworkService = new SocialNetworkService();
   }
 
   async createUser(data) {
@@ -29,7 +31,7 @@ class UserService {
     data.email = data.email.toLowerCase();
     try {
       const createdUser = await this.userRepository.create(data);
-
+      const createdSocialNetworkUser = await this.socialNetworkService.createSocialNetworkUser(createdUser);
       if (!data.hasUser) {
         // Cria o usuário no firebase
         await firebase
@@ -42,6 +44,9 @@ class UserService {
           })
           .catch(async (err) => {
             await this.removeUser(data.email);
+            await this.socialNetworkService.removeSocialNetworkUser(
+              createdSocialNetworkUser._id,
+            );
             throw err;
           });
       }
@@ -52,9 +57,9 @@ class UserService {
     }
   }
 
-  async getUsersWithDevice() {
+  async getUsersWithDevice({ query = {}, fields = '' }) {
     try {
-      const users = await this.userRepository.getUsersWithDevice();
+      const users = await this.userRepository.getUsersWithDevice({ query, fields });
       return users;
     } catch (err) {
       throw err;
@@ -102,6 +107,8 @@ class UserService {
     notificationToken,
     address,
     deviceId,
+    location,
+    biography,
   }) {
     const user = await this.getUser({ email });
 
@@ -110,7 +117,9 @@ class UserService {
     user.phone = phone || user.phone;
     user.notificationToken = notificationToken || user.notificationToken;
     user.address = address || user.address;
+    user.biography = biography || user.biography;
     user.deviceId = deviceId || user.deviceId;
+    user.location = location || user.location;
 
     const result = await this.userRepository.update(user);
 
@@ -178,9 +187,18 @@ class UserService {
   async findOneUserWithProjection(userId, projection) {
     const query = { _id: ObjectID(userId) };
 
-    const user = await this.userRepository.findOneUserWithProjection(query, projection);
+    const user = await this.userRepository.findOneUserWithProjection(
+      query,
+      projection,
+    );
 
     return user;
+  }
+
+  async listUsers({ query = {}, fields = '' }) {
+    const users = await this.userRepository.listUsers({ query, fields });
+
+    return users;
   }
 }
 

@@ -23,12 +23,14 @@ class CampaignRepository extends BaseRepository {
 
   async listByOwnerId(ownerId) {
     const query = { ownerId };
-    const campaigns = await super.$list(query);
+    const populate = ['entity', 'categories'];
+    const campaigns = await super.$list(query, {}, populate);
     return campaigns;
   }
 
   async getById(id) {
-    const campaign = await super.$getById(id);
+    const populate = ['entity', 'categories'];
+    const campaign = await super.$getById(id, true, populate);
     return campaign;
   }
 
