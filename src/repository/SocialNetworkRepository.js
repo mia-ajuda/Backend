@@ -53,7 +53,7 @@ class SocialNetworkRepository extends BaseRepository {
     await super.$update(socialNetworkProfile);
   }
 
-  async findUsersbyName(userProfileId, userName) {
+  async findUsersbyName(userProfileId, userName, limit = 20) {
     const query = {
       _id: { $ne: ObjectID(userProfileId) },
       username: { $regex: userName, $options: 'i' },
@@ -66,7 +66,7 @@ class SocialNetworkRepository extends BaseRepository {
       select: ['photo', 'cnpj', 'cpf'],
     };
 
-    const users = await super.$list(query, selectField, populate);
+    const users = await super.$list(query, selectField, populate, null, limit);
 
     const mappedUsers = users.map((user) => mapSocialNetworkUser(user, userProfileId));
 
